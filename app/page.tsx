@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Button } from "@/components/ui/button"
@@ -24,31 +24,7 @@ export default function Page() {
   const [isReadingReady, setIsReadingReady] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    shuffleCards()
-  }, [])
-
-  useEffect(() => {
-    if (flippedCards.length === 3 && !isReadingReady) {
-      generateReading()
-    }
-  }, [flippedCards, isReadingReady])
-
-  const shuffleCards = () => {
-    const shuffled = [...cards].sort(() => 0.5 - Math.random())
-    setSelectedCards(shuffled.slice(0, 3))
-    setFlippedCards([])
-    setReading('')
-    setIsReadingReady(false)
-  }
-
-  const flipCard = (id: number) => {
-    if (flippedCards.length < 3 && !flippedCards.includes(id)) {
-      setFlippedCards([...flippedCards, id])
-    }
-  }
-
-  const generateReading = async () => {
+  const generateReading = useCallback(async () => {
     setIsLoading(true);
     const flippedCardMeanings = selectedCards
       .filter(card => flippedCards.includes(card.id))
@@ -78,7 +54,31 @@ export default function Page() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [flippedCards, selectedCards]);
+
+  useEffect(() => {
+    shuffleCards()
+  }, [])
+
+  useEffect(() => {
+    if (flippedCards.length === 3 && !isReadingReady) {
+      generateReading()
+    }
+  }, [flippedCards, isReadingReady, generateReading])
+
+  const shuffleCards = () => {
+    const shuffled = [...cards].sort(() => 0.5 - Math.random())
+    setSelectedCards(shuffled.slice(0, 3))
+    setFlippedCards([])
+    setReading('')
+    setIsReadingReady(false)
+  }
+
+  const flipCard = (id: number) => {
+    if (flippedCards.length < 3 && !flippedCards.includes(id)) {
+      setFlippedCards([...flippedCards, id])
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#1C1C1E] text-white flex flex-col items-center justify-center p-4">
