@@ -1,35 +1,48 @@
-import { OpenAIStream, StreamingTextResponse } from 'ai'
-import { Configuration, OpenAIApi } from 'openai-edge'
+import OpenAI from 'openai';
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-const openai = new OpenAIApi(configuration)
+// Create an OpenAI API client (that's edge friendly!)
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || '',  // Provide a default empty string
+});
 
-export const runtime = 'edge'
+// IMPORTANT: Set the runtime to edge
+export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  const { cards } = await req.json()
+  if (!process.env.OPENAI_API_KEY) {
+    return new Response(JSON.stringify({ error: 'OpenAI API key is missing' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
-  const prompt = `Generate a mystical oracle reading based on the following three cards: ${cards.join(', ')}. 
-  The reading should include:
-  1. An introduction about the cosmic energies aligning.
-  2. A brief interpretation of each card's meaning in the context of the reading.
-  3. An overall message about what these cards mean for the querent's future.
-  4. A piece of advice or guidance based on the reading.
-  
-  Please format the response in HTML with appropriate tags for headings and paragraphs.`
+  try {
+    // Extract the `prompt` from the body of the request
+    const { prompt } = await req.json();
 
-  const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    stream: true,
-    messages: [
-      { role: 'system', content: 'You are a mystical oracle reader, providing insightful and poetic readings.' },
-      { role: 'user', content: prompt }
-    ],
-  })
+    // Ask OpenAI for a chat completion given the prompt
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 500,
+    });
 
-  const stream = OpenAIStream(response)
-  return new StreamingTextResponse(stream)
+    // Return the generated text
+    return new Response(JSON.stringify({ 
+      text: completion.choices[0].message.content 
+    }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error: unknown) {
+    console.error('Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }
 
+// ... (keep all the existing code)
+
+    
