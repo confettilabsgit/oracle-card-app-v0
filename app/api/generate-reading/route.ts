@@ -33,10 +33,11 @@ export async function POST(req: Request) {
       { headers: { 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     console.error('Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return new Response(
-      JSON.stringify({ error: error.message || 'An error occurred' }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500 }
     );
   }
