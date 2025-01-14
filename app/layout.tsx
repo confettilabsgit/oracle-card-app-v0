@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" dir="ltr">
-      <body className={`${inter.className} ${notoSansArabic.variable}`}>{children}</body>
+      <body className={`${inter.className} ${notoSansArabic.className}`}>{children}</body>
     </html>
   )
 }
