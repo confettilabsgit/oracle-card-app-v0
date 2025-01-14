@@ -5,20 +5,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Following Vercel's documentation for stream handling
-function createStream(iterator: AsyncGenerator) {
-  return new ReadableStream({
-    async pull(controller) {
-      const { value, done } = await iterator.next();
-      if (done) {
-        controller.close();
-      } else {
-        controller.enqueue(value);
-      }
-    },
-  });
-}
-
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
@@ -37,20 +23,18 @@ export async function POST(req: Request) {
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 500,
       temperature: 0.7,
-      stream: true,
+      stream: false,
     });
 
-    // Create a proper stream following Vercel's pattern
-    const stream = createStream(response);
-
-    // Return with proper streaming headers as shown in Vercel docs
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-      },
-    });
+    // Return regular JSON response instead of stream
+    return new Response(
+      JSON.stringify({ text: response.choices[0].message.content }),
+      { 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
 
   } catch (error) {
     console.error('Error:', error);
