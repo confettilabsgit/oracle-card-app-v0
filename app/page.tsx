@@ -65,7 +65,7 @@ export default function Home() {
         ✨ Turn the cards and unveil what the cosmos holds for you ✨
       </h2>
       
-      <div className="flex flex-wrap justify-center gap-4 mb-12">
+      <div className="flex flex-wrap justify-center gap-4 mb-6">
         {selectedCards.map((card) => (
           <OracleCard
             key={card.id}
@@ -85,7 +85,7 @@ export default function Home() {
       {flippedCards.length === 3 ? (
         <button
           onClick={shuffleCards}
-          className="mb-12 text-center text-base px-5 py-2 rounded-lg transition-all duration-300 bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 cursor-pointer border border-purple-500/30 hover:border-purple-400/40 shadow-md hover:shadow-purple-500/20"
+          className="mb-8 text-center text-base px-5 py-2 rounded-lg transition-all duration-300 bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 cursor-pointer border border-purple-500/30 hover:border-purple-400/40 shadow-md hover:shadow-purple-500/20"
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {

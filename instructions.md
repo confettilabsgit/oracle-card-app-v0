@@ -13,4 +13,4 @@ An oracle card reader that incorporates AI
 
 
 ## Misc
-Shadcn is no longerinstalled 
+Shadcn is no longerinstalled using shadcn-ui use npm install shadcn
