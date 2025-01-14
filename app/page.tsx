@@ -1,147 +1,144 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
-import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
 
 const cards = [
-  { id: 1, name: 'Peri', persianName: 'پری', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/peri-zfou8jGi3kUEIDBRtsId9pIFsdRQ6e.png', meaning: 'Peri: The ethereal spirit of beauty and grace' },
-  { id: 2, name: 'Anahita', persianName: 'آناهیتا', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/anahita-hEmT1AzKulovXd115ZrugyVPvR3TDz.png', meaning: 'Anahita: The goddess of water and fertility' },
-  { id: 3, name: 'Faravahar', persianName: 'فروهر', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/farahvar-2RwODfjJgn3Fzj3FLr2SABgCoEwWou.png', meaning: 'Faravahar: The guardian spirit of divine destiny' },
-  { id: 4, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-yyGPg0BQJJZzcF90VQplTyxS0rQcBx.png', meaning: 'Simurgh: The mythical bird of wisdom and healing' },
-  { id: 5, name: 'Div', persianName: 'دیو', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/div-xjvocX2ti7nB2tDYinwTQTIEAyzofV.png', meaning: 'Div: The embodiment of chaos and challenge' },
-  { id: 6, name: 'Huma', persianName: 'هما', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/huma-g30DCxlvFWfN7J2OtIFtLRH7L7dHUN.png', meaning: 'Huma: The legendary bird of paradise and fortune' },
-  { id: 7, name: 'Azhdaha', persianName: 'اژدها', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/azhdaha-tVgoPlJGFYTkBkR1GBoPbSX8S0rSPJ.png', meaning: 'Azhdaha: The dragon of power and cosmic balance' },
+  { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
+  { id: 2, name: 'Peri', persianName: 'پری', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/peri-b0M4mWvY3p2J01OCq5cieVSZ1Vhmtq.png' },
+  { id: 3, name: 'Div', persianName: 'دیو', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/div-x5JR9tBpFxUbJ4nZndek27dXlldayi.png' },
+  { id: 4, name: 'Anahita', persianName: 'آناهیتا', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/anahita-EucWYb2KyAZbe3dpCUkpo87mVQUGL2.png' },
+  { id: 5, name: 'Faravahar', persianName: 'فروهر', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/farahvar-nCH4GRiSoEAv2Wjdbo7I6j4PVaCw3O.png' },
+  { id: 6, name: 'Huma', persianName: 'هما', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/huma-ycCNKdZ7xDysRlAbvardVOmeXQ3jPM.png' },
+  { id: 7, name: 'Azhdaha', persianName: 'اژدها', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/azhdaha-eIhPk4hvsh7iOAItW8JJspjdvTHLko.png' },
 ]
 
-export default function Page() {
+export default function Home() {
   const [selectedCards, setSelectedCards] = useState<typeof cards>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
-  const [reading, setReading] = useState('')
-  const [isReadingReady, setIsReadingReady] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  const generateReading = useCallback(async () => {
-    setIsLoading(true);
-    const flippedCardMeanings = selectedCards
-      .filter(card => flippedCards.includes(card.id))
-      .map(card => card.meaning);
-    
-    const prompt = `Generate a mystical oracle reading based on these card meanings: ${flippedCardMeanings.join(', ')}. The reading should have three parts: "The Cards Speak", "The Meaning Unveiled", and "The Path Forward".`;
-
-    try {
-      const response = await fetch('/api/generate-reading', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate reading');
-      }
-
-      const data = await response.json();
-      setReading(data.text);
-      setIsReadingReady(true);
-    } catch (error) {
-      console.error('Error generating reading:', error);
-      setReading('An error occurred while generating your reading. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [flippedCards, selectedCards]);
+  const [reading, setReading] = useState({ english: '', persian: '' })
 
   useEffect(() => {
     shuffleCards()
   }, [])
 
-  useEffect(() => {
-    if (flippedCards.length === 3 && !isReadingReady) {
-      generateReading()
-    }
-  }, [flippedCards, isReadingReady, generateReading])
-
   const shuffleCards = () => {
     const shuffled = [...cards].sort(() => 0.5 - Math.random())
     setSelectedCards(shuffled.slice(0, 3))
     setFlippedCards([])
-    setReading('')
-    setIsReadingReady(false)
+    setReading({ english: '', persian: '' })
+    setIsLoading(false)
   }
 
   const flipCard = (id: number) => {
-    if (flippedCards.length < 3 && !flippedCards.includes(id)) {
-      setFlippedCards([...flippedCards, id])
+    if (!flippedCards.includes(id)) {
+      const newFlippedCards = [...flippedCards, id]
+      setFlippedCards(newFlippedCards)
+      
+      if (newFlippedCards.length === 3) {
+        generateReading()
+      }
     }
   }
 
+  const generateReading = async () => {
+    setIsLoading(true)
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    setIsLoading(false)
+    setReading({
+      english: "The mystical energies of the Persian realm converge to illuminate your path. The Simurgh's wisdom, the Peri's grace, and the Div's challenge intertwine in your journey. Embrace the transformative power of these ancient forces as they guide you towards self-discovery and spiritual awakening.",
+      persian: "انرژی‌های عرفانی قلمرو ایرانی برای روشن کردن مسیر شما همگرا می‌شوند. خرد سیمرغ، لطف پری و چالش دیو در سفر شما در هم می‌آمیزند. قدرت دگرگون‌کننده این نیروهای باستانی را در آغوش بگیرید زیرا آنها شما را به سوی خودشناسی و بیداری معنوی هدایت می‌کنند."
+    })
+  }
+
   return (
-    <div className="min-h-screen bg-[#1C1C1E] text-white flex flex-col items-center justify-center p-4">
-      <h1 className="text-4xl font-bold mb-8">Oracle</h1>
-      <h2 className="text-xl mb-12">✨ Turn the cards and unveil what the cosmos holds for you ✨</h2>
+    <main className="min-h-screen bg-[#0B0B0F] text-white flex flex-col items-center justify-start p-8">
+      <h1 className="text-3xl md:text-4xl text-center mb-2 font-serif font-light text-amber-100 tracking-wide">
+        Mystical Persian Oracle
+      </h1>
+      <div className="w-24 h-1 bg-amber-400 mx-auto mb-8 rounded-full"></div>
+      <h2 className="text-lg md:text-xl text-center mb-12 text-amber-200 font-light">
+        ✨ Turn the cards and unveil what the cosmos holds for you ✨
+      </h2>
       
-      <div className="flex flex-wrap justify-center gap-8 mb-12">
-        {selectedCards.map(card => (
-          <div key={card.id} className="flex flex-col items-center">
-            <OracleCard
-              isFlipped={flippedCards.includes(card.id)}
-              onClick={() => flipCard(card.id)}
-              frontImage={card.image}
-              name={card.name}
-              persianName={card.persianName}
-            />
-            {flippedCards.includes(card.id) && (
-              <div className="mt-4 text-center">
-                <div className="text-lg font-medium">{card.name}</div>
-                <div className="text-sm text-blue-300">{card.persianName}</div>
-              </div>
-            )}
-          </div>
+      <div className="flex flex-wrap justify-center gap-4 mb-12">
+        {selectedCards.map((card) => (
+          <OracleCard
+            key={card.id}
+            isFlipped={flippedCards.includes(card.id)}
+            onClick={() => flipCard(card.id)}
+            frontImage={card.image}
+            name={card.name}
+            persianName={card.persianName}
+          />
         ))}
       </div>
 
-      <Button 
-        onClick={shuffleCards}
-        className="bg-[#2D2D3A] hover:bg-[#3D3D4A] text-white font-medium py-3 px-6 rounded-lg mb-8"
-      >
-        ✨ Shuffle the Oracle ✨
-      </Button>
+      <div className="sr-only" aria-live="polite">
+        Selected cards: {flippedCards.length} out of 3
+      </div>
 
-      <div className="w-full max-w-2xl mx-auto">
+      {flippedCards.length === 3 ? (
+        <button
+          onClick={shuffleCards}
+          className="mb-12 text-center text-base px-5 py-2 rounded-lg transition-all duration-300 bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 cursor-pointer border border-purple-500/30 hover:border-purple-400/40 shadow-md hover:shadow-purple-500/20"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              shuffleCards()
+            }
+          }}
+        >
+          ✨ New Reading ✨
+        </button>
+      ) : (
+        <div className="mb-12 text-center text-lg text-amber-200">
+          ✨ Turn all 3 cards for a reading ✨
+        </div>
+      )}
+
+      <div className="w-full max-w-2xl pt-4">
         <Tabs defaultValue="english" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-[#2D2D3A]">
-            <TabsTrigger value="english" className="text-white">English Reading</TabsTrigger>
-            <TabsTrigger value="persian" className="text-white">قرائت فارسی</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-gray-800 rounded-t-lg">
+            <TabsTrigger value="english" className="text-lg">English Reading</TabsTrigger>
+            <TabsTrigger value="persian" className="text-lg font-arabic text-amber-200">قرائت فارسی</TabsTrigger>
           </TabsList>
           <TabsContent value="english">
-            <div className="bg-[#2D2D3A]/50 p-6 rounded-lg mt-4 min-h-[300px] relative">
+            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
               {isLoading ? (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-                    <p className="text-lg">The spirits are whispering...</p>
-                  </div>
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                  <p className="text-purple-300">The mystical forces are gathering...</p>
                 </div>
-              ) : isReadingReady ? (
-                <TypewriterEffect text={reading} delay={30} />
+              ) : reading.english ? (
+                <TypewriterEffect text={reading.english} />
               ) : (
-                <p className="text-center text-blue-300">Flip three cards to receive your reading...</p>
+                <p className="text-gray-400">Your reading will appear here...</p>
               )}
             </div>
           </TabsContent>
           <TabsContent value="persian">
-            <div className="bg-[#2D2D3A]/50 p-6 rounded-lg mt-4 min-h-[300px] text-right">
-              <p className="text-blue-300">محتوای فارسی اینجا قرار می‌گیرد...</p>
+            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                  <p className="text-purple-300 font-arabic">نیروهای عرفانی در حال جمع شدن هستند...</p>
+                </div>
+              ) : reading.persian ? (
+                <TypewriterEffect text={reading.persian} />
+              ) : (
+                <p className="text-gray-400 font-arabic">قرائت شما اینجا ظاهر خواهد شد...</p>
+              )}
             </div>
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </main>
   )
 }
 

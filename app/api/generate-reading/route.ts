@@ -43,6 +43,8 @@ export async function POST(req: Request) {
   }
 }
 
-// ... (keep all the existing code)
-
-    
+export async function GET() {
+  return new Response(JSON.stringify({ message: 'API is working. Use POST to generate text.' }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
