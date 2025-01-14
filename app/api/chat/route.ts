@@ -26,11 +26,12 @@ export async function POST(req: Request) {
         },
         {
           role: 'user',
-          content: `Create a unique oracle reading. Include a welcome message, interpretations of the cards for this specific reading, and a suggested ritual. Make sure this reading is different from any previous ones.`
+          // Using the prompt from the request here
+          content: prompt || 'Create a unique oracle reading. Include a welcome message, interpretations of the cards for this specific reading, and a suggested ritual.'
         }
       ],
       max_tokens: 500,
-      temperature: 0.9,  // Increased for more variation
+      temperature: 0.9,
       stream: false,
     });
 
