@@ -137,10 +137,20 @@ export default function Home() {
 
       <div className="w-full max-w-2xl pt-4">
         <Tabs defaultValue="english" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-800 rounded-t-lg">
-            <TabsTrigger value="english" className="text-lg">English Reading</TabsTrigger>
-            <TabsTrigger value="persian" className="text-lg font-arabic text-amber-200">قرائت فارسی</TabsTrigger>
-          </TabsList>
+        <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
+  <TabsTrigger 
+    value="english" 
+    className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+  >
+    English Reading
+  </TabsTrigger>
+  <TabsTrigger 
+    value="persian" 
+    className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+  >
+    قرائت فارسی
+  </TabsTrigger>
+</TabsList>
           <TabsContent value="english">
             <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
               {isLoading ? (
