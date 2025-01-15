@@ -36,13 +36,15 @@ export async function POST(req: Request) {
     });
 
     return new Response(
-      JSON.stringify({ text: response.choices[0].message.content }),
+      JSON.stringify({ 
+        text: `<span style="color: #${Math.floor(Math.random()*16777215).toString(16)}">${response.choices[0].message.content}</span>`
+      }),
       { 
         headers: {
           'Content-Type': 'application/json',
         },
       }
-    );
+    );  
 
   } catch (error) {
     console.error('Error:', error);
