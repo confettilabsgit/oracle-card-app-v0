@@ -48,7 +48,8 @@ export default function Home() {
   const generateReading = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/chat', {
+      // Get English reading
+      const englishResponse = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,12 +58,24 @@ export default function Home() {
           prompt: `Generate an oracle reading for these three cards: ${selectedCards.map(card => card.name).join(', ')}. Include how they interact with each other and what message they bring.`
         }),
       });
-  
-      const data = await response.json();
+
+      // Get Persian reading
+      const persianResponse = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: `Generate a Persian oracle reading in Farsi language for these three cards: ${selectedCards.map(card => card.persianName).join(', ')}. Include how they interact with each other and what message they bring. The response should be entirely in Farsi.`
+        }),
+      });
+
+      const englishData = await englishResponse.json();
+      const persianData = await persianResponse.json();
       
       setReading({
-        english: data.text,
-        persian: "انرژی‌های عرفانی قلمرو ایرانی..." // Keep Persian for now or implement separate Persian API call
+        english: englishData.text,
+        persian: persianData.text
       });
     } catch (error) {
       console.error('Error generating reading:', error);
@@ -143,7 +156,7 @@ export default function Home() {
             </div>
           </TabsContent>
           <TabsContent value="persian">
-            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
+            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg text-right" dir="rtl">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center gap-4">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
@@ -161,4 +174,3 @@ export default function Home() {
     </main>
   )
 }
-
