@@ -1,15 +1,12 @@
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 
-// Create an OpenAI API client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Set the runtime to edge
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  // Verify API key exists
   if (!process.env.OPENAI_API_KEY) {
     return new Response(
       JSON.stringify({ error: 'OpenAI API key not configured' }), 
@@ -20,20 +17,36 @@ export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    const completion = await openai.chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a wise Persian oracle reader. Generate unique readings each time, never repeating the same text.'
+        },
+        {
+          role: 'user',
+          // Using the prompt from the request here
+          content: prompt || 'Create a unique oracle reading. Include a welcome message, interpretations of the cards for this specific reading, and a suggested ritual.'
+        }
+      ],
       max_tokens: 500,
-      temperature: 0.7,
+      temperature: 0.9,
       stream: false,
     });
 
     return new Response(
-      JSON.stringify({ text: completion.choices[0].message.content }),
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+      JSON.stringify({ 
+        text: response.choices[0].message.content
+      }),
+      { 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );  
 
-  } catch (error: Error | unknown) {
+  } catch (error) {
     console.error('Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return new Response(
@@ -41,11 +54,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  return new Response(
-    JSON.stringify({ message: 'API is working. Use POST to generate text.' }),
-    { headers: { 'Content-Type': 'application/json' } }
-  );
 }
