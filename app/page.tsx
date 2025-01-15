@@ -46,14 +46,34 @@ export default function Home() {
   }
 
   const generateReading = async () => {
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    setReading({
-      english: "The mystical energies of the Persian realm converge to illuminate your path. The Simurgh's wisdom, the Peri's grace, and the Div's challenge intertwine in your journey. Embrace the transformative power of these ancient forces as they guide you towards self-discovery and spiritual awakening.",
-      persian: "انرژی‌های عرفانی قلمرو ایرانی برای روشن کردن مسیر شما همگرا می‌شوند. خرد سیمرغ، لطف پری و چالش دیو در سفر شما در هم می‌آمیزند. قدرت دگرگون‌کننده این نیروهای باستانی را در آغوش بگیرید زیرا آنها شما را به سوی خودشناسی و بیداری معنوی هدایت می‌کنند."
-    })
-  }
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: `Generate an oracle reading for these three cards: ${selectedCards.map(card => card.name).join(', ')}. Include how they interact with each other and what message they bring.`
+        }),
+      });
+  
+      const data = await response.json();
+      
+      setReading({
+        english: data.text,
+        persian: "انرژی‌های عرفانی قلمرو ایرانی..." // Keep Persian for now or implement separate Persian API call
+      });
+    } catch (error) {
+      console.error('Error generating reading:', error);
+      setReading({
+        english: "There was an error generating your reading. Please try again.",
+        persian: "در تولید قرائت شما خطایی رخ داد. لطفاً دوباره امتحان کنید."
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#0B0B0F] text-white flex flex-col items-center justify-start p-8">
