@@ -89,97 +89,112 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0B0B0F] text-white flex flex-col items-center justify-start p-8">
-      <h1 className="text-3xl md:text-4xl text-center mb-2 font-serif font-light text-amber-100 tracking-wide">
-        Mystical Persian Oracle
-      </h1>
-      <div className="w-24 h-1 bg-amber-400 mx-auto mb-8 rounded-full"></div>
-      <h2 className="text-lg md:text-xl text-center mb-12 text-amber-200 font-light">
-        ✨ Turn the cards and unveil what the cosmos holds for you ✨
-      </h2>
-      
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-        {selectedCards.map((card) => (
-          <OracleCard
-            key={card.id}
-            isFlipped={flippedCards.includes(card.id)}
-            onClick={() => flipCard(card.id)}
-            frontImage={card.image}
-            name={card.name}
-            persianName={card.persianName}
-          />
-        ))}
-      </div>
+    <main className="relative min-h-screen">
+      <div 
+        style={{
+          background: 'linear-gradient(to bottom right, #1a1033, #0a1a2c)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: -1
+        }}
+      />
+      <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center space-y-8">
+          <h1 className="text-3xl md:text-4xl text-center mb-2 font-serif font-light text-amber-100 tracking-wide">
+            Mystical Persian Oracle
+          </h1>
+          <div className="w-24 h-1 bg-amber-400 mx-auto mb-8 rounded-full"></div>
+          <h2 className="text-lg md:text-xl text-center mb-12 text-amber-200 font-light">
+            ✨ Turn the cards and unveil what the cosmos holds for you ✨
+          </h2>
+          
+          <div className="flex -space-x-4">
+            {selectedCards.map((card) => (
+              <OracleCard
+                key={card.id}
+                isFlipped={flippedCards.includes(card.id)}
+                onClick={() => flipCard(card.id)}
+                frontImage={card.image}
+                name={card.name}
+                persianName={card.persianName}
+              />
+            ))}
+          </div>
 
-      <div className="sr-only" aria-live="polite">
-        Selected cards: {flippedCards.length} out of 3
-      </div>
+          <div className="sr-only" aria-live="polite">
+            Selected cards: {flippedCards.length} out of 3
+          </div>
 
-      {flippedCards.length === 3 ? (
-        <button
-          onClick={shuffleCards}
-          className="mb-8 text-center text-base px-5 py-2 rounded-lg transition-all duration-300 bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 cursor-pointer border border-purple-500/30 hover:border-purple-400/40 shadow-md hover:shadow-purple-500/20"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              shuffleCards()
-            }
-          }}
-        >
-          ✨ New Reading ✨
-        </button>
-      ) : (
-        <div className="mb-12 text-center text-lg text-amber-200">
-          ✨ Turn all 3 cards for a reading ✨
+          {flippedCards.length === 3 ? (
+            <button
+              onClick={shuffleCards}
+              className="mb-8 text-center text-base px-5 py-2 rounded-lg transition-all duration-300 bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 cursor-pointer border border-purple-500/30 hover:border-purple-400/40 shadow-md hover:shadow-purple-500/20"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  shuffleCards()
+                }
+              }}
+            >
+              ✨ New Reading ✨
+            </button>
+          ) : (
+            <div className="mb-12 text-center text-lg text-amber-200">
+              ✨ Turn all 3 cards for a reading ✨
+            </div>
+          )}
+
+          <div className="max-w-2xl w-full">
+            <Tabs defaultValue="english" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
+      <TabsTrigger 
+        value="english" 
+        className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+      >
+        English Reading
+      </TabsTrigger>
+      <TabsTrigger 
+        value="persian" 
+        className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+      >
+        قرائت فارسی
+      </TabsTrigger>
+    </TabsList>
+              <TabsContent value="english">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-6 rounded-b-lg text-white">
+                  {isLoading ? (
+                    <div className="flex flex-col items-center justify-center gap-4">
+                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                      <p className="text-purple-300">The mystical forces are gathering...</p>
+                    </div>
+                  ) : reading.english ? (
+                    <TypewriterEffect text={reading.english} />
+                  ) : (
+                    <p className="text-white/60">Your reading will appear here...</p>
+                  )}
+                </div>
+              </TabsContent>
+              <TabsContent value="persian">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-6 rounded-b-lg text-right text-white" dir="rtl">
+                  {isLoading ? (
+                    <div className="flex flex-col items-center justify-center gap-4">
+                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                      <p className="text-purple-300 font-arabic">نیروهای عرفانی در حال جمع شدن هستند...</p>
+                    </div>
+                  ) : reading.persian ? (
+                    <TypewriterEffect text={reading.persian} />
+                  ) : (
+                    <p className="text-white/60 font-arabic">قرائت شما اینجا ظاهر خواهد شد...</p>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
-      )}
-
-      <div className="w-full max-w-2xl pt-4">
-        <Tabs defaultValue="english" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
-  <TabsTrigger 
-    value="english" 
-    className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-  >
-    English Reading
-  </TabsTrigger>
-  <TabsTrigger 
-    value="persian" 
-    className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-  >
-    قرائت فارسی
-  </TabsTrigger>
-</TabsList>
-          <TabsContent value="english">
-            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                  <p className="text-purple-300">The mystical forces are gathering...</p>
-                </div>
-              ) : reading.english ? (
-                <TypewriterEffect text={reading.english} />
-              ) : (
-                <p className="text-gray-400">Your reading will appear here...</p>
-              )}
-            </div>
-          </TabsContent>
-          <TabsContent value="persian">
-            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg text-right" dir="rtl">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                  <p className="text-purple-300 font-arabic">نیروهای عرفانی در حال جمع شدن هستند...</p>
-                </div>
-              ) : reading.persian ? (
-                <TypewriterEffect text={reading.persian} />
-              ) : (
-                <p className="text-gray-400 font-arabic">قرائت شما اینجا ظاهر خواهد شد...</p>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
       </div>
     </main>
   )

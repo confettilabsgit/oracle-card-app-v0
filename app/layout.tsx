@@ -17,7 +17,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" dir="ltr">
-      <body className={`${inter.className} ${notoSansArabic.className}`}>{children}</body>
+      <body 
+        className={`${inter.className} ${notoSansArabic.className} min-h-screen`}
+        style={{ 
+          background: 'linear-gradient(to bottom right, #0a0a0b, #1a1a1c)'
+        }}
+      >
+        {children}
+      </body>
     </html>
   )
 }

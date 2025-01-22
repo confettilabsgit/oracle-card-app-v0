@@ -15,7 +15,7 @@ export default function OracleCard({ isFlipped, onClick, frontImage, name, persi
   return (
     <div className="flex flex-col items-center mb-4">
       <div
-        className="w-[240px] h-[336px] cursor-pointer bg-[#1C1C1E]"
+        className={`w-[300px] h-[420px] cursor-pointer`}
         onClick={onClick}
       >
         <div 
