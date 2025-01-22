@@ -37,7 +37,7 @@ export default function OracleCard({
       <div
         className={`
           cursor-pointer relative
-          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[260px] h-[364px]'}
+          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[280px] h-[392px]'}
         `}
         onClick={onClick}
       >

@@ -19,7 +19,7 @@ const cards = [
 export default function Home() {
   const [selectedCards, setSelectedCards] = useState<typeof cards>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [reading, setReading] = useState({ english: '', persian: '' })
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [touchStart, setTouchStart] = useState(0);
@@ -41,12 +41,17 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkIsDesktop)
   }, [])
 
+  useEffect(() => {
+    // Set loading to false after cards are ready
+    const timer = setTimeout(() => setIsLoading(false), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
   const shuffleCards = () => {
     const shuffled = [...cards].sort(() => 0.5 - Math.random())
     setSelectedCards(shuffled.slice(0, 3))
     setFlippedCards([])
     setReading({ english: '', persian: '' })
-    setIsLoading(false)
     setCurrentCardIndex(0)
   }
 
@@ -125,7 +130,7 @@ export default function Home() {
           zIndex: -1
         }}
       />
-      <div className="container mx-auto flex flex-col items-center justify-center min-h-screen">
+      <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-16">
           <h1 className="text-xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
@@ -135,7 +140,12 @@ export default function Home() {
           
           {/* Single conditional instruction/button */}
           {flippedCards.length === 3 ? (
-            <button onClick={shuffleCards}>✨ New Reading ✨</button>
+            <button 
+              onClick={() => window.location.reload()}
+              className="bg-purple-900/50 text-[#FFFDD0] mb-4 px-6 py-2 rounded-md shadow-[0_0_15px_rgba(88,28,135,0.3)] hover:bg-purple-900/60 transition-all"
+            >
+              ✨ New Reading ✨
+            </button>
           ) : (
             <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
               <span className="md:hidden">✨ Turn three cards to unveil mystical secrets ✨</span>
@@ -146,7 +156,7 @@ export default function Home() {
 
         {/* Desktop Layout - in its own container */}
         <div className="hidden md:flex flex-col items-center w-full">
-          <div className="flex -space-x-4 mb-32" style={{ width: '900px', transform: 'translateX(160px)' }}>
+          <div className="flex -space-x-4 mb-16" style={{ width: '900px', transform: 'translateX(160px)' }}>
             {selectedCards.map((card) => (
               <OracleCard
                 key={card.id}
@@ -182,7 +192,7 @@ export default function Home() {
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 py-12">
                       <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center px-4">
+                      <p className="text-purple-300 text-lg text-center">
                         ✨ The ancient wisdom is manifesting... ✨
                       </p>
                     </div>
@@ -196,7 +206,7 @@ export default function Home() {
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 py-12">
                       <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center px-4">
+                      <p className="text-purple-300 text-lg text-center">
                         نیروهای عرفانی در حال جمع شدن هستند...
                       </p>
                     </div>
@@ -210,7 +220,7 @@ export default function Home() {
         </div>
 
         {/* Mobile Layout */}
-        <div className="md:hidden w-full max-w-[280px] -mt-4">
+        <div className="md:hidden w-screen px-4 -mt-8">
           {/* Navigation - Only Next button */}
           {flippedCards.length < 3 && (
             <div className="flex justify-center w-full mb-2">
@@ -249,34 +259,38 @@ export default function Home() {
               ))
             ) : (
               // Show reading when all cards are flipped
-              <div className="w-full animate-fade-in mt-16"> {/* Added mt-16 for spacing */}
-                {isLoading ? (
-                  <div className="flex flex-col items-center justify-center gap-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                    <p className="text-purple-300">✨ The ancient wisdom is manifesting... ✨</p>
-                  </div>
-                ) : (
-                  <Tabs defaultValue="english" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
-                      <TabsTrigger value="english" className="text-sm data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
-                        English Reading
-                      </TabsTrigger>
-                      <TabsTrigger value="persian" className="text-sm font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
-                        قرائت فارسی
-                      </TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="english">
-                      <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-white">
-                        <TypewriterEffect text={reading.english} />
-                      </div>
-                    </TabsContent>
-                    <TabsContent value="persian">
-                      <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-right text-white" dir="rtl">
-                        <TypewriterEffect text={reading.persian} />
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                )}
+              <div className="w-screen -mx-4 animate-fade-in mt-8">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-lg text-white">
+                  {isLoading ? (
+                    <div className="flex flex-col items-center justify-center gap-4 py-12">
+                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                      <p className="text-purple-300 text-lg text-center">
+                        ✨ The ancient wisdom is manifesting... ✨
+                      </p>
+                    </div>
+                  ) : (
+                    <Tabs defaultValue="english" className="w-full">
+                      <TabsList className="w-screen -mx-4 grid grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
+                        <TabsTrigger value="english" className="text-sm data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
+                          English Reading
+                        </TabsTrigger>
+                        <TabsTrigger value="persian" className="text-sm font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
+                          قرائت فارسی
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="english">
+                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-white">
+                          <TypewriterEffect text={reading.english} />
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="persian">
+                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-right text-white" dir="rtl">
+                          <TypewriterEffect text={reading.persian} />
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  )}
+                </div>
               </div>
             )}
           </div>
