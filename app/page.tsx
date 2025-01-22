@@ -21,9 +21,24 @@ export default function Home() {
   const [flippedCards, setFlippedCards] = useState<number[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [reading, setReading] = useState({ english: '', persian: '' })
+  const [currentCardIndex, setCurrentCardIndex] = useState(0)
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(true)
 
   useEffect(() => {
     shuffleCards()
+  }, [])
+
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 768) // 768px is Tailwind's md breakpoint
+    }
+    
+    checkIsDesktop()
+    window.addEventListener('resize', checkIsDesktop)
+    
+    return () => window.removeEventListener('resize', checkIsDesktop)
   }, [])
 
   const shuffleCards = () => {
@@ -32,6 +47,7 @@ export default function Home() {
     setFlippedCards([])
     setReading({ english: '', persian: '' })
     setIsLoading(false)
+    setCurrentCardIndex(0)
   }
 
   const flipCard = (id: number) => {
@@ -88,6 +104,14 @@ export default function Home() {
     }
   };
 
+  const handleCardNavigation = (direction: 'next' | 'prev') => {
+    if (direction === 'next' && currentCardIndex < 2) {
+      setCurrentCardIndex(prev => prev + 1);
+    } else if (direction === 'prev' && currentCardIndex > 0) {
+      setCurrentCardIndex(prev => prev - 1);
+    }
+  };
+
   return (
     <main className="relative min-h-screen">
       <div 
@@ -101,17 +125,28 @@ export default function Home() {
           zIndex: -1
         }}
       />
-      <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center space-y-8">
-          <h1 className="text-3xl md:text-4xl text-center mb-2 font-serif font-light text-amber-100 tracking-wide">
+      <div className="container mx-auto flex flex-col items-center justify-center min-h-screen">
+        {/* Header section */}
+        <div className="flex flex-col items-center space-y-4 mb-16">
+          <h1 className="text-xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
             Mystical Persian Oracle
           </h1>
-          <div className="w-24 h-1 bg-amber-400 mx-auto mb-8 rounded-full"></div>
-          <h2 className="text-lg md:text-xl text-center mb-12 text-amber-200 font-light">
-            ✨ Turn the cards and unveil what the cosmos holds for you ✨
-          </h2>
+          <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
           
-          <div className="flex -space-x-4">
+          {/* Single conditional instruction/button */}
+          {flippedCards.length === 3 ? (
+            <button onClick={shuffleCards}>✨ New Reading ✨</button>
+          ) : (
+            <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
+              <span className="md:hidden">✨ Turn three cards to unveil mystical secrets ✨</span>
+              <span className="hidden md:inline">✨ Turn the cards and unveil what the cosmos holds for you ✨</span>
+            </h2>
+          )}
+        </div>
+
+        {/* Desktop Layout - in its own container */}
+        <div className="hidden md:flex flex-col items-center w-full">
+          <div className="flex -space-x-4 mb-32" style={{ width: '900px', transform: 'translateX(160px)' }}>
             {selectedCards.map((card) => (
               <OracleCard
                 key={card.id}
@@ -120,79 +155,130 @@ export default function Home() {
                 frontImage={card.image}
                 name={card.name}
                 persianName={card.persianName}
+                isDesktop={isDesktop}
               />
             ))}
           </div>
 
-          <div className="sr-only" aria-live="polite">
-            Selected cards: {flippedCards.length} out of 3
-          </div>
-
-          {flippedCards.length === 3 ? (
-            <button
-              onClick={shuffleCards}
-              className="mb-8 text-center text-base px-5 py-2 rounded-lg transition-all duration-300 bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 cursor-pointer border border-purple-500/30 hover:border-purple-400/40 shadow-md hover:shadow-purple-500/20"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  shuffleCards()
-                }
-              }}
-            >
-              ✨ New Reading ✨
-            </button>
-          ) : (
-            <div className="mb-12 text-center text-lg text-amber-200">
-              ✨ Turn all 3 cards for a reading ✨
-            </div>
-          )}
-
-          <div className="max-w-2xl w-full">
+          {/* Desktop-only reading section */}
+          <div className="w-[95vw] md:max-w-3xl">
             <Tabs defaultValue="english" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
-      <TabsTrigger 
-        value="english" 
-        className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-      >
-        English Reading
-      </TabsTrigger>
-      <TabsTrigger 
-        value="persian" 
-        className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-      >
-        قرائت فارسی
-      </TabsTrigger>
-    </TabsList>
+              <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
+                <TabsTrigger 
+                  value="english" 
+                  className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                >
+                  English Reading
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="persian" 
+                  className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                >
+                  قرائت فارسی
+                </TabsTrigger>
+              </TabsList>
               <TabsContent value="english">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-6 rounded-b-lg text-white">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-white">
                   {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4">
-                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                      <p className="text-purple-300">The mystical forces are gathering...</p>
+                    <div className="flex flex-col items-center justify-center gap-4 py-12">
+                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                      <p className="text-purple-300 text-lg text-center px-4">
+                        ✨ The ancient wisdom is manifesting... ✨
+                      </p>
                     </div>
-                  ) : reading.english ? (
-                    <TypewriterEffect text={reading.english} />
                   ) : (
-                    <p className="text-white/60">Your reading will appear here...</p>
+                    <TypewriterEffect text={reading.english} />
                   )}
                 </div>
               </TabsContent>
               <TabsContent value="persian">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-6 rounded-b-lg text-right text-white" dir="rtl">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-right text-white" dir="rtl">
                   {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4">
-                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                      <p className="text-purple-300 font-arabic">نیروهای عرفانی در حال جمع شدن هستند...</p>
+                    <div className="flex flex-col items-center justify-center gap-4 py-12">
+                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                      <p className="text-purple-300 text-lg text-center px-4">
+                        نیروهای عرفانی در حال جمع شدن هستند...
+                      </p>
                     </div>
-                  ) : reading.persian ? (
-                    <TypewriterEffect text={reading.persian} />
                   ) : (
-                    <p className="text-white/60 font-arabic">قرائت شما اینجا ظاهر خواهد شد...</p>
+                    <TypewriterEffect text={reading.persian} />
                   )}
                 </div>
               </TabsContent>
             </Tabs>
+          </div>
+        </div>
+
+        {/* Mobile Layout */}
+        <div className="md:hidden w-full max-w-[280px] -mt-4">
+          {/* Navigation - Only Next button */}
+          {flippedCards.length < 3 && (
+            <div className="flex justify-center w-full mb-2">
+              {flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 && (
+                <button
+                  onClick={() => setCurrentCardIndex(prev => prev + 1)}
+                  className="w-full text-center text-base px-5 py-2 rounded-lg transition-all duration-300 
+                    bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 
+                    border border-purple-500/30 hover:border-purple-400/40 
+                    shadow-md hover:shadow-purple-500/20"
+                >
+                  {currentCardIndex === 1 
+                    ? "Nice! Turn last card ✨" 
+                    : "Great! Next Card →"}
+                </button>
+              )}
+            </div>
+          )}
+          
+          {/* Cards or Reading */}
+          <div className="relative h-[420px] overflow-hidden">
+            {flippedCards.length < 3 ? (
+              // Show cards when not all are flipped
+              selectedCards.map((card, index) => (
+                <OracleCard
+                  key={card.id}
+                  isFlipped={flippedCards.includes(card.id)}
+                  onClick={() => flipCard(card.id)}
+                  frontImage={card.image}
+                  name={card.name}
+                  persianName={card.persianName}
+                  isDesktop={isDesktop}
+                  show={index === currentCardIndex}
+                  zIndex={2}
+                />
+              ))
+            ) : (
+              // Show reading when all cards are flipped
+              <div className="w-full animate-fade-in mt-16"> {/* Added mt-16 for spacing */}
+                {isLoading ? (
+                  <div className="flex flex-col items-center justify-center gap-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                    <p className="text-purple-300">✨ The ancient wisdom is manifesting... ✨</p>
+                  </div>
+                ) : (
+                  <Tabs defaultValue="english" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
+                      <TabsTrigger value="english" className="text-sm data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
+                        English Reading
+                      </TabsTrigger>
+                      <TabsTrigger value="persian" className="text-sm font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
+                        قرائت فارسی
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="english">
+                      <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-white">
+                        <TypewriterEffect text={reading.english} />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="persian">
+                      <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-right text-white" dir="rtl">
+                        <TypewriterEffect text={reading.persian} />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -9,13 +9,36 @@ interface OracleCardProps {
   frontImage: string
   name: string
   persianName: string
+  isDesktop: boolean
+  show?: boolean
+  zIndex?: number
 }
 
-export default function OracleCard({ isFlipped, onClick, frontImage, name, persianName }: OracleCardProps) {
+export default function OracleCard({ 
+  isFlipped, 
+  onClick, 
+  frontImage, 
+  name, 
+  persianName,
+  isDesktop,
+  show = true,
+  zIndex = 0
+}: OracleCardProps) {
   return (
-    <div className="flex flex-col items-center mb-4">
+    <div className={`
+      flex flex-col items-center
+      ${isDesktop ? 'mb-4' : 'absolute transition-all duration-500'}
+      ${!isDesktop && !show ? 'translate-x-[100%] opacity-0' : 'translate-x-[-50%] opacity-100'}
+    `}
+    style={{
+      zIndex: zIndex,
+      left: isDesktop ? 'auto' : '50%',
+    }}>
       <div
-        className={`w-[300px] h-[420px] cursor-pointer`}
+        className={`
+          cursor-pointer relative
+          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[260px] h-[364px]'}
+        `}
         onClick={onClick}
       >
         <div 
@@ -26,8 +49,8 @@ export default function OracleCard({ isFlipped, onClick, frontImage, name, persi
             <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
               alt="Card Back"
-              width={224}
-              height={320}
+              width={isDesktop ? 224 : 180}
+              height={isDesktop ? 320 : 252}
               className="rounded-lg"
             />
           </div>
@@ -37,17 +60,17 @@ export default function OracleCard({ isFlipped, onClick, frontImage, name, persi
             <Image
               src={frontImage}
               alt={name}
-              width={224}
-              height={320}
+              width={isDesktop ? 224 : 180}
+              height={isDesktop ? 320 : 252}
               className="rounded-lg"
             />
           </div>
         </div>
       </div>
-      {isFlipped && (
-        <div className="text-center mt-1">
-          <h3 className="text-base font-semibold text-white">{name}</h3>
-          <p className="text-base font-semibold text-white/80">{persianName}</p>
+      {isFlipped && show && (
+        <div className="absolute bottom-[-40px] w-full text-center">
+          <h3 className={`font-semibold text-white ${isDesktop ? 'text-base' : 'text-sm'}`}>{name}</h3>
+          <p className={`font-semibold text-white/80 ${isDesktop ? 'text-base' : 'text-sm'}`}>{persianName}</p>
         </div>
       )}
     </div>

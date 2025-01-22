@@ -72,3 +72,26 @@
 .instruction-text {
   margin-top: 8rem;
 }
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100vw);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@layer utilities {
+  .animate-slide-in {
+    animation: slideIn 0.5s forwards;
+  }
+}
+
+/* Hide the sliding animation on desktop */
+@media (min-width: 768px) {
+  .animate-slide-in {
+    animation: none;
+    transform: none;
+  }
+}
