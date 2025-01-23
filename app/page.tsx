@@ -5,6 +5,7 @@ import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
+import OracleApp from './components/oracle/oracle-app'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -16,129 +17,11 @@ const cards = [
   { id: 7, name: 'Azhdaha', persianName: 'اژدها', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/azhdaha-eIhPk4hvsh7iOAItW8JJspjdvTHLko.png' },
 ]
 
-export default function Home() {
-  const [selectedCards, setSelectedCards] = useState<typeof cards>([])
-  const [flippedCards, setFlippedCards] = useState<number[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [reading, setReading] = useState({ english: '', persian: '' })
-
-  useEffect(() => {
-    shuffleCards()
-  }, [])
-
-  const shuffleCards = () => {
-    const shuffled = [...cards].sort(() => 0.5 - Math.random())
-    setSelectedCards(shuffled.slice(0, 3))
-    setFlippedCards([])
-    setReading({ english: '', persian: '' })
-    setIsLoading(false)
-  }
-
-  const flipCard = (id: number) => {
-    if (!flippedCards.includes(id)) {
-      const newFlippedCards = [...flippedCards, id]
-      setFlippedCards(newFlippedCards)
-      
-      if (newFlippedCards.length === 3) {
-        generateReading()
-      }
-    }
-  }
-
-  const generateReading = async () => {
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    setReading({
-      english: "The mystical energies of the Persian realm converge to illuminate your path. The Simurgh's wisdom, the Peri's grace, and the Div's challenge intertwine in your journey. Embrace the transformative power of these ancient forces as they guide you towards self-discovery and spiritual awakening.",
-      persian: "انرژی‌های عرفانی قلمرو ایرانی برای روشن کردن مسیر شما همگرا می‌شوند. خرد سیمرغ، لطف پری و چالش دیو در سفر شما در هم می‌آمیزند. قدرت دگرگون‌کننده این نیروهای باستانی را در آغوش بگیرید زیرا آنها شما را به سوی خودشناسی و بیداری معنوی هدایت می‌کنند."
-    })
-  }
-
+export default function Page() {
+  // Remove unused state and handlers if not using touch navigation
   return (
-    <main className="min-h-screen bg-[#0B0B0F] text-white flex flex-col items-center justify-start p-8">
-      <h1 className="text-3xl md:text-4xl text-center mb-2 font-serif font-light text-amber-100 tracking-wide">
-        Mystical Persian Oracle
-      </h1>
-      <div className="w-24 h-1 bg-amber-400 mx-auto mb-8 rounded-full"></div>
-      <h2 className="text-lg md:text-xl text-center mb-12 text-amber-200 font-light">
-        ✨ Turn the cards and unveil what the cosmos holds for you ✨
-      </h2>
-      
-      <div className="flex flex-wrap justify-center gap-4 mb-6">
-        {selectedCards.map((card) => (
-          <OracleCard
-            key={card.id}
-            isFlipped={flippedCards.includes(card.id)}
-            onClick={() => flipCard(card.id)}
-            frontImage={card.image}
-            name={card.name}
-            persianName={card.persianName}
-          />
-        ))}
-      </div>
-
-      <div className="sr-only" aria-live="polite">
-        Selected cards: {flippedCards.length} out of 3
-      </div>
-
-      {flippedCards.length === 3 ? (
-        <button
-          onClick={shuffleCards}
-          className="mb-8 text-center text-base px-5 py-2 rounded-lg transition-all duration-300 bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 cursor-pointer border border-purple-500/30 hover:border-purple-400/40 shadow-md hover:shadow-purple-500/20"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              shuffleCards()
-            }
-          }}
-        >
-          ✨ New Reading ✨
-        </button>
-      ) : (
-        <div className="mb-12 text-center text-lg text-amber-200">
-          ✨ Turn all 3 cards for a reading ✨
-        </div>
-      )}
-
-      <div className="w-full max-w-2xl pt-4">
-        <Tabs defaultValue="english" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-800 rounded-t-lg">
-            <TabsTrigger value="english" className="text-lg">English Reading</TabsTrigger>
-            <TabsTrigger value="persian" className="text-lg font-arabic text-amber-200">قرائت فارسی</TabsTrigger>
-          </TabsList>
-          <TabsContent value="english">
-            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                  <p className="text-purple-300">The mystical forces are gathering...</p>
-                </div>
-              ) : reading.english ? (
-                <TypewriterEffect text={reading.english} />
-              ) : (
-                <p className="text-gray-400">Your reading will appear here...</p>
-              )}
-            </div>
-          </TabsContent>
-          <TabsContent value="persian">
-            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                  <p className="text-purple-300 font-arabic">نیروهای عرفانی در حال جمع شدن هستند...</p>
-                </div>
-              ) : reading.persian ? (
-                <TypewriterEffect text={reading.persian} />
-              ) : (
-                <p className="text-gray-400 font-arabic">قرائت شما اینجا ظاهر خواهد شد...</p>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </main>
-  )
+    <div>
+      <OracleApp />
+    </div>
+  );
 }
-

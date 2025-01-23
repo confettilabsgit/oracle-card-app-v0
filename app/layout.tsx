@@ -17,7 +17,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" dir="ltr">
-      <body className={`${inter.className} ${notoSansArabic.className}`}>{children}</body>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#1a1a2e" />
+      </head>
+      <body 
+        className={`${inter.className} ${notoSansArabic.className} min-h-screen`}
+        style={{ 
+          background: 'linear-gradient(to bottom right, #0a0a0b, #1a1a1c)'
+        }}
+      >
+        {children}
+      </body>
     </html>
   )
 }

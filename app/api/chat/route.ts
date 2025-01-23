@@ -26,7 +26,6 @@ export async function POST(req: Request) {
         },
         {
           role: 'user',
-          // Using the prompt from the request here
           content: prompt || 'Create a unique oracle reading. Include a welcome message, interpretations of the cards for this specific reading, and a suggested ritual.'
         }
       ],
@@ -35,16 +34,15 @@ export async function POST(req: Request) {
       stream: false,
     });
 
+    // Simple return with no color formatting
     return new Response(
-      JSON.stringify({ 
-        text: response.choices[0].message.content
-      }),
+      JSON.stringify({ text: response.choices[0].message.content }),
       { 
         headers: {
           'Content-Type': 'application/json',
         },
       }
-    );  
+    );
 
   } catch (error) {
     console.error('Error:', error);
