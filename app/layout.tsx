@@ -17,6 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" dir="ltr">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#1a1a2e" />
+      </head>
       <body 
         className={`${inter.className} ${notoSansArabic.className} min-h-screen`}
         style={{ 
