@@ -4,11 +4,13 @@ const Reading: React.FC = () => {
   const [cards, setCards] = useState<Card[]>([]);
   
   useEffect(() => {
-    // Your effect code
-  }, []); // Remove cards.length dependency
+    // Effect code here
+  }, []);
 
   return (
-    // Your JSX
+    <div>
+      {/* Your JSX */}
+    </div>
   );
 };
 

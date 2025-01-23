@@ -8,9 +8,15 @@ const CardDeck: React.FC<CardDeckProps> = ({ onSelect }) => {
   // ... rest of component
 }
 
-// Use CardDeck component
-return (
-  <div>
-    <CardDeck onSelect={handleSelect} />
-  </div>
-); 
+export default function OracleApp() {
+  const handleSelect = (cards: Card[]) => {
+    // Handle selected cards
+    console.log(cards);
+  };
+
+  return (
+    <div>
+      <CardDeck onSelect={handleSelect} />
+    </div>
+  );
+} 
