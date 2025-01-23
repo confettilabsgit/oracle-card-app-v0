@@ -5,7 +5,7 @@ import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
-import OracleApp from './components/OracleApp'
+import OracleApp from './components/oracle/oracle-app'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
