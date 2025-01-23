@@ -1,0 +1,3 @@
+useEffect(() => {
+  // ... existing code ...
+}, [cards.length]); // Add cards.length to dependency array 
