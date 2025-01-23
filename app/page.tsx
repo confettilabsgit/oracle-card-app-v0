@@ -220,14 +220,14 @@ export default function Home() {
         </div>
 
         {/* Mobile Layout */}
-        <div className="md:hidden w-screen px-4 -mt-8">
+        <div className="md:hidden w-screen -mx-4">
           {/* Navigation - Only Next button */}
           {flippedCards.length < 3 && (
             <div className="flex justify-center w-full mb-2">
               {flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 && (
                 <button
                   onClick={() => setCurrentCardIndex(prev => prev + 1)}
-                  className="w-full text-center text-base px-5 py-2 rounded-lg transition-all duration-300 
+                  className="mx-auto px-8 py-2 rounded-lg transition-all duration-300 
                     bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 
                     border border-purple-500/30 hover:border-purple-400/40 
                     shadow-md hover:shadow-purple-500/20"
@@ -259,8 +259,8 @@ export default function Home() {
               ))
             ) : (
               // Show reading when all cards are flipped
-              <div className="w-screen -mx-4 animate-fade-in mt-8">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-lg text-white">
+              <div className="w-screen animate-fade-in mt-8">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm rounded-none">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 py-12">
                       <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
@@ -270,7 +270,7 @@ export default function Home() {
                     </div>
                   ) : (
                     <Tabs defaultValue="english" className="w-full">
-                      <TabsList className="w-screen -mx-4 grid grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
+                      <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 border-x-0 border-t-0 border-b border-purple-500/30">
                         <TabsTrigger value="english" className="text-sm data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
                           English Reading
                         </TabsTrigger>
@@ -279,12 +279,12 @@ export default function Home() {
                         </TabsTrigger>
                       </TabsList>
                       <TabsContent value="english">
-                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-white">
+                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 text-white">
                           <TypewriterEffect text={reading.english} />
                         </div>
                       </TabsContent>
                       <TabsContent value="persian">
-                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 rounded-b-lg text-right text-white" dir="rtl">
+                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 text-right text-white" dir="rtl">
                           <TypewriterEffect text={reading.persian} />
                         </div>
                       </TabsContent>
