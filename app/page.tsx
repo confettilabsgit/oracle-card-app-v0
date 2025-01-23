@@ -22,8 +22,6 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
   const [reading, setReading] = useState({ english: '', persian: '' })
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
   const [isDesktop, setIsDesktop] = useState(true)
 
   useEffect(() => {
@@ -115,6 +113,17 @@ export default function Home() {
     } else if (direction === 'prev' && currentCardIndex > 0) {
       setCurrentCardIndex(prev => prev - 1);
     }
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleTouchStart = (e: TouchEvent) => {
+    setTouchStart(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    setTouchEnd(e.changedTouches[0].clientX);
+    handleCardNavigation();
   };
 
   return (
