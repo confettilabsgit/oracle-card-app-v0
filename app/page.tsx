@@ -46,14 +46,43 @@ export default function Home() {
   }
 
   const generateReading = async () => {
-    setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsLoading(false)
-    setReading({
-      english: "The mystical energies of the Persian realm converge to illuminate your path. The Simurgh's wisdom, the Peri's grace, and the Div's challenge intertwine in your journey. Embrace the transformative power of these ancient forces as they guide you towards self-discovery and spiritual awakening.",
-      persian: "انرژی‌های عرفانی قلمرو ایرانی برای روشن کردن مسیر شما همگرا می‌شوند. خرد سیمرغ، لطف پری و چالش دیو در سفر شما در هم می‌آمیزند. قدرت دگرگون‌کننده این نیروهای باستانی را در آغوش بگیرید زیرا آنها شما را به سوی خودشناسی و بیداری معنوی هدایت می‌کنند."
-    })
-  }
+    setIsLoading(true);
+    try {
+      // English reading with ritual
+      const englishResponse = await fetch('/api/generate-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `Generate an oracle reading for these three cards: ${selectedCards.map(card => card.name).join(', ')}. 
+          First, provide a mystical interpretation (2-3 paragraphs).
+
+          Then, provide a very brief ritual suggestion (maximum 2 sentences) that focuses on simple actions like meditation, visualization, or symbolic gestures. No fire or candles.
+
+          Format exactly as:
+
+          [mystical interpretation]
+
+          ✧ Manifesting Ritual ✧
+          [one or two sentences for ritual]`
+        }),
+      });
+
+      const englishData = await englishResponse.json();
+      
+      setReading({
+        english: englishData.text,
+        persian: "در تولید قرائت شما خطایی رخ داد" // We can add Persian back later
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      setReading({
+        english: "There was an error generating your reading. Please try again.",
+        persian: "در تولید قرائت شما خطایی رخ داد"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#0B0B0F] text-white flex flex-col items-center justify-start p-8">
@@ -104,12 +133,22 @@ export default function Home() {
 
       <div className="w-full max-w-2xl pt-4">
         <Tabs defaultValue="english" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-gray-800 rounded-t-lg">
-            <TabsTrigger value="english" className="text-lg">English Reading</TabsTrigger>
-            <TabsTrigger value="persian" className="text-lg font-arabic text-amber-200">قرائت فارسی</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
+            <TabsTrigger 
+              value="english" 
+              className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+            >
+              English Reading
+            </TabsTrigger>
+            <TabsTrigger 
+              value="persian" 
+              className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+            >
+              قرائت فارسی
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="english">
-            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
+            <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center gap-4">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
@@ -123,7 +162,7 @@ export default function Home() {
             </div>
           </TabsContent>
           <TabsContent value="persian">
-            <div className="min-h-[200px] bg-gray-800/50 p-6 rounded-b-lg">
+            <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg">
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center gap-4">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
