@@ -47,7 +47,7 @@ export default function OracleCard({
         >
           <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] flex items-center justify-center">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
+              src="/cards/cardback.png"
               alt="Card Back"
               width={isDesktop ? 224 : 180}
               height={isDesktop ? 320 : 252}

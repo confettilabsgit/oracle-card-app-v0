@@ -6,8 +6,8 @@ const inter = Inter({ subsets: ['latin'] })
 const notoSansArabic = Noto_Sans_Arabic({ subsets: ['arabic'] })
 
 export const metadata: Metadata = {
-  title: 'Persian Oracle Cards',
-  description: 'Unveil what the Persian realm holds for you',
+  title: 'Mystical Persian Oracle',
+  description: 'A digital oracle deck inspired by Persian mythology',
 }
 
 export default function RootLayout({
