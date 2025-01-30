@@ -1,12 +1,14 @@
 import Image from 'next/image'
 
-// Either use onSelect or remove it from props
-interface CardDeckProps {
-  // Remove onSelect if not using it
-  // onSelect: (card: string) => void;
-}
+// Remove unused interface since we don't have props
+// interface CardDeckProps {
+// }
 
-export const CardDeck = (/* { onSelect } */) => {
+export const CardDeck = () => {
+  // Add these variables
+  const cardImage = '/path/to/card/image.jpg'  // Update with your image path
+  const cardAlt = 'Oracle Card'                // Update with your alt text
+
   return (
     <div>
       <Image 
