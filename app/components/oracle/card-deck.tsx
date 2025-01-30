@@ -1,8 +1,14 @@
 import Image from 'next/image'
 
-<Image 
-  src="..."
-  width={400}  // Adjust size as needed
-  height={600} // Adjust size as needed
-  alt="..."
-/> 
+export const CardDeck = ({ onSelect }) => {
+  return (
+    <div>
+      <Image 
+        src={cardImage}
+        alt={cardAlt}
+        width={400}
+        height={600}
+      />
+    </div>
+  )
+} 
