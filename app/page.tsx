@@ -107,6 +107,9 @@ export default function Home() {
     }
   };
 
+  // Test auto-deployment setup
+  console.log('Testing deployment');  // We'll remove this later
+
   return (
     <main className="relative min-h-screen">
       <div 
