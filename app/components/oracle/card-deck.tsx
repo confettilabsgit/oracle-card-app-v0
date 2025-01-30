@@ -1,6 +1,12 @@
 import Image from 'next/image'
 
-export const CardDeck = ({ onSelect }) => {
+// Either use onSelect or remove it from props
+interface CardDeckProps {
+  // Remove onSelect if not using it
+  // onSelect: (card: string) => void;
+}
+
+export const CardDeck = (/* { onSelect } */) => {
   return (
     <div>
       <Image 
