@@ -5,17 +5,18 @@ import Image from 'next/image'
 // }
 
 export const CardDeck = () => {
-  // Add these variables
-  const cardImage = '/path/to/card/image.jpg'  // Update with your image path
-  const cardAlt = 'Oracle Card'                // Update with your alt text
+  // Update image path to match your public directory structure
+  const cardImage = '/cards/angel.jpg'  // Assuming image is in public/cards/
+  const cardAlt = 'Oracle Card'
 
   return (
-    <div>
+    <div className="flex justify-center">
       <Image 
         src={cardImage}
         alt={cardAlt}
-        width={400}
-        height={600}
+        width={480}
+        height={720}
+        priority  // Add priority for first image load
       />
     </div>
   )

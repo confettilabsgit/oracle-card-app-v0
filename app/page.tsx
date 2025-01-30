@@ -5,6 +5,7 @@ import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
+import { CardDeck } from './components/oracle/card-deck'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -111,184 +112,18 @@ export default function Home() {
   console.log('Testing deployment');  // We'll remove this later
 
   return (
-    <main className="relative min-h-screen">
-      <div 
-        style={{
-          background: 'linear-gradient(to bottom right, #1a1033, #0a1a2c)',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: -1
-        }}
-      />
-      <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
-        {/* Header section */}
-        <div className="flex flex-col items-center space-y-4 mb-16">
-          <h1 className="text-xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
-            Mystical Persian Oracle
-          </h1>
-          <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
-          
-          {/* Single conditional instruction/button */}
-          {flippedCards.length === 3 ? (
-            <button 
-              onClick={() => window.location.reload()}
-              className="bg-purple-900/50 text-[#FFFDD0] mb-4 px-6 py-2 rounded-md shadow-[0_0_15px_rgba(88,28,135,0.3)] hover:bg-purple-900/60 transition-all"
-            >
-              ✨ New Reading ✨
-            </button>
-          ) : (
-            <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-              <span className="md:hidden">✨ Turn three cards to unveil mystical secrets ✨</span>
-              <span className="hidden md:inline">✨ Turn the cards and unveil what the cosmos holds for you ✨</span>
-            </h2>
-          )}
-        </div>
-
-        {/* Desktop Layout - in its own container */}
-        <div className="hidden md:flex flex-col items-center w-full">
-          <div className="flex -space-x-4 mb-16" style={{ width: '900px', transform: 'translateX(160px)' }}>
-            {selectedCards.map((card) => (
-              <OracleCard
-                key={card.id}
-                isFlipped={flippedCards.includes(card.id)}
-                onClick={() => flipCard(card.id)}
-                frontImage={card.image}
-                name={card.name}
-                persianName={card.persianName}
-                isDesktop={isDesktop}
-              />
-            ))}
-          </div>
-
-          {/* Desktop-only reading section */}
-          <div className="w-[95vw] md:max-w-3xl">
-            <Tabs defaultValue="english" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
-                <TabsTrigger 
-                  value="english" 
-                  className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-                >
-                  English Reading
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="persian" 
-                  className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-                >
-                  قرائت فارسی
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="english">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-white">
-                  {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4 py-12">
-                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center">
-                        ✨ The ancient wisdom is manifesting... ✨
-                      </p>
-                    </div>
-                  ) : (
-                    <TypewriterEffect text={reading.english} />
-                  )}
-                </div>
-              </TabsContent>
-              <TabsContent value="persian">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-right text-white" dir="rtl">
-                  {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4 py-12">
-                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center">
-                        نیروهای عرفانی در حال جمع شدن هستند...
-                      </p>
-                    </div>
-                  ) : (
-                    <TypewriterEffect text={reading.persian} />
-                  )}
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
-
-        {/* Mobile Layout */}
-        <div className="md:hidden w-screen -mx-4">
-          {/* Navigation - Only Next button */}
-          {flippedCards.length < 3 && (
-            <div className="flex justify-center w-full mb-2">
-              {flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 && (
-                <button
-                  onClick={() => setCurrentCardIndex(prev => prev + 1)}
-                  className="mx-auto px-8 py-2 rounded-lg transition-all duration-300 
-                    bg-purple-900/30 hover:bg-purple-800/40 text-amber-100 
-                    border border-purple-500/30 hover:border-purple-400/40 
-                    shadow-md hover:shadow-purple-500/20"
-                >
-                  {currentCardIndex === 1 
-                    ? "Nice! Turn last card ✨" 
-                    : "Great! Next Card →"}
-                </button>
-              )}
-            </div>
-          )}
-          
-          {/* Cards or Reading */}
-          <div className="relative h-[420px] overflow-hidden">
-            {flippedCards.length < 3 ? (
-              // Show cards when not all are flipped
-              selectedCards.map((card, index) => (
-                <OracleCard
-                  key={card.id}
-                  isFlipped={flippedCards.includes(card.id)}
-                  onClick={() => flipCard(card.id)}
-                  frontImage={card.image}
-                  name={card.name}
-                  persianName={card.persianName}
-                  isDesktop={isDesktop}
-                  show={index === currentCardIndex}
-                  zIndex={2}
-                />
-              ))
-            ) : (
-              // Show reading when all cards are flipped
-              <div className="w-screen animate-fade-in mt-8">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm rounded-none">
-                  {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4 py-12">
-                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center">
-                        ✨ The ancient wisdom is manifesting... ✨
-                      </p>
-                    </div>
-                  ) : (
-                    <Tabs defaultValue="english" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 border-x-0 border-t-0 border-b border-purple-500/30">
-                        <TabsTrigger value="english" className="text-sm data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
-                          English Reading
-                        </TabsTrigger>
-                        <TabsTrigger value="persian" className="text-sm font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
-                          قرائت فارسی
-                        </TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="english">
-                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 text-white">
-                          <TypewriterEffect text={reading.english} />
-                        </div>
-                      </TabsContent>
-                      <TabsContent value="persian">
-                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 text-right text-white" dir="rtl">
-                          <TypewriterEffect text={reading.persian} />
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+    <main className="min-h-screen p-4 flex flex-col items-center">
+      <h1 className="text-4xl mb-8 text-center">Mystical Persian Oracle</h1>
+      <p className="text-xl mb-12 text-center">✨ Turn three cards to unveil mystical secrets ✨</p>
+      
+      {/* Add more vertical space for larger cards */}
+      <div className="my-8">
+        <CardDeck />
       </div>
+      
+      <button className="mt-8 px-8 py-3 text-xl">
+        Great! Next Card →
+      </button>
     </main>
   )
 }
