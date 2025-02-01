@@ -37,7 +37,7 @@ export default function OracleCard({
       <div
         className={`
           cursor-pointer relative
-          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[280px] h-[392px]'}
+          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[380px] h-[532px]'}
         `}
         onClick={onClick}
       >
@@ -49,8 +49,8 @@ export default function OracleCard({
             <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
               alt="Card Back"
-              width={isDesktop ? 224 : 180}
-              height={isDesktop ? 320 : 252}
+              width={isDesktop ? 224 : 320}
+              height={isDesktop ? 320 : 448}
               className="rounded-lg"
             />
           </div>
@@ -60,8 +60,8 @@ export default function OracleCard({
             <Image
               src={frontImage}
               alt={name}
-              width={isDesktop ? 224 : 180}
-              height={isDesktop ? 320 : 252}
+              width={isDesktop ? 224 : 320}
+              height={isDesktop ? 320 : 448}
               className="rounded-lg"
             />
           </div>

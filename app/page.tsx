@@ -231,7 +231,7 @@ export default function Home() {
           )}
           
           {/* Cards or Reading */}
-          <div className="relative h-[420px] overflow-hidden">
+          <div className="relative h-[600px] overflow-hidden">
             {flippedCards.length < 3 ? (
               // Show cards when not all are flipped
               selectedCards.map((card, index) => (
