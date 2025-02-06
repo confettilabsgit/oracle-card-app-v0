@@ -19,7 +19,7 @@ const cards = [
 export default function Home() {
   const [selectedCards, setSelectedCards] = useState<typeof cards>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [reading, setReading] = useState({ english: '', persian: '' })
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isDesktop, setIsDesktop] = useState(true)
@@ -37,12 +37,6 @@ export default function Home() {
     window.addEventListener('resize', checkIsDesktop)
     
     return () => window.removeEventListener('resize', checkIsDesktop)
-  }, [])
-
-  useEffect(() => {
-    // Set loading to false after cards are ready
-    const timer = setTimeout(() => setIsLoading(false), 2000)
-    return () => clearTimeout(timer)
   }, [])
 
   const shuffleCards = () => {
@@ -67,25 +61,65 @@ export default function Home() {
   const generateReading = async () => {
     setIsLoading(true);
     try {
-      // Get English reading
+      // Get English reading with improved prompt
       const englishResponse = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: `Generate an oracle reading for these three cards: ${selectedCards.map(card => card.name).join(', ')}. Include how they interact with each other and what message they bring.`
+          prompt: `Generate a concise mystical Persian oracle reading for these cards: ${selectedCards.map(card => card.name).join(', ')}. 
+
+Format your response exactly like this, with clear paragraph breaks between sections:
+
+
+✨ The Message of the Cards ✨
+
+The ${selectedCards[0].name} card represents [interpretation]. 
+
+The ${selectedCards[1].name} card symbolizes [interpretation]. 
+
+The ${selectedCards[2].name} card signifies [interpretation].
+
+Together, these cards indicate [overall message].
+
+
+✨ Wisdom of Hafez ✨
+
+Persian: [Hafez quote in Persian]
+English: [English translation]
+
+
+✨ Ritual Suggestion ✨
+
+[2-3 sentences suggesting a simple meditation or visualization. Focus on breathing exercises, gentle movements, or connection with nature. No fire or candles.]`
         }),
       });
 
-      // Get Persian reading
+      // Similar structure for Persian reading
       const persianResponse = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: `Generate a Persian oracle reading in Farsi language for these three cards: ${selectedCards.map(card => card.persianName).join(', ')}. Include how they interact with each other and what message they bring. The response should be entirely in Farsi.`
+          prompt: `Generate a concise Persian oracle reading in Farsi for these cards: ${selectedCards.map(card => card.persianName).join(', ')}. 
+
+Format in Farsi exactly like this, with clear paragraph breaks between sections:
+
+
+✨ پیام کارت‌ها ✨
+[1-2 paragraphs interpreting the cards in Farsi]
+
+
+\n\n
+✨ سخن حافظ ✨
+[A relevant Hafez quote in its original Persian]
+
+
+\n\n
+✨ پیشنهاد آیین ✨
+[2-3 sentences suggesting a ritual in Farsi]`
         }),
       });
 
