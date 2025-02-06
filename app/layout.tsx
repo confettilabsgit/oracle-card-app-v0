@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, Noto_Sans_Arabic } from 'next/font/google'
+import NavMenu from './components/navigation/nav-menu'
 
 const inter = Inter({ subsets: ['latin'] })
 const notoSansArabic = Noto_Sans_Arabic({ subsets: ['arabic'] })
@@ -23,6 +24,7 @@ export default function RootLayout({
           background: 'linear-gradient(to bottom right, #0a0a0b, #1a1a1c)'
         }}
       >
+        <NavMenu />
         {children}
       </body>
     </html>
