@@ -6,6 +6,8 @@ export default function NavMenu() {
   const [showFeedback, setShowFeedback] = useState(false)
   const [feedbackText, setFeedbackText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   const goldColor = 'rgb(254 243 199)'  // Matches your title's color
 
@@ -46,10 +48,11 @@ export default function NavMenu() {
   }
 
   const handleSubmitFeedback = async () => {
-    console.log('Submit clicked')
     if (!feedbackText.trim()) return
     
     setIsSubmitting(true)
+    setError('')
+    
     try {
       const response = await fetch('/api/feedback', {
         method: 'POST',
@@ -60,17 +63,19 @@ export default function NavMenu() {
       })
 
       if (!response.ok) {
-        const errorData = await response.text()
-        console.error('Server response:', errorData)
-        throw new Error('Failed to submit')
+        const errorText = await response.text()
+        throw new Error(errorText || 'Failed to submit feedback')
       }
       
+      setIsSuccess(true)
       setFeedbackText('')
-      setShowFeedback(false)
-      alert('Thank you for your feedback!')
+      setTimeout(() => {
+        setShowFeedback(false)
+        setIsSuccess(false)
+      }, 3000)
     } catch (error) {
-      console.error('Full error:', error)
-      alert('Sorry, there was an error. Please try again.')
+      console.error('Feedback submission error:', error)
+      setError('The ancient spirits are restless. Please try again in a moment.')
     } finally {
       setIsSubmitting(false)
     }
@@ -165,46 +170,68 @@ export default function NavMenu() {
         <>
           <div style={overlayStyle} onClick={() => setShowFeedback(false)} />
           <div style={dialogStyle}>
-            <h2 style={{ color: goldColor, marginBottom: '1rem', fontSize: '1.5rem' }}>
-              Provide Feedback
-            </h2>
-            <textarea
-              value={feedbackText}
-              onChange={(e) => setFeedbackText(e.target.value)}
-              placeholder="Your feedback..."
-              style={{
-                width: '100%',
-                minHeight: '100px',
-                marginBottom: '10px',
-                padding: '8px',
-                backgroundColor: '#1a1a1a',
-                color: '#fff',
-                border: '1px solid #333',
-                borderRadius: '4px',
-                fontFamily: 'inherit',
-                fontSize: '14px'
-              }}
-            />
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button 
-                onClick={() => setShowFeedback(false)}
-                style={{ ...buttonStyle, marginLeft: 0 }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleSubmitFeedback}
-                disabled={isSubmitting || !feedbackText.trim()}
-                style={{ 
-                  ...buttonStyle, 
-                  marginLeft: 0,
-                  opacity: isSubmitting || !feedbackText.trim() ? 0.5 : 1,
-                  cursor: isSubmitting || !feedbackText.trim() ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit'}
-              </button>
-            </div>
+            {isSuccess ? (
+              <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                <h2 style={{ color: goldColor, marginBottom: '1rem', fontSize: '1.5rem' }}>
+                  Success!
+                </h2>
+                <p style={{ color: goldColor, fontSize: '1.2rem', marginBottom: '1rem' }}>
+                  ✨ I knew you were a person of great wisdom! ✨
+                </p>
+              </div>
+            ) : (
+              <>
+                <h2 style={{ color: goldColor, marginBottom: '1rem', fontSize: '1.5rem' }}>
+                  Share Your Ancient Wisdom
+                </h2>
+                <textarea
+                  value={feedbackText}
+                  onChange={(e) => setFeedbackText(e.target.value)}
+                  placeholder="Your insights are valuable..."
+                  style={{
+                    width: '100%',
+                    minHeight: '100px',
+                    marginBottom: '10px',
+                    padding: '8px',
+                    backgroundColor: '#1a1a1a',
+                    color: '#fff',
+                    border: '1px solid #333',
+                    borderRadius: '4px',
+                    fontFamily: 'inherit',
+                    fontSize: '14px'
+                  }}
+                />
+                {error && (
+                  <p style={{ 
+                    color: '#ef4444',
+                    marginBottom: '1rem',
+                    fontSize: '0.875rem'
+                  }}>
+                    {error}
+                  </p>
+                )}
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <button 
+                    onClick={() => setShowFeedback(false)}
+                    style={{ ...buttonStyle, marginLeft: 0 }}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleSubmitFeedback}
+                    disabled={isSubmitting || !feedbackText.trim()}
+                    style={{ 
+                      ...buttonStyle, 
+                      marginLeft: 0,
+                      opacity: isSubmitting || !feedbackText.trim() ? 0.5 : 1,
+                      cursor: isSubmitting || !feedbackText.trim() ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </>
       )}
