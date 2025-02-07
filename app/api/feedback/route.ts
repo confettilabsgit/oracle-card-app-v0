@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { headers } from 'next/headers'
+// import { headers } from 'next/headers' // Remove if unused
 
 export async function POST(request: Request) {
   // Debug all environment variables (don't worry, this won't show in production)

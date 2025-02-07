@@ -23,22 +23,22 @@ export default function NavMenu() {
     transition: 'opacity 0.2s',
   }
 
-  const dialogStyle = {
-    position: 'fixed',
+  const dialogStyle: React.CSSProperties = {
+    position: 'fixed' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#1a1a2e',  // Dark navy matching your theme
     padding: '2rem',
-    borderRadius: '0.5rem',
-    boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     zIndex: 100,
-    maxWidth: '500px',
+    maxWidth: '600px',
     width: '90%',
   }
 
-  const overlayStyle = {
-    position: 'fixed',
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed' as const,
     top: 0,
     left: 0,
     right: 0,
@@ -79,6 +79,14 @@ export default function NavMenu() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const generateReading = async () => {
+    // ... existing code ...
+    `[2-3 sentences suggesting a simple meditation or visualization. Focus on breathing exercises, gentle movements, or connection with nature. No fire or candles.] 
+
+To amplify the oracle's wisdom, share this reading with a friend who might need guidance.`
+    // ... rest of the code ...
   }
 
   return (
@@ -143,13 +151,13 @@ export default function NavMenu() {
             </h2>
             <div style={{ color: 'white', marginBottom: '1.5rem', lineHeight: '1.8' }}>
               <p style={{ marginBottom: '1rem' }}>
-                This digital oracle bridges the timeless wisdom of Persian mythology with the questions of today's seekers. Inspired by Fal-e-Hafez, the ancient Persian tradition of seeking guidance through poetry, it offers a modern path to cosmic reflection and insight.
+                This digital oracle bridges the timeless wisdom of Persian mythology with today&apos;s seekers. Inspired by Fal-e-Hafez, the ancient Persian tradition of seeking guidance through poetry, it offers a modern path to cosmic reflection and insight.
               </p>
               <p style={{ marginBottom: '1rem' }}>
                 Each card unveils a powerful force rooted in Persian lore, from Anahita, the goddess of waters and wisdom, to the Simurgh, the majestic guardian of ancient knowledge. To bring these mythical elements to life, we curated each card using generative AI, leveraging Stable Diffusion and OpenAI APIs to craft stunning visual artwork and poetic language that honor their origins.
               </p>
               <p style={{ marginBottom: '2rem' }}>
-                Together, these cards weave a tapestry of divination that honors the past while illuminating the present.
+                Together, these cards weave a tapestry of divination that honors the past while illuminating the present. Share your readings, and the oracle&apos;s wisdom will grow stronger with each seeker.
               </p>
               <p style={{ 
                 borderTop: `1px solid ${goldColor}`,
@@ -181,13 +189,16 @@ export default function NavMenu() {
               </div>
             ) : (
               <>
-                <h2 style={{ color: goldColor, marginBottom: '1rem', fontSize: '1.5rem' }}>
-                  Share Your Ancient Wisdom
-                </h2>
+                <h3 style={{ color: goldColor, marginBottom: '1rem', fontSize: '1.2rem' }}>
+                  Share Your Modern Insights
+                </h3>
+                <p style={{ marginBottom: '1rem', color: 'white' }}>
+                  Your perspective helps shape this oracle&apos;s evolution.
+                </p>
                 <textarea
                   value={feedbackText}
                   onChange={(e) => setFeedbackText(e.target.value)}
-                  placeholder="Your insights are valuable..."
+                  placeholder="Tell us your secrets..."
                   style={{
                     width: '100%',
                     minHeight: '100px',

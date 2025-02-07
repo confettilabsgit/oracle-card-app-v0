@@ -18,7 +18,7 @@ export default function About() {
           </p>
 
           <p>
-            Whether you seek daily guidance or deeper reflection, let these cards be your companion in exploring life's questions through a Persian lens.
+            Whether you seek daily guidance or deeper reflection, let these cards be your companion in exploring life&apos;s questions through a Persian lens.
           </p>
         </div>
       </div>
