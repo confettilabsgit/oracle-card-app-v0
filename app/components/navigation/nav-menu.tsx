@@ -139,11 +139,11 @@ export default function NavMenu() {
               </button>
             </div>
             <h2 style={{ color: goldColor, marginBottom: '1.5rem', fontSize: '1.5rem' }}>
-              Between Ancient Wisdom and Modern Seeking
+              The Oracle of Hafez
             </h2>
             <div style={{ color: 'white', marginBottom: '1.5rem', lineHeight: '1.8' }}>
               <p style={{ marginBottom: '1rem' }}>
-                This digital oracle bridges the timeless wisdom of Persian mythology with the questions of today's seekers. Inspired by the tradition of drawing guidance from Hafez, it offers a modern path to cosmic reflection and insight.
+                This digital oracle bridges the timeless wisdom of Persian mythology with the questions of today's seekers. Inspired by Fal-e-Hafez, the ancient Persian tradition of seeking guidance through poetry, it offers a modern path to cosmic reflection and insight.
               </p>
               <p style={{ marginBottom: '1rem' }}>
                 Each card unveils a powerful force rooted in Persian lore, from Anahita, the goddess of waters and wisdom, to the Simurgh, the majestic guardian of ancient knowledge. To bring these mythical elements to life, we curated each card using generative AI, leveraging Stable Diffusion and OpenAI APIs to craft stunning visual artwork and poetic language that honor their origins.

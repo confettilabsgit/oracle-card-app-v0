@@ -72,25 +72,20 @@ export default function Home() {
 
 Format your response exactly like this, with clear paragraph breaks between sections:
 
+✨ The Message of the Cards ✨\n\n
 
-✨ The Message of the Cards ✨
+The ${selectedCards[0].name} card represents [interpretation].\n
+The ${selectedCards[1].name} card symbolizes [interpretation].\n
+The ${selectedCards[2].name} card signifies [interpretation].\n\n
 
-The ${selectedCards[0].name} card represents [interpretation]. 
+Together, these cards indicate [overall message].\n\n
 
-The ${selectedCards[1].name} card symbolizes [interpretation]. 
+✨ Wisdom of Hafez ✨\n\n
 
-The ${selectedCards[2].name} card signifies [interpretation].
+Persian: [Hafez quote in Persian]\n
+English: [English translation]\n\n
 
-Together, these cards indicate [overall message].
-
-
-✨ Wisdom of Hafez ✨
-
-Persian: [Hafez quote in Persian]
-English: [English translation]
-
-
-✨ Ritual Suggestion ✨
+✨ Ritual Suggestion ✨\n\n
 
 [2-3 sentences suggesting a simple meditation or visualization. Focus on breathing exercises, gentle movements, or connection with nature. No fire or candles.]`
         }),
@@ -158,7 +153,7 @@ Format in Farsi exactly like this, with clear paragraph breaks between sections:
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-16">
           <h1 className="text-xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
-            Mystical Persian Oracle
+            The Oracle of Hafez
           </h1>
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
           
