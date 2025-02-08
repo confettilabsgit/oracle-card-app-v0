@@ -22,45 +22,24 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({ text, delay = 50 })
     }
   }, [currentIndex, delay, text])
 
-  // Split text into sections and apply styling
-  const formattedText = currentText.split('✨').map((section, index) => {
-    if (!section.trim()) return null;
-    
-    // Check if this is a header section
-    if (section.includes('The Message of the Cards') || 
-        section.includes('Wisdom of Hafez') || 
-        section.includes('Ritual Suggestion')) {
-      return (
-        <React.Fragment key={index}>
-          <h3 className="text-amber-200 text-lg font-medium mt-8 mb-4">
-            ✨ {section.trim()} ✨
-          </h3>
-        </React.Fragment>
-      )
+  // Format text to color only the stars
+  const formattedText = currentText.split('✨').map((section, index, array) => {
+    if (index === array.length - 1) {
+      return <span key={index}>{section}</span>
     }
-    
-    // Special handling for Hafez quote section
-    if (section.includes('Persian:')) {
-      return (
-        <div key={index} className="my-6 py-4 border-t border-b border-amber-200/20">
-          {section.split('\n').map((line, i) => (
-            <p key={i} className="mb-2">
-              {line.trim()}
-            </p>
-          ))}
-        </div>
-      )
-    }
-    
-    // Regular section content
     return (
-      <p key={index} className="mb-4 leading-relaxed">
-        {section.trim()}
-      </p>
+      <React.Fragment key={index}>
+        <span>{section}</span>
+        <span className="text-amber-100">✨</span>
+      </React.Fragment>
     )
   })
 
-  return <div className="space-y-2">{formattedText}</div>
+  return (
+    <div className="text-white whitespace-pre-line leading-relaxed">
+      {formattedText}
+    </div>
+  )
 }
 
 export default TypewriterEffect

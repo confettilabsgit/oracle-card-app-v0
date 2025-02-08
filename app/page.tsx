@@ -278,8 +278,8 @@ Format in Farsi exactly like this, with clear paragraph breaks between sections:
               ))
             ) : (
               // Show reading when all cards are flipped
-              <div className="w-screen animate-fade-in mt-8">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm rounded-none">
+              <div className="w-screen md:w-auto animate-fade-in mt-8">
+                <div className="min-h-[200px] max-h-[70vh] overflow-y-auto bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 py-6">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 py-12">
                       <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
@@ -288,26 +288,9 @@ Format in Farsi exactly like this, with clear paragraph breaks between sections:
                       </p>
                     </div>
                   ) : (
-                    <Tabs defaultValue="english" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 border-x-0 border-t-0 border-b border-purple-500/30">
-                        <TabsTrigger value="english" className="text-sm data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
-                          English Reading
-                        </TabsTrigger>
-                        <TabsTrigger value="persian" className="text-sm font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400">
-                          قرائت فارسی
-                        </TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="english">
-                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 text-white">
-                          <TypewriterEffect text={reading.english} />
-                        </div>
-                      </TabsContent>
-                      <TabsContent value="persian">
-                        <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-4 text-right text-white" dir="rtl">
-                          <TypewriterEffect text={reading.persian} />
-                        </div>
-                      </TabsContent>
-                    </Tabs>
+                    <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
+                      <TypewriterEffect text={reading.english} />
+                    </div>
                   )}
                 </div>
               </div>
