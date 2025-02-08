@@ -3,41 +3,37 @@
 import React, { useState, useEffect } from 'react'
 
 interface TypewriterEffectProps {
-  text: string
+  text?: string
   delay?: number
 }
 
-const TypewriterEffect: React.FC<TypewriterEffectProps> = ({ text, delay = 50 }) => {
+const TypewriterEffect: React.FC<TypewriterEffectProps> = ({ 
+  text = '', 
+  delay = 50 
+}) => {
   const [currentText, setCurrentText] = useState('')
-  const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setCurrentText(prevText => prevText + text[currentIndex])
-        setCurrentIndex(prevIndex => prevIndex + 1)
-      }, delay)
+    if (!text) return
+    
+    let index = 0
+    setCurrentText('')
 
-      return () => clearTimeout(timeout)
-    }
-  }, [currentIndex, delay, text])
+    const timer = setInterval(() => {
+      if (index < text.length) {
+        setCurrentText((prev) => prev + text[index])
+        index++
+      } else {
+        clearInterval(timer)
+      }
+    }, delay)
 
-  // Format text to color only the stars
-  const formattedText = currentText.split('✨').map((section, index, array) => {
-    if (index === array.length - 1) {
-      return <span key={index}>{section}</span>
-    }
-    return (
-      <React.Fragment key={index}>
-        <span>{section}</span>
-        <span className="text-amber-100">✨</span>
-      </React.Fragment>
-    )
-  })
+    return () => clearInterval(timer)
+  }, [text, delay])
 
   return (
     <div className="text-white whitespace-pre-line leading-relaxed">
-      {formattedText}
+      {currentText}
     </div>
   )
 }
