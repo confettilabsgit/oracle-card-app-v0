@@ -81,24 +81,9 @@ export default function NavMenu() {
     }
   }
 
-  const generateReading = async () => {
-    // ... existing code ...
-    `[2-3 sentences suggesting a simple meditation or visualization. Focus on breathing exercises, gentle movements, or connection with nature. No fire or candles.] 
-
-To amplify the oracle's wisdom, share this reading with a friend who might need guidance.`
-    // ... rest of the code ...
-  }
-
   return (
     <>
-      <div style={{
-        position: 'fixed',
-        top: '1rem',
-        right: '1rem',
-        zIndex: 50,
-        display: 'flex',
-        gap: '0.5rem'
-      }}>
+      <nav className="fixed top-4 right-4 z-50 hidden md:flex gap-2">
         <button 
           onClick={() => setShowAbout(true)}
           style={buttonStyle}
@@ -115,7 +100,7 @@ To amplify the oracle's wisdom, share this reading with a friend who might need 
         >
           Feedback
         </button>
-      </div>
+      </nav>
 
       {showAbout && (
         <>
