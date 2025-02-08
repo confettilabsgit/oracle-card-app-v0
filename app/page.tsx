@@ -20,8 +20,6 @@ const cards = [
   { id: 11, name: 'Sun Lion', persianName: 'شیر و خورشید', image: '/cards/sunlion.png' },
 ]
 
-const placeholderImage = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/card-back-NfGXD0M8jVwgPkEtW2Sj5vhVnGC4Zt.png'
-
 export default function Home() {
   const [selectedCards, setSelectedCards] = useState<typeof cards>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
