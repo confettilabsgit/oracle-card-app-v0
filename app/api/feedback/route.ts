@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-// import { headers } from 'next/headers' // Remove if unused
 
 export async function POST(request: Request) {
   // Debug all environment variables (don't worry, this won't show in production)
@@ -55,6 +54,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error details:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    // Type-safe error handling
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 } 
