@@ -14,12 +14,13 @@ const cards = [
   { id: 5, name: 'Faravahar', persianName: 'فروهر', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/farahvar-nCH4GRiSoEAv2Wjdbo7I6j4PVaCw3O.png' },
   { id: 6, name: 'Huma', persianName: 'هما', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/huma-ycCNKdZ7xDysRlAbvardVOmeXQ3jPM.png' },
   { id: 7, name: 'Azhdaha', persianName: 'اژدها', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/azhdaha-eIhPk4hvsh7iOAItW8JJspjdvTHLko.png' },
-  { id: 8, name: 'Rakhsh', persianName: 'رخش', image: 'URL_TO_IMAGE' },  // Rustam's legendary horse
-  { id: 9, name: 'Zahhak', persianName: 'ضحاک', image: 'URL_TO_IMAGE' },  // The serpent king
-  { id: 10, name: 'Siavash', persianName: 'سیاوش', image: 'URL_TO_IMAGE' },  // The innocent prince
-  { id: 11, name: 'Rostam', persianName: 'رستم', image: 'URL_TO_IMAGE' },  // The great hero
-  { id: 12, name: 'Kaveh', persianName: 'کاوه', image: 'URL_TO_IMAGE' },  // The blacksmith hero
+  { id: 8, name: 'Cypress', persianName: 'سرو', image: '/cards/cypress.png' },
+  { id: 9, name: 'Moon', persianName: 'ماه', image: '/cards/moon.png' },
+  { id: 10, name: 'Dervish', persianName: 'درویش', image: '/cards/dervish.png' },
+  { id: 11, name: 'Sun Lion', persianName: 'شیر و خورشید', image: '/cards/sunlion.png' },
 ]
+
+const placeholderImage = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/card-back-NfGXD0M8jVwgPkEtW2Sj5vhVnGC4Zt.png'
 
 export default function Home() {
   const [selectedCards, setSelectedCards] = useState<typeof cards>([])
