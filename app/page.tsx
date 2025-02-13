@@ -76,7 +76,7 @@ export default function Home() {
           prompt: `For these three cards: ${selectedCards.map(card => card.name).join(', ')}, generate a reading in this exact format:
 
           ✧ Wisdom of Hafez ✧
-          [Hafez quote]
+          [Choose a different, random quote from Hafez that relates to the cards' themes of ${selectedCards.map(card => card.name).join(', ')}. The quote should be profound and mystical, focusing on love, wisdom, or spiritual transformation.]
 
           ✧ Brief Insight ✧
           [2-3 sentences interpreting the Hafez quote and cards together]
@@ -181,25 +181,20 @@ export default function Home() {
                       <p className="text-purple-300">The mystical forces are gathering...</p>
                     </div>
                   ) : reading.english ? (
-                    <div className="text-amber-100">
+                    <div className="text-amber-100 space-y-6">
                       <TypewriterEffect 
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
-                        onComplete={() => {
-                          console.log('onComplete called, setting showReadMore to true')
-                          setShowReadMore(true)
-                        }}
+                        onComplete={() => setShowReadMore(true)}
                       />
                       
                       {showReadMore && !showFullReading && (
-                        <div className="mt-8 flex justify-center">
+                        <div className="flex justify-center">
                           <button 
-                            onClick={() => {
-                              console.log('Read more button clicked')
-                              setShowFullReading(true)
-                            }}
+                            onClick={() => setShowFullReading(true)}
                             className="px-6 py-2 text-amber-200 hover:text-amber-100 
                                      border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
-                                     transition-all duration-300 animate-fade-in"
+                                     transition-all duration-300 animate-fade-in
+                                     bg-black/20 hover:bg-black/30"
                           >
                             ✧ Reveal the deeper wisdom ✧
                           </button>
@@ -207,7 +202,7 @@ export default function Home() {
                       )}
                       
                       {showFullReading && (
-                        <div className="mt-6 animate-fade-in">
+                        <div className="animate-fade-in">
                           <TypewriterEffect 
                             text={reading.english.split('[READMORE_SPLIT]')[1]} 
                           />
