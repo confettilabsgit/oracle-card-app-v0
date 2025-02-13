@@ -27,6 +27,8 @@ export default function Home() {
   const [reading, setReading] = useState({ english: '', persian: '' })
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isDesktop, setIsDesktop] = useState(true)
+  const [showReadMore, setShowReadMore] = useState(false)
+  const [showFullReading, setShowFullReading] = useState(false)
 
   useEffect(() => {
     shuffleCards()
@@ -63,78 +65,39 @@ export default function Home() {
   }
 
   const generateReading = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
+    setShowReadMore(false)
+    setShowFullReading(false)
     try {
-      // Get English reading with improved prompt
-      const englishResponse = await fetch('/api/chat', {
+      const englishResponse = await fetch('/api/generate-reading', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `Generate a concise mystical Persian oracle reading for these cards: ${selectedCards.map(card => card.name).join(', ')}. 
+          prompt: `For these three cards: ${selectedCards.map(card => card.name).join(', ')}, generate a reading in this exact format:
 
-Format your response exactly like this, with clear paragraph breaks between sections:
+          ✧ Wisdom of Hafez ✧
+          [Hafez quote]
 
-✨ The Message of the Cards ✨\n\n
+          ✧ Brief Insight ✧
+          [2-3 sentences interpreting the Hafez quote and cards together]
 
-The ${selectedCards[0].name} card represents [interpretation].\n
-The ${selectedCards[1].name} card symbolizes [interpretation].\n
-The ${selectedCards[2].name} card signifies [interpretation].\n\n
+          [READMORE_SPLIT]
 
-Together, these cards indicate [overall message].\n\n
+          ✧ The Message of the Cards ✧
+          [2-3 paragraphs with detailed card interpretation]
 
-✨ Wisdom of Hafez ✨\n\n
-
-Persian: [Hafez quote in Persian]\n
-English: [English translation]\n\n
-
-✨ Ritual Suggestion ✨\n\n
-
-[2-3 sentences suggesting a simple meditation or visualization. Focus on breathing exercises, gentle movements, or connection with nature. No fire or candles.]`
-        }),
-      });
-
-      // Similar structure for Persian reading
-      const persianResponse = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: `Generate a concise Persian oracle reading in Farsi for these cards: ${selectedCards.map(card => card.persianName).join(', ')}. 
-
-Format in Farsi exactly like this, with clear paragraph breaks between sections:
-
-
-✨ پیام کارت‌ها ✨
-[1-2 paragraphs interpreting the cards in Farsi]
-
-
-\n\n
-✨ سخن حافظ ✨
-[A relevant Hafez quote in its original Persian]
-
-
-\n\n
-✨ پیشنهاد آیین ✨
-[2-3 sentences suggesting a ritual in Farsi]`
+          ✧ Ritual Suggestion ✧
+          [2 sentences for a simple ritual]`
         }),
       });
 
       const englishData = await englishResponse.json();
-      const persianData = await persianResponse.json();
-      
       setReading({
         english: englishData.text,
-        persian: persianData.text
+        persian: "در تولید قرائت شما خطایی رخ داد"
       });
     } catch (error) {
-      console.error('Error generating reading:', error);
-      setReading({
-        english: "There was an error generating your reading. Please try again.",
-        persian: "در تولید قرائت شما خطایی رخ داد. لطفاً دوباره امتحان کنید."
-      });
+      console.error('Error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -201,26 +164,52 @@ Format in Farsi exactly like this, with clear paragraph breaks between sections:
                   value="english" 
                   className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                 >
-                  English Reading
+                  Reading
                 </TabsTrigger>
                 <TabsTrigger 
                   value="persian" 
                   className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                 >
-                  قرائت فارسی
+                  فال فارسی
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="english">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-white">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg">
                   {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4 py-12">
-                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center">
-                        ✨ The ancient wisdom is manifesting... ✨
-                      </p>
+                    <div className="flex flex-col items-center justify-center gap-4">
+                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                      <p className="text-purple-300">The mystical forces are gathering...</p>
+                    </div>
+                  ) : reading.english ? (
+                    <div className="text-amber-100">
+                      <TypewriterEffect 
+                        text={reading.english.split('[READMORE_SPLIT]')[0]} 
+                        onComplete={() => setShowReadMore(true)}
+                      />
+                      
+                      {showReadMore && !showFullReading && (
+                        <div className="mt-8 flex justify-center">
+                          <button 
+                            onClick={() => setShowFullReading(true)}
+                            className="px-6 py-2 text-amber-200 hover:text-amber-100 
+                                     border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
+                                     transition-all duration-300 animate-fade-in"
+                          >
+                            ✧ Read your full oracle message ✧
+                          </button>
+                        </div>
+                      )}
+                      
+                      {showFullReading && (
+                        <div className="mt-6 animate-fade-in">
+                          <TypewriterEffect 
+                            text={reading.english.split('[READMORE_SPLIT]')[1]} 
+                          />
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <TypewriterEffect text={reading.english} />
+                    <p className="text-gray-400">Your reading will appear here...</p>
                   )}
                 </div>
               </TabsContent>
