@@ -24,11 +24,12 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
       }, delay)
       return () => clearTimeout(timeout)
     } else if (onComplete) {
+      console.log('TypewriterEffect: Text complete, calling onComplete')
       onComplete()
     }
   }, [currentIndex, delay, text, onComplete])
 
-  return <div className="text-white whitespace-pre-line">{currentText}</div>
+  return <div className="text-amber-100 whitespace-pre-line leading-relaxed">{currentText}</div>
 }
 
 export default TypewriterEffect

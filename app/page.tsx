@@ -184,18 +184,24 @@ export default function Home() {
                     <div className="text-amber-100">
                       <TypewriterEffect 
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
-                        onComplete={() => setShowReadMore(true)}
+                        onComplete={() => {
+                          console.log('onComplete called, setting showReadMore to true')
+                          setShowReadMore(true)
+                        }}
                       />
                       
                       {showReadMore && !showFullReading && (
                         <div className="mt-8 flex justify-center">
                           <button 
-                            onClick={() => setShowFullReading(true)}
+                            onClick={() => {
+                              console.log('Read more button clicked')
+                              setShowFullReading(true)
+                            }}
                             className="px-6 py-2 text-amber-200 hover:text-amber-100 
                                      border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                      transition-all duration-300 animate-fade-in"
                           >
-                            ✧ Read your full oracle message ✧
+                            ✧ Reveal the deeper wisdom ✧
                           </button>
                         </div>
                       )}
