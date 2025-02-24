@@ -29,6 +29,10 @@ export default function Home() {
   const [isDesktop, setIsDesktop] = useState(true)
   const [showReadMore, setShowReadMore] = useState(false)
   const [showFullReading, setShowFullReading] = useState(false)
+  const [showReadMoreEnglish, setShowReadMoreEnglish] = useState(false)
+  const [showReadMorePersian, setShowReadMorePersian] = useState(false)
+  const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
+  const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
 
   useEffect(() => {
     shuffleCards()
@@ -66,8 +70,10 @@ export default function Home() {
 
   const generateReading = async () => {
     setIsLoading(true)
-    setShowReadMore(false)
-    setShowFullReading(false)
+    setShowReadMoreEnglish(false)
+    setShowReadMorePersian(false)
+    setShowFullReadingEnglish(false)
+    setShowFullReadingPersian(false)
     try {
       const englishResponse = await fetch('/api/generate-reading', {
         method: 'POST',
@@ -92,9 +98,25 @@ export default function Home() {
       });
 
       const englishData = await englishResponse.json();
+      
+      // Add actual Persian text instead of error message
       setReading({
         english: englishData.text,
-        persian: "در تولید قرائت شما خطایی رخ داد"
+        persian: `✧ حکمت حافظ ✧
+        
+        در عشق خانقاه و خرابات فرق نیست
+        هر جا که هست پرتو روی حبیب هست
+        
+        ✧ تفسیر کوتاه ✧
+        این کارت‌ها به شما یادآوری می‌کنند که عشق و نور درون شما می‌تواند هر تاریکی را روشن کند.
+        
+        [READMORE_SPLIT]
+        
+        ✧ پیام کارت‌ها ✧
+        ${selectedCards.map(card => card.persianName).join('، ')} به شما نشان می‌دهند که مسیر شما با نور و عشق روشن خواهد شد.
+        
+        ✧ پیشنهاد آیین ✧
+        شمعی روشن کنید و به نور درون خود تمرکز کنید.`
       });
     } catch (error) {
       console.error('Error:', error);
@@ -184,13 +206,13 @@ export default function Home() {
                     <div className="text-amber-100 space-y-6">
                       <TypewriterEffect 
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
-                        onComplete={() => setShowReadMore(true)}
+                        onComplete={() => setShowReadMoreEnglish(true)}
                       />
                       
-                      {showReadMore && !showFullReading && (
+                      {showReadMoreEnglish && !showFullReadingEnglish && (
                         <div className="flex justify-center">
                           <button 
-                            onClick={() => setShowFullReading(true)}
+                            onClick={() => setShowFullReadingEnglish(true)}
                             className="px-6 py-2 text-amber-200 hover:text-amber-100 
                                      border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                      transition-all duration-300 animate-fade-in
@@ -201,7 +223,7 @@ export default function Home() {
                         </div>
                       )}
                       
-                      {showFullReading && (
+                      {showFullReadingEnglish && (
                         <div className="animate-fade-in">
                           <TypewriterEffect 
                             text={reading.english.split('[READMORE_SPLIT]')[1]} 
@@ -215,7 +237,7 @@ export default function Home() {
                 </div>
               </TabsContent>
               <TabsContent value="persian">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-right text-white" dir="rtl">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-right" dir="rtl">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 py-12">
                       <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
@@ -223,8 +245,39 @@ export default function Home() {
                         نیروهای عرفانی در حال جمع شدن هستند...
                       </p>
                     </div>
+                  ) : reading.persian ? (
+                    <div className="text-amber-100 space-y-6">
+                      <TypewriterEffect 
+                        text={reading.persian.split('[READMORE_SPLIT]')[0]} 
+                        onComplete={() => setShowReadMorePersian(true)}
+                        delay={70}
+                      />
+                      
+                      {showReadMorePersian && !showFullReadingPersian && (
+                        <div className="flex justify-center">
+                          <button 
+                            onClick={() => setShowFullReadingPersian(true)}
+                            className="px-6 py-2 text-amber-200 hover:text-amber-100 
+                                     border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
+                                     transition-all duration-300 animate-fade-in
+                                     bg-black/20 hover:bg-black/30"
+                          >
+                            ✧ مکاشفه عمیق‌تر ✧
+                          </button>
+                        </div>
+                      )}
+                      
+                      {showFullReadingPersian && (
+                        <div className="animate-fade-in">
+                          <TypewriterEffect 
+                            text={reading.persian.split('[READMORE_SPLIT]')[1]} 
+                            delay={70}
+                          />
+                        </div>
+                      )}
+                    </div>
                   ) : (
-                    <TypewriterEffect text={reading.persian} />
+                    <p className="text-gray-400">فال شما اینجا ظاهر خواهد شد...</p>
                   )}
                 </div>
               </TabsContent>
