@@ -5,6 +5,7 @@ import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
+import Image from 'next/image'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -70,6 +71,8 @@ export default function Home() {
 
   const generateReading = async () => {
     setIsLoading(true)
+    setShowReadMore(false)
+    setShowFullReading(false)
     setShowReadMoreEnglish(false)
     setShowReadMorePersian(false)
     setShowFullReadingEnglish(false)
@@ -206,27 +209,31 @@ export default function Home() {
                     <div className="text-amber-100 space-y-6">
                       <TypewriterEffect 
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
-                        onComplete={() => setShowReadMoreEnglish(true)}
+                        onComplete={() => setShowReadMore(true)}
+                        isTitle={true}
                       />
                       
-                      {showReadMoreEnglish && !showFullReadingEnglish && (
-                        <div className="flex justify-center">
+                      {showReadMore && !showFullReading && (
+                        <div className="mt-8 flex justify-center animate-fade-in">
                           <button 
-                            onClick={() => setShowFullReadingEnglish(true)}
-                            className="px-6 py-2 text-amber-200 hover:text-amber-100 
+                            onClick={() => setShowFullReading(true)}
+                            className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 
                                      border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
-                                     transition-all duration-300 animate-fade-in
-                                     bg-black/20 hover:bg-black/30"
+                                     transition-all duration-300
+                                     shadow-[0_0_15px_rgba(88,28,135,0.2)]
+                                     hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]
+                                     hover:bg-[#1a1033]"
                           >
                             ✧ Reveal the deeper wisdom ✧
                           </button>
                         </div>
                       )}
                       
-                      {showFullReadingEnglish && (
+                      {showFullReading && (
                         <div className="animate-fade-in">
                           <TypewriterEffect 
                             text={reading.english.split('[READMORE_SPLIT]')[1]} 
+                            isTitle={false}
                           />
                         </div>
                       )}
@@ -305,11 +312,10 @@ export default function Home() {
               )}
             </div>
           )}
-          
-          {/* Cards or Reading */}
+
+          {/* Main Card Selection Area */}
           <div className="relative h-[600px] overflow-hidden">
             {flippedCards.length < 3 ? (
-              // Show cards when not all are flipped
               selectedCards.map((card, index) => (
                 <OracleCard
                   key={card.id}
@@ -324,21 +330,127 @@ export default function Home() {
                 />
               ))
             ) : (
-              // Show reading when all cards are flipped
-              <div className="w-screen md:w-auto animate-fade-in mt-8">
+              <div className="w-screen md:w-auto animate-fade-in mt-4">
+                {/* Add mini cards here */}
+                <div className="flex justify-center gap-2 mb-4">
+                  {selectedCards.map((card) => (
+                    <div 
+                      key={card.id}
+                      className="w-24 h-40 rounded-lg overflow-hidden border border-amber-200/20"
+                    >
+                      <img 
+                        src={card.image} 
+                        alt={card.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Keep existing reading content */}
                 <div className="min-h-[200px] max-h-[70vh] overflow-y-auto bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 py-6">
-                  {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4 py-12">
-                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center">
-                        ✨ The ancient wisdom is manifesting... ✨
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
-                      <TypewriterEffect text={reading.english} />
-                    </div>
-                  )}
+                  <Tabs defaultValue="english" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30 mb-4">
+                      <TabsTrigger 
+                        value="english" 
+                        className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                      >
+                        Reading
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="persian" 
+                        className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                      >
+                        فال فارسی
+                      </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="english">
+                      {isLoading ? (
+                        <div className="flex flex-col items-center justify-center gap-4 py-12">
+                          <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                          <p className="text-purple-300 text-lg text-center">
+                            ✨ The ancient wisdom is manifesting... ✨
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
+                          <TypewriterEffect 
+                            text={reading.english.split('[READMORE_SPLIT]')[0]} 
+                            onComplete={() => setShowReadMore(true)}
+                            isTitle={true}
+                          />
+                          
+                          {showReadMore && !showFullReading && (
+                            <div className="mt-8 flex justify-center animate-fade-in">
+                              <button 
+                                onClick={() => setShowFullReading(true)}
+                                className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 
+                                         border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
+                                         transition-all duration-300
+                                         shadow-[0_0_15px_rgba(88,28,135,0.2)]
+                                         hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]
+                                         hover:bg-[#1a1033]"
+                              >
+                                ✧ Reveal the deeper wisdom ✧
+                              </button>
+                            </div>
+                          )}
+                          
+                          {showFullReading && (
+                            <div className="animate-fade-in">
+                              <TypewriterEffect 
+                                text={reading.english.split('[READMORE_SPLIT]')[1]} 
+                                isTitle={false}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </TabsContent>
+                    
+                    <TabsContent value="persian" dir="rtl">
+                      {isLoading ? (
+                        <div className="flex flex-col items-center justify-center gap-4 py-12">
+                          <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                          <p className="text-purple-300 text-lg text-center">
+                            نیروهای عرفانی در حال جمع شدن هستند...
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
+                          <TypewriterEffect 
+                            text={reading.persian.split('[READMORE_SPLIT]')[0]} 
+                            onComplete={() => setShowReadMorePersian(true)}
+                            delay={70}
+                          />
+                          
+                          {showReadMorePersian && !showFullReadingPersian && (
+                            <div className="flex justify-center">
+                              <button 
+                                onClick={() => setShowFullReadingPersian(true)}
+                                className="px-6 py-2 text-amber-200 hover:text-amber-100 
+                                         border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
+                                         transition-all duration-300 animate-fade-in
+                                         bg-black/20 hover:bg-black/30"
+                              >
+                                ✧ مکاشفه عمیق‌تر ✧
+                              </button>
+                            </div>
+                          )}
+                          
+                          {showFullReadingPersian && (
+                            <div className="animate-fade-in">
+                              <TypewriterEffect 
+                                text={reading.persian.split('[READMORE_SPLIT]')[1]} 
+                                delay={70}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </TabsContent>
+                  </Tabs>
                 </div>
               </div>
             )}

@@ -6,13 +6,15 @@ interface TypewriterEffectProps {
   text: string
   delay?: number
   onComplete?: () => void
+  isTitle?: boolean
 }
 
-const TypewriterEffect: React.FC<TypewriterEffectProps> = ({ 
+const TypewriterEffect = ({ 
   text, 
   delay = 50,
-  onComplete 
-}) => {
+  onComplete,
+  isTitle = false
+}: TypewriterEffectProps) => {
   const [currentText, setCurrentText] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -24,12 +26,21 @@ const TypewriterEffect: React.FC<TypewriterEffectProps> = ({
       }, delay)
       return () => clearTimeout(timeout)
     } else if (onComplete) {
-      console.log('TypewriterEffect: Text complete, calling onComplete')
       onComplete()
     }
   }, [currentIndex, delay, text, onComplete])
 
-  return <div className="text-amber-100 whitespace-pre-line leading-relaxed">{currentText}</div>
+  // Add extra line breaks before section titles
+  const formattedText = currentText.replace(
+    /(✧ Wisdom of Hafez ✧|✧ Brief Insight ✧|✧ The Message of the Cards ✧|✧ Ritual Suggestion ✧)/g, 
+    '\n\n$1\n'
+  )
+
+  return (
+    <div className={`whitespace-pre-line text-left leading-relaxed ${isTitle ? 'text-amber-200' : 'text-white'}`}>
+      {formattedText}
+    </div>
+  )
 }
 
 export default TypewriterEffect
