@@ -5,7 +5,6 @@ import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
-import Image from 'next/image'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -28,8 +27,6 @@ export default function Home() {
   const [reading, setReading] = useState({ english: '', persian: '' })
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [isDesktop, setIsDesktop] = useState(true)
-  const [showReadMore, setShowReadMore] = useState(false)
-  const [showFullReading, setShowFullReading] = useState(false)
   const [showReadMoreEnglish, setShowReadMoreEnglish] = useState(false)
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
@@ -71,11 +68,9 @@ export default function Home() {
 
   const generateReading = async () => {
     setIsLoading(true)
-    setShowReadMore(false)
-    setShowFullReading(false)
     setShowReadMoreEnglish(false)
-    setShowReadMorePersian(false)
     setShowFullReadingEnglish(false)
+    setShowReadMorePersian(false)
     setShowFullReadingPersian(false)
     try {
       const englishResponse = await fetch('/api/generate-reading', {
@@ -209,14 +204,14 @@ export default function Home() {
                     <div className="text-amber-100 space-y-6">
                       <TypewriterEffect 
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
-                        onComplete={() => setShowReadMore(true)}
+                        onComplete={() => setShowReadMoreEnglish(true)}
                         isTitle={true}
                       />
                       
-                      {showReadMore && !showFullReading && (
+                      {showReadMoreEnglish && !showFullReadingEnglish && (
                         <div className="mt-8 flex justify-center animate-fade-in">
                           <button 
-                            onClick={() => setShowFullReading(true)}
+                            onClick={() => setShowFullReadingEnglish(true)}
                             className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 
                                      border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                      transition-all duration-300
@@ -229,7 +224,7 @@ export default function Home() {
                         </div>
                       )}
                       
-                      {showFullReading && (
+                      {showFullReadingEnglish && (
                         <div className="animate-fade-in">
                           <TypewriterEffect 
                             text={reading.english.split('[READMORE_SPLIT]')[1]} 
@@ -341,7 +336,7 @@ export default function Home() {
                       <img 
                         src={card.image} 
                         alt={card.name}
-                        className="w-full h-full object-cover"
+                        className="object-cover"
                       />
                     </div>
                   ))}
@@ -377,14 +372,14 @@ export default function Home() {
                         <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
                           <TypewriterEffect 
                             text={reading.english.split('[READMORE_SPLIT]')[0]} 
-                            onComplete={() => setShowReadMore(true)}
+                            onComplete={() => setShowReadMoreEnglish(true)}
                             isTitle={true}
                           />
                           
-                          {showReadMore && !showFullReading && (
+                          {showReadMoreEnglish && !showFullReadingEnglish && (
                             <div className="mt-8 flex justify-center animate-fade-in">
                               <button 
-                                onClick={() => setShowFullReading(true)}
+                                onClick={() => setShowFullReadingEnglish(true)}
                                 className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 
                                          border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                          transition-all duration-300
@@ -397,7 +392,7 @@ export default function Home() {
                             </div>
                           )}
                           
-                          {showFullReading && (
+                          {showFullReadingEnglish && (
                             <div className="animate-fade-in">
                               <TypewriterEffect 
                                 text={reading.english.split('[READMORE_SPLIT]')[1]} 
