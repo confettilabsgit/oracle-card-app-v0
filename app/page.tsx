@@ -5,6 +5,7 @@ import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
+import { generateHafezWisdom } from '@/lib/generateHafezWisdom'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -116,6 +117,8 @@ export default function Home() {
         ✧ پیشنهاد آیین ✧
         شمعی روشن کنید و به نور درون خود تمرکز کنید.`
       });
+
+      const hafezWisdom = await generateHafezWisdom(selectedCards.map(card => card.name));
     } catch (error) {
       console.error('Error:', error);
     } finally {
