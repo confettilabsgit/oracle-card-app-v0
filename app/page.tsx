@@ -6,6 +6,7 @@ import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
 import { generateHafezWisdom } from '@/lib/generateHafezWisdom'
+import Image from 'next/image'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -336,9 +337,11 @@ export default function Home() {
                       key={card.id}
                       className="w-24 h-40 rounded-lg overflow-hidden border border-amber-200/20"
                     >
-                      <img 
+                      <Image 
                         src={card.image} 
                         alt={card.name}
+                        width={96}
+                        height={160}
                         className="object-cover"
                       />
                     </div>
