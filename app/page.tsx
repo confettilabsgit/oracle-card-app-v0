@@ -5,7 +5,6 @@ import OracleCard from './components/OracleCard'
 import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
-import { generateHafezWisdom } from '@/lib/generateHafezWisdom'
 import Image from 'next/image'
 
 const cards = [
@@ -33,7 +32,6 @@ export default function Home() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
-  const [hafezWisdom, setHafezWisdom] = useState('')
 
   useEffect(() => {
     shuffleCards()
@@ -76,16 +74,7 @@ export default function Home() {
     setShowReadMorePersian(false)
     setShowFullReadingPersian(false)
     try {
-      // Get Hafez wisdom
-      const hafezResponse = await fetch('/api/hafez', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cards: selectedCards.map(card => card.name) })
-      })
-      const hafezData = await hafezResponse.json()
-      setHafezWisdom(hafezData.text)
-
-      // First get the reading
+      // Get the reading directly without setting hafezWisdom
       const englishResponse = await fetch('/api/generate-reading', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
