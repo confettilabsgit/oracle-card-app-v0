@@ -69,10 +69,6 @@ export default function Home() {
 
   const generateReading = async () => {
     setIsLoading(true)
-    setShowReadMoreEnglish(false)
-    setShowFullReadingEnglish(false)
-    setShowReadMorePersian(false)
-    setShowFullReadingPersian(false)
     try {
       // Get Hafez wisdom first
       const hafezResponse = await fetch('/api/hafez', {
@@ -81,9 +77,19 @@ export default function Home() {
       })
       const hafezData = await hafezResponse.json()
 
-      // Set the reading with both languages
+      // Get the reading with card interpretation
+      const englishResponse = await fetch('/api/generate-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `For these three cards: ${selectedCards.map(card => card.name).join(', ')}, generate a brief insight (2-3 sentences) that connects them to this Hafez wisdom: "${hafezData.text}"`
+        }),
+      })
+      const englishData = await englishResponse.json()
+
+      // Set readings for both languages
       setReading({
-        english: `✧ Wisdom of Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n[2-3 sentences interpreting how these specific cards relate to the Hafez poem above]`,
+        english: `✧ Wisdom of Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${englishData.text}`,
         persian: `✧ حکمت حافظ ✧\n
         در عشق خانقاه و خرابات فرق نیست
         هر جا که هست پرتو روی حبیب هست\n
@@ -135,8 +141,7 @@ export default function Home() {
             </button>
           ) : (
             <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-              <span className="md:hidden">✨ Turn three cards to unveil mystical secrets ✨</span>
-              <span className="hidden md:inline">✨ Turn the cards and unveil what the cosmos holds for you ✨</span>
+              <span>✨ Turn three cards mindfully and let the cosmos share its secrets ✨</span>
             </h2>
           )}
         </div>
@@ -311,7 +316,7 @@ export default function Home() {
             ) : (
               <div className="w-screen md:w-auto animate-fade-in mt-0">
                 {/* Mini cards container - minimal margin */}
-                <div className="flex justify-center gap-2 mb-1 cards-container">
+                <div className="flex justify-center gap-2 mb-0 cards-container">
                   {selectedCards.map((card) => (
                     <div 
                       key={card.id}
@@ -328,10 +333,14 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Reading section - remove top spacing */}
-                <div className="h-[60vh] overflow-y-auto touch-pan-y overscroll-y-contain bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 pt-0 pb-6">
+                {/* Reading section - remove spacing */}
+                <div className="h-[60vh] overflow-y-auto touch-pan-y overscroll-y-contain 
+                  bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 pt-0 pb-6"
+                >
                   <Tabs defaultValue="english" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30 mb-2">
+                    <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 
+                      rounded-t-lg border border-purple-500/30 mb-1"
+                    >
                       <TabsTrigger 
                         value="english" 
                         className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
