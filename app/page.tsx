@@ -74,42 +74,28 @@ export default function Home() {
     setShowReadMorePersian(false)
     setShowFullReadingPersian(false)
     try {
-      // Get Hafez wisdom first - pure poetry
+      // Get Hafez wisdom first
       const hafezResponse = await fetch('/api/hafez', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       })
       const hafezData = await hafezResponse.json()
-      
-      // Then get the reading with card interpretation
-      const englishResponse = await fetch('/api/generate-reading', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: `For these three cards: ${selectedCards.map(card => card.name).join(', ')}, generate a reading in this exact format:
 
-          ✧ Wisdom of Hafez ✧
-          ${hafezData.text}
-
-          ✧ Brief Insight ✧
-          [2-3 sentences interpreting how these specific cards (${selectedCards.map(card => card.name).join(', ')}) relate to the Hafez poem above]
-          `
-        }),
-      });
-
-      const englishData = await englishResponse.json();
-      
-      // Set the reading first
+      // Set the reading with both languages
       setReading({
-        english: englishData.text,
-        persian: englishData.text  // We'll need to handle Persian translation properly
-      });
+        english: `✧ Wisdom of Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n[2-3 sentences interpreting how these specific cards relate to the Hafez poem above]`,
+        persian: `✧ حکمت حافظ ✧\n
+        در عشق خانقاه و خرابات فرق نیست
+        هر جا که هست پرتو روی حبیب هست\n
+        ✧ تفسیر کوتاه ✧\n
+        ${selectedCards.map(card => card.persianName).join('، ')} به شما نشان می‌دهند که مسیر شما با نور و عشق روشن خواهد شد.`
+      })
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <main className="relative min-h-screen">
