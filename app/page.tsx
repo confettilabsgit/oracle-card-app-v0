@@ -74,7 +74,14 @@ export default function Home() {
     setShowReadMorePersian(false)
     setShowFullReadingPersian(false)
     try {
-      // Get the reading directly without setting hafezWisdom
+      // Get Hafez wisdom first - pure poetry
+      const hafezResponse = await fetch('/api/hafez', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      const hafezData = await hafezResponse.json()
+      
+      // Then get the reading with card interpretation
       const englishResponse = await fetch('/api/generate-reading', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -82,18 +89,11 @@ export default function Home() {
           prompt: `For these three cards: ${selectedCards.map(card => card.name).join(', ')}, generate a reading in this exact format:
 
           ✧ Wisdom of Hafez ✧
-          [Choose a different, random quote from Hafez that relates to the cards' themes of ${selectedCards.map(card => card.name).join(', ')}. The quote should be profound and mystical, focusing on love, wisdom, or spiritual transformation.]
+          ${hafezData.text}
 
           ✧ Brief Insight ✧
-          [2-3 sentences interpreting the Hafez quote and cards together]
-
-          [READMORE_SPLIT]
-
-          ✧ The Message of the Cards ✧
-          [2-3 paragraphs with detailed card interpretation]
-
-          ✧ Ritual Suggestion ✧
-          [2 sentences for a simple ritual]`
+          [2-3 sentences interpreting how these specific cards (${selectedCards.map(card => card.name).join(', ')}) relate to the Hafez poem above]
+          `
         }),
       });
 
@@ -102,21 +102,7 @@ export default function Home() {
       // Set the reading first
       setReading({
         english: englishData.text,
-        persian: `✧ حکمت حافظ ✧
-        
-        در عشق خانقاه و خرابات فرق نیست
-        هر جا که هست پرتو روی حبیب هست
-        
-        ✧ تفسیر کوتاه ✧
-        این کارت‌ها به شما یادآوری می‌کنند که عشق و نور درون شما می‌تواند هر تاریکی را روشن کند.
-        
-        [READMORE_SPLIT]
-        
-        ✧ پیام کارت‌ها ✧
-        ${selectedCards.map(card => card.persianName).join('، ')} به شما نشان می‌دهند که مسیر شما با نور و عشق روشن خواهد شد.
-        
-        ✧ پیشنهاد آیین ✧
-        شمعی روشن کنید و به نور درون خود تمرکز کنید.`
+        persian: englishData.text  // We'll need to handle Persian translation properly
       });
     } catch (error) {
       console.error('Error:', error);
@@ -140,7 +126,7 @@ export default function Home() {
       />
       <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
         {/* Header section */}
-        <div className="flex flex-col items-center space-y-4 mb-16">
+        <div className="flex flex-col items-center space-y-4 mb-16 md:mb-16 mb-8">
           <h1 className="text-xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
             The Oracle of Hafez
           </h1>
@@ -155,7 +141,7 @@ export default function Home() {
                 // Delay reload slightly to allow animation
                 setTimeout(() => window.location.reload(), 300)
               }}
-              className="bg-purple-900/50 text-[#FFFDD0] mb-4 px-6 py-2 rounded-md 
+              className="bg-purple-900/50 text-[#FFFDD0] mb-4 md:mb-4 mb-2 px-6 py-2 rounded-md 
                        shadow-[0_0_15px_rgba(88,28,135,0.3)] hover:bg-purple-900/60 
                        transition-all"
             >
@@ -337,9 +323,9 @@ export default function Home() {
                 />
               ))
             ) : (
-              <div className="w-screen md:w-auto animate-fade-in mt-4">
-                {/* Add mini cards here */}
-                <div className="flex justify-center gap-2 mb-4 cards-container">
+              <div className="w-screen md:w-auto animate-fade-in mt-0">
+                {/* Mini cards container - minimal margin */}
+                <div className="flex justify-center gap-2 mb-1 cards-container">
                   {selectedCards.map((card) => (
                     <div 
                       key={card.id}
@@ -356,10 +342,10 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Keep existing reading content */}
-                <div className="min-h-[200px] max-h-[70vh] overflow-y-auto bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 pt-1 pb-6">
+                {/* Reading section - remove top spacing */}
+                <div className="h-[60vh] overflow-y-auto touch-pan-y overscroll-y-contain bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 pt-0 pb-6">
                   <Tabs defaultValue="english" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30 mb-4">
+                    <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30 mb-2">
                       <TabsTrigger 
                         value="english" 
                         className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
