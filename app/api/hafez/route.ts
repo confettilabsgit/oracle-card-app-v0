@@ -1,7 +1,7 @@
 import { generateHafezWisdom } from '@/lib/generateHafezWisdom'
 import { NextResponse } from 'next/server'
 
-export async function POST(req: Request) {
+export async function POST(_req: Request) {
   try {
     const wisdom = await generateHafezWisdom()
     return NextResponse.json({ text: wisdom })
