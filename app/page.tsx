@@ -315,8 +315,8 @@ export default function Home() {
                               bg-purple-900/30 px-6 py-2 rounded-lg"
                   >
                     {currentCardIndex === 1 
-                      ? "Nice! Turn last card ✨" 
-                      : "Great! Next Card →"}
+                      ? "Mashallah! Turn the last card ✨" 
+                      : "Yallah! Next Card →"}
                   </button>
                 )}
               </div>
