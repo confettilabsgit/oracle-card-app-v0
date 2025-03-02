@@ -314,9 +314,9 @@ export default function Home() {
                 />
               ))
             ) : (
-              <div className="w-screen md:w-auto animate-fade-in mt-0">
-                {/* Mini cards container - minimal margin */}
-                <div className="flex justify-center gap-2 mb-0 cards-container">
+              <div className="w-full md:w-auto animate-fade-in mt-0 px-4">
+                {/* Mini cards container - reduce bottom margin */}
+                <div className="flex justify-center gap-2 -mb-5 cards-container max-w-lg mx-auto">  {/* Added negative margin */}
                   {selectedCards.map((card) => (
                     <div 
                       key={card.id}
@@ -333,10 +333,24 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Reading section - remove spacing */}
-                <div className="h-[60vh] overflow-y-auto touch-pan-y overscroll-y-contain 
-                  bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 pt-0 pb-6"
-                >
+                {/* Reading section - reduce top padding */}
+                <div className="
+                  min-h-[400px]
+                  max-h-[calc(100vh-400px)]
+                  overflow-y-auto 
+                  touch-pan-y 
+                  overscroll-y-contain 
+                  bg-black/10 
+                  backdrop-blur-sm 
+                  rounded-none 
+                  px-4 
+                  md:px-6 
+                  -mt-5   {/* Added negative margin */}
+                  pt-0 
+                  pb-6
+                  max-w-lg
+                  mx-auto
+                ">
                   <Tabs defaultValue="english" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 
                       rounded-t-lg border border-purple-500/30 mb-1"
