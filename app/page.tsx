@@ -81,8 +81,8 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide a brief insight (2-3 sentences) followed by [READMORE_SPLIT] and then a deeper spiritual interpretation.`,
-            temperature: 0.7, // Add some randomness but keep focused
-            max_tokens: 300 // Limit response size for speed
+            temperature: 0.7,
+            max_tokens: 300
           }),
         })
       ])
@@ -105,8 +105,10 @@ export default function Home() {
         }`,
         persian: `✧ حکمت حافظ ✧\nدر عشق خانقاه و خرابات فرق نیست
         هر جا که هست پرتو روی حبیب هست\n
-        ✧ تفسیر کوتاه ✧\n
-        ${selectedCards.map(card => card.persianName).join('، ')} به شما نشان می‌دهند که مسیر شما با نور و عشق روشن خواهد شد.`
+        ✧ تفسیر کوتاه ✧\n${
+          selectedCards.map(card => card.persianName).join('، ')} به شما نشان می‌دهند که مسیر شما با نور و عشق روشن خواهد شد.
+        [READMORE_SPLIT]✧ تفسیر عمیق ✧\n
+        این کارت‌ها نشان دهنده‌ی مرحله‌ای مهم در سفر معنوی شما هستند. سیمرغ، پری و درویش با هم نشان می‌دهند که شما در آستانه‌ی تحولی عمیق قرار دارید. با پذیرش این تغییر و اعتماد به حکمت درونی، مسیر شما به سوی روشنایی و عشق هدایت خواهد شد. این زمان، فرصتی برای رها کردن محدودیت‌های گذشته و پذیرش هدیه‌های معنوی است که در انتظار شماست.`
       })
     } catch (error) {
       console.error('Error:', error)
@@ -260,7 +262,9 @@ export default function Home() {
                             className="px-6 py-2 text-amber-200 hover:text-amber-100 
                                      border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                      transition-all duration-300 animate-fade-in
-                                     bg-black/20 hover:bg-black/30"
+                                     bg-[#1a1033]/80 hover:bg-[#1a1033]
+                                     shadow-[0_0_15px_rgba(88,28,135,0.2)]
+                                     hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]"
                           >
                             ✧ مکاشفه عمیق‌تر ✧
                           </button>
@@ -434,7 +438,9 @@ export default function Home() {
                                   className="px-6 py-2 text-amber-200 hover:text-amber-100 
                                            border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                            transition-all duration-300 animate-fade-in
-                                           bg-black/20 hover:bg-black/30"
+                                           bg-[#1a1033]/80 hover:bg-[#1a1033]
+                                           shadow-[0_0_15px_rgba(88,28,135,0.2)]
+                                           hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]"
                                 >
                                   ✧ مکاشفه عمیق‌تر ✧
                                 </button>
