@@ -33,6 +33,7 @@ export default function Home() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
+  const [hafezWisdom, setHafezWisdom] = useState('')
 
   useEffect(() => {
     shuffleCards()
@@ -75,6 +76,16 @@ export default function Home() {
     setShowReadMorePersian(false)
     setShowFullReadingPersian(false)
     try {
+      // Get Hafez wisdom
+      const hafezResponse = await fetch('/api/hafez', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cards: selectedCards.map(card => card.name) })
+      })
+      const hafezData = await hafezResponse.json()
+      setHafezWisdom(hafezData.text)
+
+      // First get the reading
       const englishResponse = await fetch('/api/generate-reading', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,7 +110,7 @@ export default function Home() {
 
       const englishData = await englishResponse.json();
       
-      // Add actual Persian text instead of error message
+      // Set the reading first
       setReading({
         english: englishData.text,
         persian: `✧ حکمت حافظ ✧
@@ -118,8 +129,6 @@ export default function Home() {
         ✧ پیشنهاد آیین ✧
         شمعی روشن کنید و به نور درون خود تمرکز کنید.`
       });
-
-      const hafezWisdom = await generateHafezWisdom(selectedCards.map(card => card.name));
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -151,8 +160,15 @@ export default function Home() {
           {/* Single conditional instruction/button */}
           {flippedCards.length === 3 ? (
             <button 
-              onClick={() => window.location.reload()}
-              className="bg-purple-900/50 text-[#FFFDD0] mb-4 px-6 py-2 rounded-md shadow-[0_0_15px_rgba(88,28,135,0.3)] hover:bg-purple-900/60 transition-all"
+              onClick={() => {
+                // Add fade-out class to cards container
+                document.querySelector('.cards-container')?.classList.add('animate-fade-out')
+                // Delay reload slightly to allow animation
+                setTimeout(() => window.location.reload(), 300)
+              }}
+              className="bg-purple-900/50 text-[#FFFDD0] mb-4 px-6 py-2 rounded-md 
+                       shadow-[0_0_15px_rgba(88,28,135,0.3)] hover:bg-purple-900/60 
+                       transition-all"
             >
               ✨ New Reading ✨
             </button>
@@ -188,7 +204,7 @@ export default function Home() {
                   value="english" 
                   className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                 >
-                  Reading
+                  English Reading
                 </TabsTrigger>
                 <TabsTrigger 
                   value="persian" 
@@ -198,7 +214,7 @@ export default function Home() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="english">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4">
                       <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
@@ -210,6 +226,7 @@ export default function Home() {
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
                         onComplete={() => setShowReadMoreEnglish(true)}
                         isTitle={true}
+                        delay={30}
                       />
                       
                       {showReadMoreEnglish && !showFullReadingEnglish && (
@@ -243,7 +260,7 @@ export default function Home() {
                 </div>
               </TabsContent>
               <TabsContent value="persian">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm p-8 rounded-b-lg text-right" dir="rtl">
+                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg text-right" dir="rtl">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 py-12">
                       <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
@@ -256,7 +273,8 @@ export default function Home() {
                       <TypewriterEffect 
                         text={reading.persian.split('[READMORE_SPLIT]')[0]} 
                         onComplete={() => setShowReadMorePersian(true)}
-                        delay={70}
+                        delay={30}
+                        direction="rtl"
                       />
                       
                       {showReadMorePersian && !showFullReadingPersian && (
@@ -277,7 +295,8 @@ export default function Home() {
                         <div className="animate-fade-in">
                           <TypewriterEffect 
                             text={reading.persian.split('[READMORE_SPLIT]')[1]} 
-                            delay={70}
+                            delay={30}
+                            direction="rtl"
                           />
                         </div>
                       )}
@@ -331,7 +350,7 @@ export default function Home() {
             ) : (
               <div className="w-screen md:w-auto animate-fade-in mt-4">
                 {/* Add mini cards here */}
-                <div className="flex justify-center gap-2 mb-4">
+                <div className="flex justify-center gap-2 mb-4 cards-container">
                   {selectedCards.map((card) => (
                     <div 
                       key={card.id}
@@ -349,14 +368,14 @@ export default function Home() {
                 </div>
 
                 {/* Keep existing reading content */}
-                <div className="min-h-[200px] max-h-[70vh] overflow-y-auto bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 py-6">
+                <div className="min-h-[200px] max-h-[70vh] overflow-y-auto bg-black/10 backdrop-blur-sm rounded-none px-4 md:px-6 pt-1 pb-6">
                   <Tabs defaultValue="english" className="w-full">
                     <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30 mb-4">
                       <TabsTrigger 
                         value="english" 
                         className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                       >
-                        Reading
+                        English Reading
                       </TabsTrigger>
                       <TabsTrigger 
                         value="persian" 
@@ -380,6 +399,7 @@ export default function Home() {
                             text={reading.english.split('[READMORE_SPLIT]')[0]} 
                             onComplete={() => setShowReadMoreEnglish(true)}
                             isTitle={true}
+                            delay={30}
                           />
                           
                           {showReadMoreEnglish && !showFullReadingEnglish && (
@@ -423,7 +443,8 @@ export default function Home() {
                           <TypewriterEffect 
                             text={reading.persian.split('[READMORE_SPLIT]')[0]} 
                             onComplete={() => setShowReadMorePersian(true)}
-                            delay={70}
+                            delay={30}
+                            direction="rtl"
                           />
                           
                           {showReadMorePersian && !showFullReadingPersian && (
@@ -444,7 +465,8 @@ export default function Home() {
                             <div className="animate-fade-in">
                               <TypewriterEffect 
                                 text={reading.persian.split('[READMORE_SPLIT]')[1]} 
-                                delay={70}
+                                delay={30}
+                                direction="rtl"
                               />
                             </div>
                           )}

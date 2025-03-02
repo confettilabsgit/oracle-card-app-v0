@@ -7,13 +7,15 @@ interface TypewriterEffectProps {
   delay?: number
   onComplete?: () => void
   isTitle?: boolean
+  direction?: 'ltr' | 'rtl'
 }
 
 const TypewriterEffect = ({ 
   text, 
   delay = 50,
   onComplete,
-  isTitle = false 
+  isTitle = false,
+  direction = 'ltr'
 }: TypewriterEffectProps) => {
   const [currentText, setCurrentText] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -40,7 +42,10 @@ const TypewriterEffect = ({
   )
 
   return (
-    <div className={`whitespace-pre-line text-left leading-normal pt-0 ${isTitle ? '' : 'mt-0'}`}>
+    <div 
+      className={`whitespace-pre-line leading-normal ${direction === 'rtl' ? 'text-right' : 'text-left'} ${isTitle ? '' : 'mt-0'}`}
+      style={{ direction: direction }}
+    >
       {formattedText.split('\n').map((line, i) => (
         <div 
           key={i} 
