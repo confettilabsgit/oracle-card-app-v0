@@ -12,7 +12,7 @@ interface TypewriterEffectProps {
 
 const TypewriterEffect = ({ 
   text, 
-  delay = 50,
+  delay = 15,
   onComplete,
   isTitle = false,
   direction = 'ltr'
@@ -21,6 +21,9 @@ const TypewriterEffect = ({
   const [currentIndex, setCurrentIndex] = useState(0)
 
   useEffect(() => {
+    // Guard against undefined text
+    if (!text) return;
+    
     if (currentIndex < text.length) {
       const timeout = setTimeout(() => {
         setCurrentText(prevText => prevText + text[currentIndex])

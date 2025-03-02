@@ -18,21 +18,23 @@ export async function POST(req: Request) {
     const { prompt } = await req.json();
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
       messages: [
         {
-          role: 'system',
-          content: 'You are a wise Persian oracle reader. Generate unique readings each time, never repeating the same text.'
+          role: "system",
+          content: `You are a mystical oracle providing insights based on Persian-themed tarot cards.
+            Be very concise. First insight should be 1-2 sentences, deeper wisdom 3-4 sentences.`
         },
         {
-          role: 'user',
-          // Using the prompt from the request here
-          content: prompt || 'Create a unique oracle reading. Include a welcome message, interpretations of the cards for this specific reading, and a suggested ritual.'
+          role: "user",
+          content: prompt
         }
       ],
-      max_tokens: 500,
-      temperature: 0.9,
-      stream: false,
+      model: "gpt-4-turbo-preview",
+      max_tokens: 200,
+      temperature: 0.5,
+      presence_penalty: 0.0,
+      frequency_penalty: 0.0,
+      response_format: { type: "text" }
     });
 
     return new Response(
