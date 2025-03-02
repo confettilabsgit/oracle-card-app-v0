@@ -1,10 +1,9 @@
 import { generateHafezWisdom } from '@/lib/generateHafezWisdom'
 import { NextResponse } from 'next/server'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const runtime = 'edge'
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     const wisdom = await generateHafezWisdom()
     return NextResponse.json({ text: wisdom }, { status: 200 })
