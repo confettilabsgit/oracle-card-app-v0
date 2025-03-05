@@ -41,6 +41,7 @@ export default function OracleCard({
         className={`
           cursor-pointer relative
           ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[380px] h-[532px]'}
+          transform-style-preserve-3d perspective-1000
         `}
         onClick={onClick}
       >
@@ -48,6 +49,7 @@ export default function OracleCard({
           className="relative w-full h-full transition-transform duration-500 [transform-style:preserve-3d]"
           style={{ transform: isFlipped ? 'rotateY(180deg)' : '' }}
         >
+          {/* Back of card (cover) */}
           <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] flex items-center justify-center">
             <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
@@ -57,9 +59,8 @@ export default function OracleCard({
               className="rounded-lg"
             />
           </div>
-          <div 
-            className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col items-center justify-center"
-          >
+          {/* Front of card */}
+          <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col items-center justify-center">
             <Image
               src={frontImage}
               alt={name}
