@@ -117,6 +117,8 @@ export default function Home() {
     }
   }
 
+  console.log('Testing deployment - ' + new Date().toISOString())
+
   return (
     <main className="relative min-h-screen">
       <div 
