@@ -11,7 +11,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Initialize OpenAI inside the function
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -22,7 +21,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: "You are a mystical oracle drawing upon Persian mythology and Sufi wisdom to provide meaningful insights."
+          content: "You are a mystical oracle drawing upon Persian mythology and Sufi wisdom. Be concise but meaningful."
         },
         {
           role: "user",
@@ -30,13 +29,14 @@ export async function POST(req: Request) {
         }
       ],
       model: "gpt-4-turbo-preview",
-      max_tokens: 800,
+      max_tokens: 600,
       temperature: 0.7,
       presence_penalty: 0.0,
       frequency_penalty: 0.0,
       response_format: { type: "text" }
     });
 
+    // Handle non-streaming response
     return new Response(
       JSON.stringify({ 
         text: response.choices[0].message.content
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
           'Content-Type': 'application/json',
         },
       }
-    );  
+    );
 
   } catch (error) {
     console.error('Error:', error);

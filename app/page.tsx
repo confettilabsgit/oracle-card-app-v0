@@ -93,23 +93,17 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide a brief insight (2-3 sentences) followed by [READMORE_SPLIT] and then a deeper spiritual interpretation.
-
-          Special card meanings to incorporate:
-          - Zahhak: Represents facing one's shadows, transformation through adversity, the eternal struggle between light and dark. When this card appears, it often signals a time of confronting inner demons and emerging stronger.
-          - Other cards retain their existing meanings.
+          prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide a brief insight (2-3 sentences) followed by [READMORE_SPLIT] and then a deeper interpretation.
 
           In the deeper interpretation:
-          1. Start by examining this Hafez verse: "${hafezData.text}"
-          2. Interpret this specific verse in relation to the cards drawn
-          3. Show how the cards illuminate and expand upon the verse's meaning
-          4. Offer practical guidance while staying grounded in Persian mystical traditions
-          5. Keep a hopeful tone while acknowledging challenges
+          1. Interpret this Hafez verse: "${hafezData.text}"
+          2. Connect it to the cards drawn
+          3. Offer practical guidance with Persian mystical wisdom
+          4. Keep a hopeful tone
 
-          Keep the deeper interpretation around 500-600 characters.
-          IMPORTANT: Do not generate or quote any other Hafez verses - only interpret the one provided above.`,
+          Keep the deeper interpretation around 300-400 characters.`,
           temperature: 0.7,
-          max_tokens: 800
+          max_tokens: 600
         }),
       });
 
@@ -175,8 +169,13 @@ export default function Home() {
           {flippedCards.length === 3 && !isLoading ? (
             <button 
               onClick={() => {
-                document.querySelector('.cards-container')?.classList.add('animate-fade-out')
-                setTimeout(() => window.location.reload(), 150)
+                // First flip all cards back
+                setFlippedCards([]);
+                
+                // Wait for flip animation to complete before shuffling
+                setTimeout(() => {
+                  shuffleCards();
+                }, 500); // Match this with our flip animation duration
               }}
               className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
                        shadow-[0_0_15px_rgba(88,28,135,0.3)]
@@ -239,7 +238,7 @@ export default function Home() {
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
                         onComplete={() => setShowReadMoreEnglish(true)}
                         isTitle={true}
-                        delay={10}
+                        delay={20}
                       />
                       
                       {showReadMoreEnglish && !showFullReadingEnglish && (
@@ -418,12 +417,12 @@ export default function Home() {
                             </p>
                           </div>
                         ) : (
-                          <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
+                          <div className="md:hidden max-w-[95vw] md:max-w-none mx-auto text-white">
                             <TypewriterEffect 
                               text={reading.english.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMoreEnglish(true)}
                               isTitle={true}
-                              delay={10}
+                              delay={20}
                             />
                             
                             {showReadMoreEnglish && !showFullReadingEnglish && (
