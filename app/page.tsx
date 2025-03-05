@@ -133,7 +133,7 @@ export default function Home() {
       <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-8">
-          <h1 className="text-xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
+          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
             The Oracle of Hafez
           </h1>
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
@@ -145,15 +145,17 @@ export default function Home() {
                 document.querySelector('.cards-container')?.classList.add('animate-fade-out')
                 setTimeout(() => window.location.reload(), 150)
               }}
-              className="bg-purple-900/50 text-[#FFFDD0] px-6 py-2 rounded-md 
-                       shadow-[0_0_15px_rgba(88,28,135,0.3)] hover:bg-purple-900/60 
+              className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
+                       shadow-[0_0_15px_rgba(88,28,135,0.3)]
+                       border border-purple-500/30 hover:border-purple-400/40
+                       hover:bg-purple-800/40 
                        transition-all"
             >
               ✨ New Reading ✨
             </button>
           ) : (
             <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-              <span>✨ Turn three cards mindfully and let the cosmos share its secrets ✨</span>
+              <span>✨ Turn three cards mindfully and invite the cosmos to share its secrets ✨</span>
             </h2>
           )}
         </div>
@@ -293,7 +295,7 @@ export default function Home() {
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
           {/* Main Card Selection Area */}
-          <div className="relative min-h-screen pt-24">
+          <div className="relative min-h-screen pt-28 px-4">
             {flippedCards.length < 3 ? (
               <div className="flex flex-col items-center">
                 {selectedCards.map((card, index) => (
@@ -307,6 +309,7 @@ export default function Home() {
                     isDesktop={isDesktop}
                     show={index === currentCardIndex}
                     zIndex={2}
+                    className="w-[80%] mx-auto"
                   />
                 ))}
                 
@@ -316,10 +319,15 @@ export default function Home() {
                     onClick={() => setCurrentCardIndex(prev => prev + 1)}
                     className="absolute top-4 left-1/2 -translate-x-1/2 
                               text-amber-200 hover:text-amber-100 
-                              bg-purple-900/30 px-6 py-2 rounded-lg"
+                              bg-purple-900/30 px-8 py-2 rounded-lg
+                              min-w-[200px] text-center
+                              leading-tight py-3
+                              shadow-[0_0_15px_rgba(88,28,135,0.3)]
+                              border border-purple-500/30 hover:border-purple-400/40
+                              hover:bg-purple-800/40"
                   >
                     {currentCardIndex === 1 
-                      ? "Mashallah! Turn the last card ✨" 
+                      ? <span>Mashallah!<br />Turn the last card ✨</span>
                       : "Yallah! Next Card →"}
                   </button>
                 )}

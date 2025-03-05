@@ -12,6 +12,7 @@ interface OracleCardProps {
   isDesktop: boolean
   show?: boolean
   zIndex?: number
+  className?: string
 }
 
 export default function OracleCard({ 
@@ -22,13 +23,15 @@ export default function OracleCard({
   persianName,
   isDesktop,
   show = true,
-  zIndex = 0
+  zIndex = 0,
+  className = ''
 }: OracleCardProps) {
   return (
     <div className={`
       flex flex-col items-center
       ${isDesktop ? 'mb-4' : 'absolute transition-all duration-500'}
       ${!isDesktop && !show ? 'translate-x-[100%] opacity-0' : 'translate-x-[-50%] opacity-100'}
+      ${className}
     `}
     style={{
       zIndex: zIndex,
