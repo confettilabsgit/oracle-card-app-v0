@@ -19,9 +19,10 @@ export async function GET() {
       message: response.choices[0].message.content 
     })
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     return NextResponse.json({ 
       success: false, 
-      error: error.message 
+      error: errorMessage 
     }, { status: 500 })
   }
 } 
