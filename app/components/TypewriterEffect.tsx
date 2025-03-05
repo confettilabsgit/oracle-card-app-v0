@@ -12,7 +12,7 @@ interface TypewriterEffectProps {
 
 const TypewriterEffect = ({ 
   text, 
-  delay = 15,
+  delay = 10,
   onComplete,
   isTitle = false,
   direction = 'ltr'

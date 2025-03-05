@@ -1,9 +1,5 @@
 import { OpenAI } from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
@@ -15,6 +11,11 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Initialize OpenAI inside the function
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const { prompt } = await req.json();
 
     const response = await openai.chat.completions.create({
