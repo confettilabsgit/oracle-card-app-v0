@@ -6,7 +6,8 @@ export async function POST() {
     const wisdom = await generateHafezWisdom()
     return NextResponse.json({ text: wisdom }, { status: 200 })
   } catch (error) {
-    console.error('Hafez generation error:', error.message)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Hafez generation error:', errorMessage)
     return NextResponse.json({ error: 'Failed to generate wisdom' }, { status: 500 })
   }
 } 
