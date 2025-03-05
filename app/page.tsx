@@ -109,7 +109,7 @@ export default function Home() {
   };
 
   // Test auto-deployment setup
-  console.log('Testing deployment');  // We'll remove this later
+  console.log('Testing deployment - ' + new Date().toISOString())
 
   return (
     <main className="min-h-screen p-4 flex flex-col items-center">
