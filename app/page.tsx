@@ -19,6 +19,7 @@ const cards = [
   { id: 9, name: 'Moon', persianName: 'ماه', image: '/cards/moon.png' },
   { id: 10, name: 'Dervish', persianName: 'درویش', image: '/cards/dervish.png' },
   { id: 11, name: 'Sun Lion', persianName: 'شیر و خورشید', image: '/cards/sunlion.png' },
+  { id: 12, name: 'Zahhak', persianName: 'ضحاک', image: '/cards/zahhak.png' },
 ]
 
 export default function Home() {
@@ -70,47 +71,62 @@ export default function Home() {
 
   const generateReading = async () => {
     try {
-      // Make both API calls in parallel
-      const [hafezResponse, englishResponse] = await Promise.all([
-        fetch('/api/hafez', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+      // Get Hafez quote first
+      const hafezResponse = await fetch('/api/hafez', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const hafezText = await hafezResponse.text();
+      if (!hafezResponse.ok) {
+        console.error('Hafez Response:', hafezText);
+        throw new Error('Failed to fetch Hafez quote');
+      }
+
+      const hafezData = JSON.parse(hafezText);
+      if (!hafezData?.text) {
+        throw new Error('Invalid Hafez response format');
+      }
+
+      // Then generate reading with the Hafez quote
+      const englishResponse = await fetch('/api/generate-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide a brief insight (2-3 sentences) followed by [READMORE_SPLIT] and then a deeper spiritual interpretation.
+
+          Special card meanings to incorporate:
+          - Zahhak: Represents facing one's shadows, transformation through adversity, the eternal struggle between light and dark. When this card appears, it often signals a time of confronting inner demons and emerging stronger.
+          - Other cards retain their existing meanings.
+
+          In the deeper interpretation:
+          1. Start by examining this Hafez verse: "${hafezData.text}"
+          2. Interpret this specific verse in relation to the cards drawn
+          3. Show how the cards illuminate and expand upon the verse's meaning
+          4. Offer practical guidance while staying grounded in Persian mystical traditions
+          5. Keep a hopeful tone while acknowledging challenges
+
+          Keep the deeper interpretation around 500-600 characters.
+          IMPORTANT: Do not generate or quote any other Hafez verses - only interpret the one provided above.`,
+          temperature: 0.7,
+          max_tokens: 800
         }),
-        fetch('/api/generate-reading', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide a brief insight (2-3 sentences) followed by [READMORE_SPLIT] and then a deeper spiritual interpretation.`,
-            temperature: 0.7,
-            max_tokens: 300
-          }),
-        })
-      ])
+      });
 
-      // Get response texts first
-      const [hafezText, englishText] = await Promise.all([
-        hafezResponse.text(),
-        englishResponse.text()
-      ])
-
-      if (!hafezResponse.ok || !englishResponse.ok) {
-        console.error('Hafez Response:', hafezText)
-        console.error('English Response:', englishText)
-        throw new Error('Failed to fetch readings')
+      const englishText = await englishResponse.text();
+      if (!englishResponse.ok) {
+        console.error('English Response:', englishText);
+        throw new Error('Failed to fetch English reading');
       }
 
-      // Parse JSON after checking responses
-      const hafezData = JSON.parse(hafezText)
-      const englishData = JSON.parse(englishText)
-
-      if (!englishData?.text || !hafezData?.text) {
-        throw new Error('Invalid response format')
+      const englishData = JSON.parse(englishText);
+      if (!englishData?.text) {
+        throw new Error('Invalid English response format');
       }
 
-      // Split the reading into brief and deeper parts
       const [briefInsight, deeperWisdom] = englishData.text
         .split('[READMORE_SPLIT]')
-        .map((text: string) => text.trim());
+        .map((text: string) => text.trim())
 
       setReading({
         english: `✧ Wisdom of Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${

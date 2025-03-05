@@ -22,8 +22,7 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content: `You are a mystical oracle providing insights based on Persian-themed tarot cards.
-            Be very concise. First insight should be 1-2 sentences, deeper wisdom 3-4 sentences.`
+          content: "You are a mystical oracle drawing upon Persian mythology and Sufi wisdom to provide meaningful insights."
         },
         {
           role: "user",
@@ -31,8 +30,8 @@ export async function POST(req: Request) {
         }
       ],
       model: "gpt-4-turbo-preview",
-      max_tokens: 200,
-      temperature: 0.5,
+      max_tokens: 800,
+      temperature: 0.7,
       presence_penalty: 0.0,
       frequency_penalty: 0.0,
       response_format: { type: "text" }
