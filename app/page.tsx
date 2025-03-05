@@ -87,10 +87,25 @@ export default function Home() {
         })
       ])
 
-      const [hafezData, englishData] = await Promise.all([
-        hafezResponse.json(),
-        englishResponse.json()
+      // Get response texts first
+      const [hafezText, englishText] = await Promise.all([
+        hafezResponse.text(),
+        englishResponse.text()
       ])
+
+      if (!hafezResponse.ok || !englishResponse.ok) {
+        console.error('Hafez Response:', hafezText)
+        console.error('English Response:', englishText)
+        throw new Error('Failed to fetch readings')
+      }
+
+      // Parse JSON after checking responses
+      const hafezData = JSON.parse(hafezText)
+      const englishData = JSON.parse(englishText)
+
+      if (!englishData?.text || !hafezData?.text) {
+        throw new Error('Invalid response format')
+      }
 
       // Split the reading into brief and deeper parts
       const [briefInsight, deeperWisdom] = englishData.text
@@ -132,7 +147,7 @@ export default function Home() {
       />
       <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
         {/* Header section */}
-        <div className="flex flex-col items-center space-y-4 mb-8">
+        <div className="flex flex-col items-center space-y-4 mb-8 mt-10 md:mt-12">
           <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
             The Oracle of Hafez
           </h1>
@@ -206,7 +221,7 @@ export default function Home() {
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
                         onComplete={() => setShowReadMoreEnglish(true)}
                         isTitle={true}
-                        delay={30}
+                        delay={15}
                       />
                       
                       {showReadMoreEnglish && !showFullReadingEnglish && (
@@ -230,6 +245,7 @@ export default function Home() {
                           <TypewriterEffect 
                             text={reading.english.split('[READMORE_SPLIT]')[1]} 
                             isTitle={false}
+                            delay={15}
                           />
                         </div>
                       )}
@@ -253,7 +269,7 @@ export default function Home() {
                       <TypewriterEffect 
                         text={reading.persian.split('[READMORE_SPLIT]')[0]} 
                         onComplete={() => setShowReadMorePersian(true)}
-                        delay={30}
+                        delay={15}
                         direction="rtl"
                       />
                       
@@ -277,7 +293,7 @@ export default function Home() {
                         <div className="animate-fade-in">
                           <TypewriterEffect 
                             text={reading.persian.split('[READMORE_SPLIT]')[1]} 
-                            delay={30}
+                            delay={15}
                             direction="rtl"
                           />
                         </div>
@@ -389,7 +405,7 @@ export default function Home() {
                               text={reading.english.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMoreEnglish(true)}
                               isTitle={true}
-                              delay={30}
+                              delay={15}
                             />
                             
                             {showReadMoreEnglish && !showFullReadingEnglish && (
@@ -413,6 +429,7 @@ export default function Home() {
                                 <TypewriterEffect 
                                   text={reading.english.split('[READMORE_SPLIT]')[1]} 
                                   isTitle={false}
+                                  delay={15}
                                 />
                               </div>
                             )}
@@ -433,7 +450,7 @@ export default function Home() {
                             <TypewriterEffect 
                               text={reading.persian.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMorePersian(true)}
-                              delay={30}
+                              delay={15}
                               direction="rtl"
                             />
 
@@ -459,7 +476,7 @@ export default function Home() {
                               <div className="animate-fade-in">
                                 <TypewriterEffect 
                                   text={reading.persian.split('[READMORE_SPLIT]')[1]} 
-                                  delay={30}
+                                  delay={15}
                                   direction="rtl"
                                 />
                               </div>

@@ -1,7 +1,8 @@
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: false
 })
 
 export const generateHafezWisdom = async () => {
@@ -10,20 +11,25 @@ export const generateHafezWisdom = async () => {
   Return only the English translation of the poem, followed by "- Hafez".
   Do not create new content or modify the poems.`
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: [
-      {
-        role: "system",
-        content: "You are a scholar of Hafez poetry with access to the complete Divan. Select authentic, varied poems, never repeat the same one."
-      },
-      {
-        role: "user",
-        content: prompt
-      }
-    ],
-    temperature: 0.9,  // Higher temperature for more variety
-  })
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are a scholar of Hafez poetry with access to the complete Divan. Select authentic, varied poems, never repeat the same one."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.9,  // Higher temperature for more variety
+    })
 
-  return completion.choices[0].message.content
+    return completion.choices[0].message.content
+  } catch (error) {
+    console.error('OpenAI Error:', error)
+    throw error
+  }
 } 
