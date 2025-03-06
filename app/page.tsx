@@ -71,6 +71,12 @@ export default function Home() {
 
   const generateReading = async () => {
     try {
+      // Reset states at the start of generating new reading
+      setShowReadMoreEnglish(false);
+      setShowReadMorePersian(false);
+      setShowFullReadingEnglish(false);
+      setShowFullReadingPersian(false);
+      
       // Get Hafez quote first
       const hafezResponse = await fetch('/api/hafez', {
         method: 'POST',
@@ -416,8 +422,8 @@ export default function Home() {
                               ✨ The ancient wisdom is manifesting... ✨
                             </p>
                           </div>
-                        ) : (
-                          <div className="md:hidden max-w-[95vw] md:max-w-none mx-auto text-white">
+                        ) : reading.english ? (
+                          <div className="text-amber-100 space-y-6 px-4">
                             <TypewriterEffect 
                               text={reading.english.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMoreEnglish(true)}
@@ -451,6 +457,8 @@ export default function Home() {
                               </div>
                             )}
                           </div>
+                        ) : (
+                          <p className="text-gray-400">Your reading will appear here...</p>
                         )}
                       </TabsContent>
                       
