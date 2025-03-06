@@ -55,6 +55,12 @@ export default function Home() {
     setFlippedCards([])
     setReading({ english: '', persian: '' })
     setCurrentCardIndex(0)
+    
+    // Reset all reading states
+    setShowReadMoreEnglish(false)
+    setShowReadMorePersian(false)
+    setShowFullReadingEnglish(false)
+    setShowFullReadingPersian(false)
   }
 
   const flipCard = (id: number) => {
@@ -71,11 +77,12 @@ export default function Home() {
 
   const generateReading = async () => {
     try {
-      // Reset states at the start of generating new reading
+      // Reset all states at the start
       setShowReadMoreEnglish(false);
       setShowReadMorePersian(false);
       setShowFullReadingEnglish(false);
       setShowFullReadingPersian(false);
+      setReading({ english: '', persian: '' }); // Clear previous reading completely
       
       // Get Hafez quote first
       const hafezResponse = await fetch('/api/hafez', {
@@ -99,15 +106,18 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide a brief insight (2-3 sentences) followed by [READMORE_SPLIT] and then a deeper interpretation.
+          prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide:
 
-          In the deeper interpretation:
-          1. Interpret this Hafez verse: "${hafezData.text}"
-          2. Connect it to the cards drawn
-          3. Offer practical guidance with Persian mystical wisdom
-          4. Keep a hopeful tone
+          1. A meaningful brief insight (2-3 impactful sentences) that captures the essence of these cards. Do not use any markdown formatting or special characters - write in plain text. Follow this with [READMORE_SPLIT]
 
-          Keep the deeper interpretation around 300-400 characters.`,
+          2. Then a deeper interpretation that:
+             - Interprets this Hafez verse: "${hafezData.text}"
+             - Shows how the cards illuminate the verse's meaning
+             - Offers practical guidance with Persian mystical wisdom
+             - Keeps a hopeful tone
+
+          Keep the deeper interpretation around 300-400 characters.
+          IMPORTANT: Write in plain text without any formatting characters or symbols (no *, _, etc).`,
           temperature: 0.7,
           max_tokens: 600
         }),
@@ -150,6 +160,22 @@ export default function Home() {
 
   console.log('Testing deployment - ' + new Date().toISOString())
 
+  useEffect(() => {
+    // Reset states when component mounts or when route changes
+    setShowReadMoreEnglish(false);
+    setShowReadMorePersian(false);
+    setShowFullReadingEnglish(false);
+    setShowFullReadingPersian(false);
+    
+    return () => {
+      // Cleanup when component unmounts
+      setShowReadMoreEnglish(false);
+      setShowReadMorePersian(false);
+      setShowFullReadingEnglish(false);
+      setShowFullReadingPersian(false);
+    };
+  }, []); // Empty dependency array means this runs once on mount
+
   return (
     <main className="relative min-h-screen">
       <div 
@@ -166,7 +192,7 @@ export default function Home() {
       <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-8">
-          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide pt-10">
+          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide pt-5 md:pt-10">
             The Oracle of Hafez
           </h1>
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
@@ -175,13 +201,19 @@ export default function Home() {
           {flippedCards.length === 3 && !isLoading ? (
             <button 
               onClick={() => {
+                // Reset all states immediately
+                setShowReadMoreEnglish(false);
+                setShowReadMorePersian(false);
+                setShowFullReadingEnglish(false);
+                setShowFullReadingPersian(false);
+                
                 // First flip all cards back
                 setFlippedCards([]);
                 
                 // Wait for flip animation to complete before shuffling
                 setTimeout(() => {
                   shuffleCards();
-                }, 500); // Match this with our flip animation duration
+                }, 500);
               }}
               className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
                        shadow-[0_0_15px_rgba(88,28,135,0.3)]
@@ -222,7 +254,8 @@ export default function Home() {
                   value="english" 
                   className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                 >
-                  English Reading
+                  <span className="md:inline hidden">English Reading</span>
+                  <span className="inline md:hidden">English</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="persian" 
@@ -356,18 +389,26 @@ export default function Home() {
                 {flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 && (
                   <button
                     onClick={() => setCurrentCardIndex(prev => prev + 1)}
-                    className="absolute top-4 left-1/2 -translate-x-1/2 
+                    className="absolute top-6 left-1/2 -translate-x-1/2 
                               text-amber-200 hover:text-amber-100 
-                              bg-purple-900/30 px-8 py-2 rounded-lg
-                              min-w-[200px] text-center
-                              leading-tight py-3
+                              bg-purple-900/30 px-6 py-2 rounded-lg
+                              min-w-[220px] text-center
+                              leading-tight
                               shadow-[0_0_15px_rgba(88,28,135,0.3)]
                               border border-purple-500/30 hover:border-purple-400/40
                               hover:bg-purple-800/40"
                   >
-                    {currentCardIndex === 1 
-                      ? <span>Mashallah!<br />Turn the last card ✨</span>
-                      : "Yallah! Next Card →"}
+                    {currentCardIndex === 1 ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <div>Mashallah!</div>
+                        <div className="flex items-center gap-2">
+                          Turn the last card
+                          <span className="text-xl">→</span>
+                        </div>
+                      </div>
+                    ) : (
+                      "Yallah! Next Card →"
+                    )}
                   </button>
                 )}
               </div>
@@ -404,7 +445,8 @@ export default function Home() {
                           value="english" 
                           className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                         >
-                          English Reading
+                          <span className="md:inline hidden">English Reading</span>
+                          <span className="inline md:hidden">English</span>
                         </TabsTrigger>
                         <TabsTrigger 
                           value="persian" 
