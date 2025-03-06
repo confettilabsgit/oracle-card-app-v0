@@ -6,28 +6,24 @@ import { motion } from 'framer-motion'
 
 interface OracleCardProps {
   isFlipped: boolean
+  card: {
+    id: number
+    name: string
+    persianName: string
+    image: string
+  }
   onClick: () => void
-  frontImage: string
-  name: string
-  persianName: string
-  isDesktop: boolean
-  show?: boolean
-  zIndex?: number
+  isDesktop?: boolean
   className?: string
 }
 
-export default function OracleCard({ 
+const OracleCard = ({ 
   isFlipped, 
-  onClick, 
-  frontImage, 
-  name, 
-  persianName,
-  isDesktop,
-  show = true,
-  zIndex = 0,
+  card, 
+  onClick,
+  isDesktop = true,
   className = ''
-}: OracleCardProps) {
-  // Add a condition to only apply the slide animation on desktop
+}: OracleCardProps) => {
   const slideAnimation = isDesktop ? {
     hidden: { x: '100%', opacity: 0 },
     visible: { 
@@ -41,64 +37,57 @@ export default function OracleCard({
       transition: { duration: 0.5, ease: "easeIn" }
     }
   } : {
-    // No slide animation for mobile
     hidden: { opacity: 0 },
     visible: { opacity: 1 },
     exit: { opacity: 0 }
   };
 
   return (
-    <div className={`
-      flex flex-col items-center
-      ${isDesktop ? 'mb-4' : 'absolute transition-all duration-500'}
-      ${!isDesktop && !show ? 'translate-x-[100%] opacity-0' : 'translate-x-[-50%] opacity-100'}
-      ${className}
-    `}
-    style={{
-      zIndex: zIndex,
-      left: isDesktop ? 'auto' : '50%',
-    }}>
-      <div
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      variants={slideAnimation}
+      className={`relative ${className}`}
+    >
+      <div 
         className={`
-          cursor-pointer relative
-          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[380px] h-[532px]'}
-          transform-style-preserve-3d perspective-1000
+          relative w-full aspect-[2/3] rounded-lg overflow-hidden cursor-pointer
+          transform transition-transform duration-700 preserve-3d
+          ${isFlipped ? 'rotate-y-180' : ''}
         `}
         onClick={onClick}
       >
-        <div 
-          className="relative w-full h-full transition-transform duration-500 [transform-style:preserve-3d]"
-          style={{ transform: isFlipped ? 'rotateY(180deg)' : '' }}
-        >
-          {/* Back of card (cover) */}
-          <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] flex items-center justify-center">
-            <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
-              alt="Card Back"
-              width={isDesktop ? 224 : 320}
-              height={isDesktop ? 320 : 448}
-              className="rounded-lg"
-            />
-          </div>
-          {/* Front of card */}
-          <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col items-center justify-center">
-            <Image
-              src={frontImage}
-              alt={name}
-              width={isDesktop ? 224 : 320}
-              height={isDesktop ? 320 : 448}
-              className="rounded-lg"
-            />
-          </div>
+        {/* Back of card (cover) */}
+        <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] flex items-center justify-center">
+          <Image
+            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
+            alt="Card Back"
+            width={isDesktop ? 224 : 320}
+            height={isDesktop ? 320 : 448}
+            className="rounded-lg"
+          />
+        </div>
+        {/* Front of card */}
+        <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] flex flex-col items-center justify-center">
+          <Image
+            src={card.image}
+            alt={card.name}
+            width={isDesktop ? 224 : 320}
+            height={isDesktop ? 320 : 448}
+            className="rounded-lg"
+          />
         </div>
       </div>
-      {isFlipped && show && (
+      {isFlipped && (
         <div className="absolute bottom-[-40px] w-full text-center">
-          <h3 className={`font-semibold text-white ${isDesktop ? 'text-base' : 'text-sm'}`}>{name}</h3>
-          <p className={`font-semibold text-white/80 ${isDesktop ? 'text-base' : 'text-sm'}`}>{persianName}</p>
+          <h3 className={`font-semibold text-white ${isDesktop ? 'text-base' : 'text-sm'}`}>{card.name}</h3>
+          <p className={`font-semibold text-white/80 ${isDesktop ? 'text-base' : 'text-sm'}`}>{card.persianName}</p>
         </div>
       )}
-    </div>
-  )
+    </motion.div>
+  );
 }
+
+export default OracleCard
 

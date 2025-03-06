@@ -244,9 +244,7 @@ export default function Home() {
                 key={card.id}
                 isFlipped={flippedCards.includes(card.id)}
                 onClick={() => flipCard(card.id)}
-                frontImage={card.image}
-                name={card.name}
-                persianName={card.persianName}
+                card={card}
                 isDesktop={isDesktop}
               />
             ))}
@@ -381,9 +379,7 @@ export default function Home() {
                     key={card.id}
                     isFlipped={flippedCards.includes(card.id)}
                     onClick={() => flipCard(card.id)}
-                    frontImage={card.image}
-                    name={card.name}
-                    persianName={card.persianName}
+                    card={card}
                     isDesktop={isDesktop}
                     show={index === currentCardIndex}
                     zIndex={2}
