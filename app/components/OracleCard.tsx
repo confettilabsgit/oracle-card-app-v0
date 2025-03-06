@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 
 interface OracleCardProps {
   isFlipped: boolean
@@ -26,6 +27,26 @@ export default function OracleCard({
   zIndex = 0,
   className = ''
 }: OracleCardProps) {
+  // Add a condition to only apply the slide animation on desktop
+  const slideAnimation = isDesktop ? {
+    hidden: { x: '100%', opacity: 0 },
+    visible: { 
+      x: 0, 
+      opacity: 1,
+      transition: { duration: 0.5, ease: "easeOut" }
+    },
+    exit: { 
+      x: '100%', 
+      opacity: 0,
+      transition: { duration: 0.5, ease: "easeIn" }
+    }
+  } : {
+    // No slide animation for mobile
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
+  };
+
   return (
     <div className={`
       flex flex-col items-center

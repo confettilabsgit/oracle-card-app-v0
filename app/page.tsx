@@ -108,16 +108,22 @@ export default function Home() {
         body: JSON.stringify({
           prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide:
 
-          1. A meaningful brief insight (2-3 impactful sentences) that captures the essence of these cards. Do not use any markdown formatting or special characters - write in plain text. Follow this with [READMORE_SPLIT]
+          First, write a brief insight section with the core meaning of each card (no numbers, no special formatting):
+          [Card Name]: [simple meaning]. 
+          Keep each card to one line, plain text only.
+          End this section with [READMORE_SPLIT]
 
-          2. Then a deeper interpretation that:
+          Then provide a deeper interpretation that:
              - Interprets this Hafez verse: "${hafezData.text}"
              - Shows how the cards illuminate the verse's meaning
              - Offers practical guidance with Persian mystical wisdom
              - Keeps a hopeful tone
 
           Keep the deeper interpretation around 300-400 characters.
-          IMPORTANT: Write in plain text without any formatting characters or symbols (no *, _, etc).`,
+          IMPORTANT: For the first part, use this format exactly:
+          Simurgh: [meaning].
+          Div: [meaning].
+          Moon: [meaning].`,
           temperature: 0.7,
           max_tokens: 600
         }),
@@ -277,7 +283,7 @@ export default function Home() {
                         text={reading.english.split('[READMORE_SPLIT]')[0]} 
                         onComplete={() => setShowReadMoreEnglish(true)}
                         isTitle={true}
-                        delay={20}
+                        delay={10}
                       />
                       
                       {showReadMoreEnglish && !showFullReadingEnglish && (
@@ -301,7 +307,7 @@ export default function Home() {
                           <TypewriterEffect 
                             text={reading.english.split('[READMORE_SPLIT]')[1]} 
                             isTitle={false}
-                            delay={15}
+                            delay={8}
                           />
                         </div>
                       )}
@@ -325,7 +331,7 @@ export default function Home() {
                       <TypewriterEffect 
                         text={reading.persian.split('[READMORE_SPLIT]')[0]} 
                         onComplete={() => setShowReadMorePersian(true)}
-                        delay={10}
+                        delay={8}
                         direction="rtl"
                       />
                       
@@ -349,7 +355,7 @@ export default function Home() {
                         <div className="animate-fade-in">
                           <TypewriterEffect 
                             text={reading.persian.split('[READMORE_SPLIT]')[1]} 
-                            delay={10}
+                            delay={8}
                             direction="rtl"
                           />
                         </div>
@@ -389,7 +395,7 @@ export default function Home() {
                 {flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 && (
                   <button
                     onClick={() => setCurrentCardIndex(prev => prev + 1)}
-                    className="absolute top-6 left-1/2 -translate-x-1/2 
+                    className="absolute top-4 left-1/2 -translate-x-1/2  
                               text-amber-200 hover:text-amber-100 
                               bg-purple-900/30 px-6 py-2 rounded-lg
                               min-w-[220px] text-center
@@ -470,7 +476,7 @@ export default function Home() {
                               text={reading.english.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMoreEnglish(true)}
                               isTitle={true}
-                              delay={20}
+                              delay={10}
                             />
                             
                             {showReadMoreEnglish && !showFullReadingEnglish && (
@@ -494,7 +500,7 @@ export default function Home() {
                                 <TypewriterEffect 
                                   text={reading.english.split('[READMORE_SPLIT]')[1]} 
                                   isTitle={false}
-                                  delay={15}
+                                  delay={8}
                                 />
                               </div>
                             )}
@@ -517,7 +523,7 @@ export default function Home() {
                             <TypewriterEffect 
                               text={reading.persian.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMorePersian(true)}
-                              delay={10}
+                              delay={8}
                               direction="rtl"
                             />
 
@@ -543,7 +549,7 @@ export default function Home() {
                               <div className="animate-fade-in">
                                 <TypewriterEffect 
                                   text={reading.persian.split('[READMORE_SPLIT]')[1]} 
-                                  delay={10}
+                                  delay={8}
                                   direction="rtl"
                                 />
                               </div>
