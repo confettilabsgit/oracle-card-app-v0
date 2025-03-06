@@ -14,6 +14,8 @@ interface OracleCardProps {
   }
   onClick: () => void
   isDesktop?: boolean
+  show?: boolean
+  zIndex?: number
   className?: string
 }
 
@@ -22,6 +24,8 @@ const OracleCard = ({
   card, 
   onClick,
   isDesktop = true,
+  show = true,
+  zIndex = 0,
   className = ''
 }: OracleCardProps) => {
   const slideAnimation = isDesktop ? {
@@ -45,10 +49,11 @@ const OracleCard = ({
   return (
     <motion.div
       initial="hidden"
-      animate="visible"
+      animate={show ? "visible" : "hidden"}
       exit="exit"
       variants={slideAnimation}
       className={`relative ${className}`}
+      style={{ zIndex }}
     >
       <div 
         className={`
