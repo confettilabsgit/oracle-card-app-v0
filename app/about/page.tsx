@@ -14,7 +14,7 @@ export default function About() {
           </p>
           
           <p>
-            Each card is carefully crafted to reflect Persian mysticism and cultural elements, offering guidance and insight through a unique blend of traditional symbolism and contemporary interpretation.
+            Each card unveils a powerful force rooted in Persian lore, from Anahita, the goddess of waters and wisdom, to the Simurgh, the majestic guardian of ancient knowledge. To bring these mythical elements to life, artist Amir Bahadori curated each card using generative AI, leveraging Stable Diffusion and OpenAI APIs to craft stunning visual artwork and poetic language that honor their origins.
           </p>
 
           <p>

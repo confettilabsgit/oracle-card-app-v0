@@ -108,9 +108,7 @@ export default function Home() {
         body: JSON.stringify({
           prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide:
 
-          First, write a brief insight section with the core meaning of each card (no numbers, no special formatting):
-          [Card Name]: [simple meaning]. 
-          Keep each card to one line, plain text only.
+          First, write a brief narrative insight (2-3 sentences) that weaves together the core meanings of the cards in a flowing, poetic way. Focus on how they interact and influence each other. Keep it concise but evocative.
           End this section with [READMORE_SPLIT]
 
           Then provide a deeper interpretation that:
@@ -119,11 +117,7 @@ export default function Home() {
              - Offers practical guidance with Persian mystical wisdom
              - Keeps a hopeful tone
 
-          Keep the deeper interpretation around 300-400 characters.
-          IMPORTANT: For the first part, use this format exactly:
-          Simurgh: [meaning].
-          Div: [meaning].
-          Moon: [meaning].`,
+          Keep the deeper interpretation around 300-400 characters.`,
           temperature: 0.7,
           max_tokens: 600
         }),
@@ -164,6 +158,10 @@ export default function Home() {
     }
   }
 
+  const generateBriefInsight = (cards: typeof selectedCards) => {
+    return `In this reading, the ${cards[0].name} brings wisdom and healing energy, while the ${cards[1].name} reflects ethereal beauty. The ${cards[2].name} guides us through spiritual transformation.`
+  }
+
   console.log('Testing deployment - ' + new Date().toISOString())
 
   useEffect(() => {
@@ -198,7 +196,7 @@ export default function Home() {
       <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-8">
-          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide pt-5 md:pt-10">
+          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide pt-5 md:pt-8">
             The Oracle of Hafez
           </h1>
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
