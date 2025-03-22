@@ -150,6 +150,16 @@ export default function Home() {
 
   console.log('Testing deployment - ' + new Date().toISOString())
 
+  function getCardMeaning(name: string) {
+    const meanings = {
+      'Simurgh': 'The majestic phoenix of wisdom',
+      'Peri': 'The fairy of divine beauty',
+      'Div': 'The shadow self',
+      // ... add other cards
+    };
+    return meanings[name] || '';
+  }
+
   return (
     <main className="relative min-h-screen">
       <div 
@@ -355,21 +365,38 @@ export default function Home() {
                 
                 {/* Navigation button */}
                 {flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 && (
-                  <button
-                    onClick={() => setCurrentCardIndex(prev => prev + 1)}
-                    className="absolute top-4 left-1/2 -translate-x-1/2 
-                              text-amber-200 hover:text-amber-100 
-                              bg-purple-900/30 px-8 py-2 rounded-lg
-                              min-w-[200px] text-center
-                              leading-tight py-3
-                              shadow-[0_0_15px_rgba(88,28,135,0.3)]
-                              border border-purple-500/30 hover:border-purple-400/40
-                              hover:bg-purple-800/40"
-                  >
-                    {currentCardIndex === 1 
-                      ? <span>Mashallah!<br />Turn the last card ✨</span>
-                      : "Yallah! Next Card →"}
-                  </button>
+                  <>
+                    <button
+                      onClick={() => setCurrentCardIndex(prev => prev + 1)}
+                      className="absolute top-4 left-1/2 -translate-x-1/2  
+                                text-amber-200 hover:text-amber-100 
+                                bg-purple-900/30 px-6 py-2 rounded-lg
+                                min-w-[220px] text-center
+                                leading-tight
+                                shadow-[0_0_15px_rgba(88,28,135,0.3)]
+                                border border-purple-500/30 hover:border-purple-400/40
+                                hover:bg-purple-800/40"
+                    >
+                      {currentCardIndex === 1 ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <div>Mashallah!</div>
+                          <div className="flex items-center gap-2">
+                            See the last card
+                            <span className="text-xl">→</span>
+                          </div>
+                        </div>
+                      ) : (
+                        "Yallah! Next Card →"
+                      )}
+                    </button>
+                    {/* Add card info below button */}
+                    <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center">
+                      <p className="text-amber-200">{selectedCards[currentCardIndex].name}</p>
+                      <p className="text-amber-100/80 text-sm mt-1">
+                        {getCardMeaning(selectedCards[currentCardIndex].name)}
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
             ) : (
