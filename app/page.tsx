@@ -329,9 +329,15 @@ export default function Home() {
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
           {/* Main Card Selection Area */}
-          <div className="relative min-h-screen pt-28 px-4">
+          <div className="relative min-h-screen pt-24 px-4">
             {flippedCards.length < 3 ? (
               <div className="flex flex-col items-center">
+                {/* Only show instruction if current card is not flipped */}
+                {!flippedCards.includes(selectedCards[currentCardIndex]?.id) && (
+                  <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200">
+                    ✨ Tap the card to continue ✨
+                  </p>
+                )}
                 {selectedCards.map((card, index) => (
                   <OracleCard
                     key={card.id}
