@@ -37,6 +37,10 @@ export async function POST(req: Request) {
       response_format: { type: "text" }
     });
 
+    if (!response.choices || response.choices.length === 0) {
+      throw new Error('No choices returned from OpenAI');
+    }
+
     return new Response(
       JSON.stringify({ 
         text: response.choices[0].message.content
