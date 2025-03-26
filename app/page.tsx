@@ -33,6 +33,7 @@ export default function Home() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
+  const [isFlippingBack, setIsFlippingBack] = useState(false)
 
   useEffect(() => {
     shuffleCards()
@@ -160,6 +161,16 @@ export default function Home() {
     return meanings[name] || '';
   }
 
+  const handleNewReading = () => {
+    setIsFlippingBack(true);
+    setTimeout(() => {
+      // Reset the cards and generate a new reading
+      setFlippedCards(Array(selectedCards.length).fill(false));
+      generateReading();
+      setIsFlippingBack(false);
+    }, 600); // Match this duration with your CSS transition
+  };
+
   return (
     <main className="relative min-h-screen">
       <div 
@@ -184,10 +195,7 @@ export default function Home() {
           {/* Show New Reading button only after loading is complete */}
           {flippedCards.length === 3 && !isLoading ? (
             <button 
-              onClick={() => {
-                document.querySelector('.cards-container')?.classList.add('animate-fade-out')
-                setTimeout(() => window.location.reload(), 150)
-              }}
+              onClick={handleNewReading}
               className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
                        shadow-[0_0_15px_rgba(88,28,135,0.3)]
                        border border-purple-500/30 hover:border-purple-400/40
