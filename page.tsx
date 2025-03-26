@@ -22,6 +22,18 @@ const cards = [
   { id: 12, name: 'Zahhak', persianName: 'ضحاک', image: '/cards/zahhak.png' },
 ]
 
+const quotes = [
+  {
+    persian: "در میکده عشق، هر جام شراب با نور الهی پر شده است.",
+    english: "In the tavern of Love, every cup of wine is filled with divine light."
+  },
+  {
+    persian: "هر که در این بزم مقرب‌تر است، جام بلا بیشترش می‌دهند.",
+    english: "The closer one is to the circle, the more trials they receive."
+  },
+  // Add more quotes up to 20
+];
+
 export default function Home() {
   const [selectedCards, setSelectedCards] = useState<typeof cards>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
@@ -72,82 +84,23 @@ export default function Home() {
 
   const generateReading = async () => {
     try {
-      // Get Hafez quote first
-      const hafezResponse = await fetch('/api/hafez', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const hafezText = await hafezResponse.text();
-      if (!hafezResponse.ok) {
-        console.error('Hafez Response:', hafezText);
-        throw new Error('Failed to fetch Hafez quote');
-      }
-
-      const hafezData = JSON.parse(hafezText);
-      if (!hafezData?.text) {
-        throw new Error('Invalid Hafez response format');
-      }
-
-      // Then generate reading with the Hafez quote
-      const englishResponse = await fetch('/api/generate-reading', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: `For these cards: ${selectedCards.map(card => card.name).join(', ')}, provide a brief insight (2-3 sentences) followed by [READMORE_SPLIT] and then a deeper spiritual interpretation.
-
-          Special card meanings to incorporate:
-          - Zahhak: Represents facing one's shadows, transformation through adversity, the eternal struggle between light and dark. When this card appears, it often signals a time of confronting inner demons and emerging stronger.
-          - Other cards retain their existing meanings.
-
-          In the deeper interpretation:
-          1. Start by examining this Hafez verse: "${hafezData.text}"
-          2. Interpret this specific verse in relation to the cards drawn
-          3. Show how the cards illuminate and expand upon the verse's meaning
-          4. Offer practical guidance while staying grounded in Persian mystical traditions
-          5. Keep a hopeful tone while acknowledging challenges
-
-          Keep the deeper interpretation around 500-600 characters.
-          IMPORTANT: Do not generate or quote any other Hafez verses - only interpret the one provided above.`,
-          temperature: 0.7,
-          max_tokens: 800
-        }),
-      });
-
-      const englishText = await englishResponse.text();
-      if (!englishResponse.ok) {
-        console.error('English Response:', englishText);
-        throw new Error('Failed to fetch English reading');
-      }
-
-      const englishData = JSON.parse(englishText);
-      if (!englishData?.text) {
-        throw new Error('Invalid English response format');
-      }
-
-      const [briefInsight, deeperWisdom] = englishData.text
-        .split('[READMORE_SPLIT]')
-        .map((text: string) => text.trim())
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      const selectedQuote = quotes[randomIndex];
+      console.log('Selected Quote:', selectedQuote);
 
       setReading({
-        english: `✧ Wisdom of Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${
-          briefInsight
-        }[READMORE_SPLIT]✧ Deeper Wisdom ✧\n${
-          deeperWisdom || 'Meditate on these cards to reveal their deeper meaning...'
-        }`,
-        persian: `✧ حکمت حافظ ✧\nدر عشق خانقاه و خرابات فرق نیست
-        هر جا که هست پرتو روی حبیب هست\n
-        ✧ تفسیر کوتاه ✧\n${
-          selectedCards.map(card => card.persianName).join('، ')} به شما نشان می‌دهند که مسیر شما با نور و عشق روشن خواهد شد.
-        [READMORE_SPLIT]✧ تفسیر عمیق ✧\n
-        این کارت‌ها نشان دهنده‌ی مرحله‌ای مهم در سفر معنوی شما هستند. سیمرغ، پری و درویش با هم نشان می‌دهند که شما در آستانه‌ی تحولی عمیق قرار دارید. با پذیرش این تغییر و اعتماد به حکمت درونی، مسیر شما به سوی روشنایی و عشق هدایت خواهد شد. این زمان، فرصتی برای رها کردن محدودیت‌های گذشته و پذیرش هدیه‌های معنوی است که در انتظار شماست.`
-      })
+        english: `✧ Wisdom of Hafez ✧\n${selectedQuote.english}`,
+        persian: `✧ فال حافظ ✧\n${selectedQuote.persian}`
+      });
+
+      console.log('Reading State:', reading);
+
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   console.log('Testing deployment - ' + new Date().toISOString())
 
@@ -164,11 +117,9 @@ export default function Home() {
   const handleNewReading = () => {
     setIsFlippingBack(true);
     setTimeout(() => {
-      // Reset the cards and reading
-      setFlippedCards([]);
-      setSelectedCards([]);
-      setReading({ english: '', persian: '' });
-      shuffleCards(); // Reshuffle or reset the cards
+      // Reset the cards and generate a new reading
+      setFlippedCards(Array(selectedCards.length).fill(false));
+      generateReading();
       setIsFlippingBack(false);
     }, 600); // Match this duration with your CSS transition
   };
