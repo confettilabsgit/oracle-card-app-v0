@@ -92,7 +92,6 @@ export default function Home() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
-  const [isFlippingBack, setIsFlippingBack] = useState(false)
 
   useEffect(() => {
     shuffleCards()
@@ -202,26 +201,21 @@ export default function Home() {
 
   console.log('Testing deployment - ' + new Date().toISOString())
 
-  function getCardMeaning(name: string) {
+  function getCardMeaning(name: 'Simurgh' | 'Peri' | 'Div'): string {
     const meanings = {
       'Simurgh': 'The majestic phoenix of wisdom',
       'Peri': 'The fairy of divine beauty',
-      'Div': 'The shadow self',
-      // ... add other cards
-    };
+      'Div': 'The shadow self'
+    } as const;
     return meanings[name] || '';
   }
 
   const handleNewReading = () => {
-    setIsFlippingBack(true);
-    setTimeout(() => {
-      // Reset the cards and reading
-      setFlippedCards([]);
-      setSelectedCards([]);
-      setReading({ english: '', persian: '' });
-      shuffleCards(); // Reshuffle or reset the cards
-      setIsFlippingBack(false);
-    }, 600); // Match this duration with your CSS transition
+    // Reset the cards and reading
+    setFlippedCards([]);
+    setSelectedCards([]);
+    setReading({ english: '', persian: '' });
+    shuffleCards(); // Reshuffle or reset the cards
   };
 
   return (
@@ -454,7 +448,7 @@ export default function Home() {
                     <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center">
                       <p className="text-amber-200">{selectedCards[currentCardIndex].name}</p>
                       <p className="text-amber-100/80 text-sm mt-1">
-                        {getCardMeaning(selectedCards[currentCardIndex].name)}
+                        {getCardMeaning(selectedCards[currentCardIndex].name as 'Simurgh' | 'Peri' | 'Div')}
                       </p>
                     </div>
                   </>

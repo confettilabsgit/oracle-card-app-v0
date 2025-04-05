@@ -1,5 +1,20 @@
+// Create interfaces for our types
+interface Card {
+  name: string;
+  persianName: string;
+}
+
+interface CardMeaning {
+  meaning: string;
+  persianMeaning: string;
+  description: string;
+  persianDescription: string;
+  keywords: string[];
+  persianKeywords: string[];
+}
+
 // Create a new file for our card meanings database
-export const cardMeanings = {
+export const cardMeanings: Record<string, CardMeaning> = {
   'Simurgh': {
     meaning: 'The majestic phoenix of wisdom and divine guidance',
     persianMeaning: 'سیمرغ، نماد خرد و راهنمایی الهی',
@@ -27,7 +42,7 @@ export const cardMeanings = {
   // ... Add all other cards with similar detailed meanings
 };
 
-export function generateFallbackReading(selectedCards: any[]) {
+export function generateFallbackReading(selectedCards: Card[]) {
   // Create meaningful combinations based on the cards drawn
   const cardDescriptions = selectedCards.map(card => cardMeanings[card.name]);
   
@@ -52,7 +67,7 @@ export function generateFallbackReading(selectedCards: any[]) {
   };
 }
 
-function generateCombinationInsight(cards: any[]) {
+function generateCombinationInsight(cards: Card[]) {
   // Add special insights for specific card combinations
   if (cards.some(c => c.name === 'Simurgh') && cards.some(c => c.name === 'Div')) {
     return "The presence of both Simurgh and Div suggests a powerful transformation through facing your shadows with divine wisdom.";
@@ -61,7 +76,7 @@ function generateCombinationInsight(cards: any[]) {
   return "Consider how these symbols work together to illuminate your path.";
 }
 
-function generatePersianCombinationInsight(cards: any[]) {
+function generatePersianCombinationInsight(cards: Card[]) {
   if (cards.some(c => c.name === 'Simurgh') && cards.some(c => c.name === 'Div')) {
     return "حضور همزمان سیمرغ و دیو نشان‌دهنده تحولی قدرتمند از طریق رویارویی با سایه‌ها به کمک خرد الهی است.";
   }
@@ -69,7 +84,7 @@ function generatePersianCombinationInsight(cards: any[]) {
   return "به چگونگی همکاری این نمادها در روشن کردن مسیر خود بیندیشید.";
 }
 
-function generateDeeperWisdom(cards: any[]) {
+function generateDeeperWisdom(cards: Card[]) {
   let wisdom = "In this reading, ";
   cards.forEach((card, index) => {
     wisdom += `${cardMeanings[card.name].description} `;
@@ -81,7 +96,7 @@ function generateDeeperWisdom(cards: any[]) {
   return wisdom;
 }
 
-function generatePersianDeeperWisdom(cards: any[]) {
+function generatePersianDeeperWisdom(cards: Card[]) {
   let wisdom = "در این فال، ";
   cards.forEach((card, index) => {
     wisdom += `${cardMeanings[card.name].persianDescription} `;
