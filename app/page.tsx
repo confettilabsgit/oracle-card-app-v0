@@ -22,6 +22,65 @@ const cards = [
   { id: 12, name: 'Zahhak', persianName: 'ضحاک', image: '/cards/zahhak.png' },
 ]
 
+const hafezPoems = [
+  {
+    persian: "الا ای ساقی از آن می که در جام است ما را ده",
+    english: "O you whose heart is drunk with the tavern's wine, rise and come!"
+  },
+  {
+    persian: "که عشق آسان نمود اول ولی افتاد مشکل‌ها",
+    english: "Love seemed easy at first, but difficulties arose"
+  },
+  {
+    persian: "به بوی نافه‌ای کآخر صبا زان طره بگشاید",
+    english: "The morning breeze will finally unfold from those curls"
+  },
+  {
+    persian: "ز تاب جعد مشکینش چه خون افتاد در دل‌ها",
+    english: "From the twist of those musky locks, what blood fell in hearts"
+  },
+  {
+    persian: "مرا در منزل جانان چه امن عیش چون هر دم",
+    english: "What peace have I in the beloved's dwelling when at every moment"
+  },
+  {
+    persian: "جرس فریاد می‌دارد که بربندید محمل‌ها",
+    english: "The bell cries out: 'Bind up the camel-litters!'"
+  },
+  {
+    persian: "صلاح کار کجا و من خراب کجا",
+    english: "Where is righteousness and where am I, the ruined one?"
+  },
+  {
+    persian: "ببین تفاوت ره از کجاست تا به کجا",
+    english: "See how far the path is from where to where"
+  },
+  {
+    persian: "دلم ز صومعه بگرفت و خرقه‌ی سالوس",
+    english: "My heart grew weary of the monastery and the hypocrite's cloak"
+  },
+  {
+    persian: "کجاست دیر مغان و شراب ناب کجا",
+    english: "Where is the Magian temple and where the pure wine?"
+  },
+  {
+    persian: "دل شکسته حافظ به خواب آن ببرند",
+    english: "The heart was shattered, Hafez sought a dream to heal it"
+  },
+  {
+    persian: "دل به میخانه سپردم، خردم خرمن سوخت",
+    english: "The heart's own wound has kindled fire anew"
+  },
+  {
+    persian: "نفس گرم می آید ز کوی یار ای دل",
+    english: "The breeze from the beloved's street has come again"
+  },
+  {
+    persian: "گلِ باغِ خاطره‌ی ماست نسیم سحری",
+    english: "The rose in the garden of memory blooms once more"
+  }
+];
+
 export default function Home() {
   const [selectedCards, setSelectedCards] = useState<typeof cards>([])
   const [flippedCards, setFlippedCards] = useState<number[]>([])
@@ -72,24 +131,18 @@ export default function Home() {
 
   const generateReading = async () => {
     try {
-      // Get Hafez quote first
-      const hafezResponse = await fetch('/api/hafez', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      // Select a random Hafez poem
+      const randomPoem = hafezPoems[Math.floor(Math.random() * hafezPoems.length)];
+      
+      // Add console logs to verify selection
+      console.log('Selected Poem:', {
+        index: hafezPoems.indexOf(randomPoem),
+        total_poems: hafezPoems.length,
+        persian: randomPoem.persian,
+        english: randomPoem.english
       });
 
-      const hafezText = await hafezResponse.text();
-      if (!hafezResponse.ok) {
-        console.error('Hafez Response:', hafezText);
-        throw new Error('Failed to fetch Hafez quote');
-      }
-
-      const hafezData = JSON.parse(hafezText);
-      if (!hafezData?.text) {
-        throw new Error('Invalid Hafez response format');
-      }
-
-      // Then generate reading with the Hafez quote
+      // Generate reading with the Hafez quote
       const englishResponse = await fetch('/api/generate-reading', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,7 +154,7 @@ export default function Home() {
           - Other cards retain their existing meanings.
 
           In the deeper interpretation:
-          1. Start by examining this Hafez verse: "${hafezData.text}"
+          1. Start by examining this Hafez verse: "${randomPoem.english}"
           2. Interpret this specific verse in relation to the cards drawn
           3. Show how the cards illuminate and expand upon the verse's meaning
           4. Offer practical guidance while staying grounded in Persian mystical traditions
@@ -130,14 +183,12 @@ export default function Home() {
         .map((text: string) => text.trim())
 
       setReading({
-        english: `✧ Wisdom of Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${
+        english: `✧ Wisdom of Hafez ✧\n${randomPoem.english}\n\n✧ Brief Insight ✧\n${
           briefInsight
         }[READMORE_SPLIT]✧ Deeper Wisdom ✧\n${
           deeperWisdom || 'Meditate on these cards to reveal their deeper meaning...'
         }`,
-        persian: `✧ حکمت حافظ ✧\nدر عشق خانقاه و خرابات فرق نیست
-        هر جا که هست پرتو روی حبیب هست\n
-        ✧ تفسیر کوتاه ✧\n${
+        persian: `✧ حکمت حافظ ✧\n${randomPoem.persian}\n\n✧ تفسیر کوتاه ✧\n${
           selectedCards.map(card => card.persianName).join('، ')} به شما نشان می‌دهند که مسیر شما با نور و عشق روشن خواهد شد.
         [READMORE_SPLIT]✧ تفسیر عمیق ✧\n
         این کارت‌ها نشان دهنده‌ی مرحله‌ای مهم در سفر معنوی شما هستند. سیمرغ، پری و درویش با هم نشان می‌دهند که شما در آستانه‌ی تحولی عمیق قرار دارید. با پذیرش این تغییر و اعتماد به حکمت درونی، مسیر شما به سوی روشنایی و عشق هدایت خواهد شد. این زمان، فرصتی برای رها کردن محدودیت‌های گذشته و پذیرش هدیه‌های معنوی است که در انتظار شماست.`
