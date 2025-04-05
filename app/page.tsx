@@ -201,12 +201,21 @@ export default function Home() {
 
   console.log('Testing deployment - ' + new Date().toISOString())
 
-  function getCardMeaning(name: 'Simurgh' | 'Peri' | 'Div'): string {
-    const meanings = {
+  function getCardMeaning(name: string) {
+    const meanings: Record<string, string> = {
       'Simurgh': 'The majestic phoenix of wisdom',
       'Peri': 'The fairy of divine beauty',
-      'Div': 'The shadow self'
-    } as const;
+      'Div': 'The shadow self',
+      'Anahita': 'The goddess of waters and wisdom',
+      'Faravahar': 'The divine guardian spirit',
+      'Huma': 'The bird of paradise',
+      'Azhdaha': 'The cosmic dragon',
+      'Cypress': 'The eternal tree of life',
+      'Moon': 'The celestial guide',
+      'Dervish': 'The mystic seeker',
+      'Sun Lion': 'The royal protector',
+      'Zahhak': 'The shadow of transformation'
+    };
     return meanings[name] || '';
   }
 
@@ -448,7 +457,7 @@ export default function Home() {
                     <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center">
                       <p className="text-amber-200">{selectedCards[currentCardIndex].name}</p>
                       <p className="text-amber-100/80 text-sm mt-1">
-                        {getCardMeaning(selectedCards[currentCardIndex].name as 'Simurgh' | 'Peri' | 'Div')}
+                        {getCardMeaning(selectedCards[currentCardIndex].name)}
                       </p>
                     </div>
                   </>
