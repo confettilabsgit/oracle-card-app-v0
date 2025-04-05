@@ -139,7 +139,7 @@ export default function NavMenu() {
                 This digital oracle bridges the timeless wisdom of Persian mythology with today&apos;s seekers. Inspired by Fal-e-Hafez, the ancient Persian tradition of seeking guidance through poetry, it offers a modern path to cosmic reflection and insight.
               </p>
               <p style={{ marginBottom: '1rem' }}>
-                Each card unveils a powerful force rooted in Persian lore, from Anahita, the goddess of waters and wisdom, to the Simurgh, the majestic guardian of ancient knowledge. To bring these mythical elements to life, we curated each card using generative AI, leveraging Stable Diffusion and OpenAI APIs to craft stunning visual artwork and poetic language that honor their origins.
+                Each card unveils a powerful force rooted in Persian lore, from Anahita, the goddess of waters and wisdom, to the Simurgh, the majestic guardian of ancient knowledge. To bring these mythical elements to life, Artist Amir Bahadori curated each card using generative AI, leveraging Stable Diffusion and OpenAI APIs to craft stunning visual artwork and poetic language that honor their origins.
               </p>
               <p style={{ marginBottom: '2rem' }}>
                 Together, these cards weave a tapestry of divination that honors the past while illuminating the present. Share your readings, and the oracle&apos;s wisdom will grow stronger with each seeker.

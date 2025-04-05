@@ -47,12 +47,12 @@ export function generateFallbackReading(selectedCards: Card[]) {
   const cardDescriptions = selectedCards.map(card => cardMeanings[card.name]);
   
   // Generate brief insight combining card meanings
-  const briefInsight = `Your reading reveals a powerful combination: ${selectedCards.map(card => 
-    `${card.name}, ${cardMeanings[card.name].meaning}`
+  const briefInsight = `Your reading reveals a powerful combination: ${cardDescriptions.map(desc => 
+    desc.meaning
   ).join('; ')}. ${generateCombinationInsight(selectedCards)}`;
 
-  const persianBriefInsight = `فال شما ترکیبی قدرتمند را نشان می‌دهد: ${selectedCards.map(card =>
-    `${card.persianName}، ${cardMeanings[card.name].persianMeaning}`
+  const persianBriefInsight = `فال شما ترکیبی قدرتمند را نشان می‌دهد: ${cardDescriptions.map(desc =>
+    desc.persianMeaning
   ).join('؛ ')}. ${generatePersianCombinationInsight(selectedCards)}`;
 
   // Generate deeper wisdom based on card combinations
