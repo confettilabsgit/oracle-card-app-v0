@@ -3,7 +3,7 @@ import { OpenAI } from 'openai';
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  if (!process.env.OPEN_API_KEY) {
+  if (!process.env.OPENAI_API_KEY) {
     return new Response(
       JSON.stringify({ error: 'OpenAI API key not configured' }), 
       { status: 500 }
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   try {
     // Initialize OpenAI inside the function
     const openai = new OpenAI({
-      apiKey: process.env.OPEN_API_KEY,
+      apiKey: process.env.OPENAI_API_KEY,
     });
 
     const { prompt } = await req.json();
