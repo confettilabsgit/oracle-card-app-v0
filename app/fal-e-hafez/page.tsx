@@ -281,13 +281,13 @@ export default function FaleHafez() {
                 New Reading
               </button>
               <p className="text-amber-200/70 text-sm text-center">
-                Turn one page to discover your verse from Hafez
+                Flip the page to reveal your Hafez verse and fortune
               </p>
             </div>
           ) : !selectedCard ? (
             <div className="flex flex-col items-center gap-2">
               <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-                <span>Turn one page to discover your verse from Hafez</span>
+                <span>Flip the page to reveal your Hafez verse and fortune</span>
               </h2>
             </div>
           ) : null}
@@ -539,7 +539,7 @@ export default function FaleHafez() {
             {!selectedCard ? (
               <div className="flex flex-col items-center w-full">
                 <p className="text-amber-200 text-center px-4 mb-8 text-lg">
-                  Turn the page to discover your Hafez verse.
+                  Flip the page to reveal your Hafez verse and fortune
                 </p>
                 {/* Single card back */}
                 <div
