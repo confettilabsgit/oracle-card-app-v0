@@ -161,12 +161,10 @@ export default function Home() {
   }
 
   const handleNewReading = () => {
-    setIsFlippingBack(true);
     setTimeout(() => {
       // Reset the flip state without removing cards
       setFlippedCards([]);
       setReading({ english: '', persian: '' });
-      setIsFlippingBack(false);
     }, 600); // Match this duration with your CSS transition
   };
 
