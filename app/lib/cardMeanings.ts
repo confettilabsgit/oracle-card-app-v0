@@ -37,11 +37,11 @@ export function generateFallbackReading(selectedCards: Card[]) {
   
   // Generate brief insight combining card meanings
   const briefInsight = `Your reading reveals a powerful combination: ${selectedCards.map(card => 
-    `${card.name}, ${cardMeanings[card.name].meaning}`
+    `${card.name}, ${cardMeanings[card.name as keyof typeof cardMeanings]?.meaning || 'mystical guidance'}`
   ).join('; ')}. ${generateCombinationInsight(selectedCards)}`;
 
   const persianBriefInsight = `فال شما ترکیبی قدرتمند را نشان می‌دهد: ${selectedCards.map(card =>
-    `${card.persianName}، ${cardMeanings[card.name].persianMeaning}`
+    `${card.persianName}، ${cardMeanings[card.name as keyof typeof cardMeanings]?.persianMeaning || 'هدایت عرفانی'}`
   ).join('؛ ')}. ${generatePersianCombinationInsight(selectedCards)}`;
 
   // Generate deeper wisdom based on card combinations
@@ -76,7 +76,8 @@ function generatePersianCombinationInsight(cards: Card[]) {
 function generateDeeperWisdom(cards: Card[]) {
   let wisdom = "In this reading, ";
   cards.forEach((card, index) => {
-    wisdom += `${cardMeanings[card.name].description} `;
+    const cardData = cardMeanings[card.name as keyof typeof cardMeanings];
+    wisdom += `${cardData?.description || 'mystical guidance'} `;
     if (index < cards.length - 1) {
       wisdom += "Furthermore, ";
     }
@@ -88,7 +89,8 @@ function generateDeeperWisdom(cards: Card[]) {
 function generatePersianDeeperWisdom(cards: Card[]) {
   let wisdom = "در این فال، ";
   cards.forEach((card, index) => {
-    wisdom += `${cardMeanings[card.name].persianDescription} `;
+    const cardData = cardMeanings[card.name as keyof typeof cardMeanings];
+    wisdom += `${cardData?.persianDescription || 'هدایت عرفانی'} `;
     if (index < cards.length - 1) {
       wisdom += "همچنین، ";
     }
