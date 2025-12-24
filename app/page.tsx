@@ -70,6 +70,12 @@ export default function Home() {
   }
 
   const generateReading = async () => {
+    // Reset reading reveal states
+    setShowReadMoreEnglish(false)
+    setShowReadMorePersian(false)
+    setShowFullReadingEnglish(false)
+    setShowFullReadingPersian(false)
+    
     try {
       // Get Hafez quote first
       const hafezResponse = await fetch('/api/hafez', {
@@ -161,10 +167,16 @@ export default function Home() {
   }
 
   const handleNewReading = () => {
+    // Reset all reading states
+    setShowReadMoreEnglish(false)
+    setShowReadMorePersian(false)
+    setShowFullReadingEnglish(false)
+    setShowFullReadingPersian(false)
+    setReading({ english: '', persian: '' });
+    
     setTimeout(() => {
       // Reset the flip state without removing cards
       setFlippedCards([]);
-      setReading({ english: '', persian: '' });
     }, 600); // Match this duration with your CSS transition
   };
 
