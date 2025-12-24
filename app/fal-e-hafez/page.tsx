@@ -317,13 +317,13 @@ export default function FaleHafez() {
                 }}
               >
                 <div
-                  className={`relative w-full h-full transition-transform duration-700 ${selectedCard ? '' : 'cursor-pointer'}`}
+                  className={`relative w-full h-full transition-transform duration-700 ${flippedCards.includes(card.id) ? '' : 'cursor-pointer'}`}
                   style={{
                     transform: flippedCards.includes(card.id) 
                       ? 'rotateY(-180deg)' 
                       : 'rotateY(0deg)',
                     transformStyle: 'preserve-3d',
-                    pointerEvents: selectedCard ? 'none' : 'auto',
+                    pointerEvents: flippedCards.includes(card.id) ? 'none' : 'auto',
                   }}
                   onClick={() => flipCard(card.id)}
                 >
@@ -552,13 +552,13 @@ export default function FaleHafez() {
                       }}
                     >
                       <div
-                        className={`relative w-full h-full transition-transform duration-700 ${selectedCard ? '' : 'cursor-pointer'}`}
+                        className={`relative w-full h-full transition-transform duration-700 ${flippedCards.includes(card.id) ? '' : 'cursor-pointer'}`}
                         style={{
                           transform: flippedCards.includes(card.id) 
                             ? 'rotateY(-180deg)' 
                             : 'rotateY(0deg)',
                           transformStyle: 'preserve-3d',
-                          pointerEvents: selectedCard ? 'none' : 'auto',
+                          pointerEvents: flippedCards.includes(card.id) ? 'none' : 'auto',
                         }}
                         onClick={() => flipCard(card.id)}
                       >
