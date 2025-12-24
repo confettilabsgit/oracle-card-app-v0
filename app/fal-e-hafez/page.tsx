@@ -289,13 +289,17 @@ export default function FaleHafez() {
               <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
                 <span>Turn one page to discover your verse from Hafez</span>
               </h2>
-              {errorMessage && (
-                <p className="text-red-300 text-sm animate-fade-in px-4 text-center">
-                  {errorMessage}
-                </p>
-              )}
             </div>
           ) : null}
+          
+          {/* Error message - always visible when present */}
+          {errorMessage && (
+            <div className="mt-4 animate-fade-in">
+              <p className="text-red-300 text-sm md:text-base px-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg py-2">
+                {errorMessage}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Desktop Layout */}
@@ -524,18 +528,19 @@ export default function FaleHafez() {
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
           <div className="relative min-h-screen pt-24 px-4">
+            {/* Error message for mobile */}
+            {errorMessage && (
+              <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] animate-fade-in z-50">
+                <p className="text-red-300 text-sm px-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg py-2">
+                  {errorMessage}
+                </p>
+              </div>
+            )}
             {!selectedCard ? (
               <div className="flex flex-col items-center">
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 text-center px-4">
-                  <p className="text-amber-200">
-                    Turn one page to discover your verse from Hafez
-                  </p>
-                  {errorMessage && (
-                    <p className="text-red-300 text-sm animate-fade-in mt-2">
-                      {errorMessage}
-                    </p>
-                  )}
-                </div>
+                <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200 text-center px-4">
+                  Turn one page to discover your verse from Hafez
+                </p>
                 <div className="flex flex-col gap-4 mt-12">
                   {selectedCards.map((card, index) => (
                     <div
