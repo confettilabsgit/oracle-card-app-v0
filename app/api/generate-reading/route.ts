@@ -1,9 +1,5 @@
 import { OpenAI } from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
@@ -15,25 +11,35 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Initialize OpenAI inside the function
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
     const { prompt } = await req.json();
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
       messages: [
         {
-          role: 'system',
-          content: 'You are a wise Persian oracle reader. Generate unique readings each time, never repeating the same text.'
+          role: "system",
+          content: "You are a mystical oracle drawing upon Persian mythology and Sufi wisdom to provide meaningful insights."
         },
         {
-          role: 'user',
-          // Using the prompt from the request here
-          content: prompt || 'Create a unique oracle reading. Include a welcome message, interpretations of the cards for this specific reading, and a suggested ritual.'
+          role: "user",
+          content: prompt
         }
       ],
-      max_tokens: 500,
-      temperature: 0.9,
-      stream: false,
+      model: "gpt-4-turbo-preview",
+      max_tokens: 800,
+      temperature: 0.7,
+      presence_penalty: 0.0,
+      frequency_penalty: 0.0,
+      response_format: { type: "text" }
     });
+
+    if (!response.choices || response.choices.length === 0) {
+      throw new Error('No choices returned from OpenAI');
+    }
 
     return new Response(
       JSON.stringify({ 

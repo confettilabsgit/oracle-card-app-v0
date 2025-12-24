@@ -12,6 +12,7 @@ interface OracleCardProps {
   isDesktop: boolean
   show?: boolean
   zIndex?: number
+  className?: string
 }
 
 export default function OracleCard({ 
@@ -22,13 +23,15 @@ export default function OracleCard({
   persianName,
   isDesktop,
   show = true,
-  zIndex = 0
+  zIndex = 0,
+  className = ''
 }: OracleCardProps) {
   return (
     <div className={`
       flex flex-col items-center
       ${isDesktop ? 'mb-4' : 'absolute transition-all duration-500'}
       ${!isDesktop && !show ? 'translate-x-[100%] opacity-0' : 'translate-x-[-50%] opacity-100'}
+      ${className}
     `}
     style={{
       zIndex: zIndex,
@@ -37,7 +40,7 @@ export default function OracleCard({
       <div
         className={`
           cursor-pointer relative
-          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[280px] h-[392px]'}
+          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[380px] h-[532px]'}
         `}
         onClick={onClick}
       >
@@ -49,8 +52,8 @@ export default function OracleCard({
             <Image
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
               alt="Card Back"
-              width={isDesktop ? 224 : 180}
-              height={isDesktop ? 320 : 252}
+              width={isDesktop ? 224 : 320}
+              height={isDesktop ? 320 : 448}
               className="rounded-lg"
             />
           </div>
@@ -60,8 +63,8 @@ export default function OracleCard({
             <Image
               src={frontImage}
               alt={name}
-              width={isDesktop ? 224 : 180}
-              height={isDesktop ? 320 : 252}
+              width={isDesktop ? 224 : 320}
+              height={isDesktop ? 320 : 448}
               className="rounded-lg"
             />
           </div>
