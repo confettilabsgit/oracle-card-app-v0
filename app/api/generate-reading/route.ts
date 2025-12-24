@@ -1,7 +1,5 @@
 import { OpenAI } from 'openai';
 
-export const runtime = 'edge';
-
 export async function POST(req: Request) {
   if (!process.env.OPENAI_API_KEY) {
     return new Response(
@@ -29,7 +27,7 @@ export async function POST(req: Request) {
           content: prompt
         }
       ],
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4-turbo",
       max_tokens: 800,
       temperature: 0.7,
       presence_penalty: 0.0,

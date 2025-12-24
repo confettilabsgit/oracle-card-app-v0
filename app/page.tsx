@@ -6,6 +6,7 @@ import TypewriterEffect from './components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import StarryBackground from './components/StarryBackground'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -229,6 +230,7 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen">
+      <StarryBackground />
       <div 
         style={{
           background: 'linear-gradient(to bottom right, #1a1033, #0a1a2c)',
