@@ -33,7 +33,6 @@ export default function Home() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
-  const [isFlippingBack, setIsFlippingBack] = useState(false)
 
   useEffect(() => {
     shuffleCards()
