@@ -527,84 +527,84 @@ export default function FaleHafez() {
 
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
-          <div className="relative min-h-screen pt-24 px-4">
+          <div className="relative min-h-screen pt-24 px-4 flex flex-col items-center">
             {/* Error message for mobile */}
             {errorMessage && (
-              <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[90%] animate-fade-in z-50">
+              <div className="w-[90%] mb-4 animate-fade-in z-50">
                 <p className="text-red-300 text-sm px-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg py-2">
                   {errorMessage}
                 </p>
               </div>
             )}
             {!selectedCard ? (
-              <div className="flex flex-col items-center">
-                <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200 text-center px-4">
-                  Turn one page to discover your verse from Hafez
+              <div className="flex flex-col items-center w-full">
+                <p className="text-amber-200 text-center px-4 mb-8 text-lg">
+                  Turn the page to discover your Hafez verse.
                 </p>
-                <div className="flex flex-col gap-4 mt-12">
-                  {selectedCards.map((card, index) => (
-                    <div
-                      key={card.id}
-                      className="relative"
+                {/* Single card back */}
+                <div
+                  className="relative"
+                  style={{
+                    width: '280px',
+                    height: '420px',
+                    maxWidth: '90vw',
+                    maxHeight: '60vh',
+                  }}
+                >
+                  <div
+                    className="relative w-full h-full transition-transform duration-700 cursor-pointer"
+                    style={{
+                      transform: flippedCards.length > 0 
+                        ? 'rotateY(-180deg)' 
+                        : 'rotateY(0deg)',
+                      transformStyle: 'preserve-3d',
+                    }}
+                    onClick={() => {
+                      // Flip the first card from selectedCards
+                      if (selectedCards.length > 0 && flippedCards.length === 0) {
+                        flipCard(selectedCards[0].id)
+                      }
+                    }}
+                  >
+                    {/* Card back - using cardback.png */}
+                    <div 
+                      className="absolute inset-0 w-full h-full"
                       style={{
-                        width: '280px',
-                        height: '420px',
+                        backfaceVisibility: 'hidden',
+                        borderRadius: '4px',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
+                        overflow: 'hidden',
                       }}
                     >
-                      <div
-                        className={`relative w-full h-full transition-transform duration-700 ${flippedCards.includes(card.id) ? '' : 'cursor-pointer'}`}
+                      <Image
+                        src="/cards/cardback.png"
+                        alt="Card back"
+                        width={280}
+                        height={420}
+                        className="rounded-sm"
                         style={{
-                          transform: flippedCards.includes(card.id) 
-                            ? 'rotateY(-180deg)' 
-                            : 'rotateY(0deg)',
-                          transformStyle: 'preserve-3d',
-                          pointerEvents: flippedCards.includes(card.id) ? 'none' : 'auto',
+                          objectFit: 'contain',
+                          width: '100%',
+                          height: '100%',
                         }}
-                        onClick={() => flipCard(card.id)}
-                      >
-                        {/* Page back - show card image darkened */}
-                        <div 
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            background: 'linear-gradient(135deg, #2a1a4a 0%, #1a0f2e 100%)',
-                            border: '2px solid rgba(254, 243, 199, 0.3)',
-                            borderRadius: '4px',
-                            boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
-                            overflow: 'hidden',
-                          }}
-                        >
+                      />
+                    </div>
+                    
+                    {/* Card front - show the selected card */}
+                    <div 
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)',
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {selectedCards.length > 0 && (
+                        <>
                           <Image
-                            src={card.image}
-                            alt={card.name}
-                            width={280}
-                            height={420}
-                            className="rounded-sm opacity-30"
-                            style={{
-                              objectFit: 'contain',
-                              width: '100%',
-                              height: '100%',
-                              filter: 'brightness(0.3)',
-                            }}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-amber-200/40 text-sm text-center px-4">
-                              Page {index + 1}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Page front */}
-                        <div 
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            transform: 'rotateY(180deg)',
-                          }}
-                        >
-                          <Image
-                            src={card.image}
-                            alt={card.name}
+                            src={selectedCards[0].image}
+                            alt={selectedCards[0].name}
                             width={280}
                             height={420}
                             className="rounded-sm"
@@ -615,13 +615,13 @@ export default function FaleHafez() {
                             }}
                           />
                           <div className="absolute bottom-2 left-2 right-2 text-center">
-                            <h3 className="text-white text-sm font-semibold drop-shadow-lg">{card.name}</h3>
-                            <p className="text-white/80 text-xs drop-shadow-lg">{card.persianName}</p>
+                            <h3 className="text-white text-sm font-semibold drop-shadow-lg">{selectedCards[0].name}</h3>
+                            <p className="text-white/80 text-xs drop-shadow-lg">{selectedCards[0].persianName}</p>
                           </div>
-                        </div>
-                      </div>
+                        </>
+                      )}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             ) : (
