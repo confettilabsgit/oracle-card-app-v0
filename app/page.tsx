@@ -137,9 +137,7 @@ export default function Home() {
       setReading({
         english: `✧ Wisdom of Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${
           briefInsight
-        }[READMORE_SPLIT]✧ Deeper Wisdom ✧\n${
-          deeperWisdom || 'Meditate on these cards to reveal their deeper meaning...'
-        }`,
+        }[READMORE_SPLIT]${deeperWisdom || 'Meditate on these cards to reveal their deeper meaning...'}`,
         persian: `✧ حکمت حافظ ✧\nدر عشق خانقاه و خرابات فرق نیست
         هر جا که هست پرتو روی حبیب هست\n
         ✧ تفسیر کوتاه ✧\n${
@@ -286,9 +284,10 @@ export default function Home() {
                       )}
                       
                       {showFullReadingEnglish && (
-                        <div className="animate-fade-in">
+                        <div className="animate-fade-in mt-6">
+                          <div className="text-amber-200 mb-4">✧ Deeper Wisdom ✧</div>
                           <TypewriterEffect 
-                            text={reading.english.split('[READMORE_SPLIT]')[1]} 
+                            text={reading.english.split('[READMORE_SPLIT]')[1] || ''} 
                             isTitle={false}
                             delay={15}
                           />
