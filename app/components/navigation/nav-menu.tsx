@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function NavMenu() {
   const [showAbout, setShowAbout] = useState(false)
@@ -84,6 +85,14 @@ export default function NavMenu() {
   return (
     <>
       <nav className="fixed top-4 right-4 z-50 hidden md:flex gap-2">
+        <Link 
+          href="/fal-e-hafez"
+          style={buttonStyle}
+          onMouseOver={e => e.currentTarget.style.opacity = '0.8'}
+          onMouseOut={e => e.currentTarget.style.opacity = '1'}
+        >
+          Fal-e-Hafez
+        </Link>
         <button 
           onClick={() => setShowAbout(true)}
           style={buttonStyle}
