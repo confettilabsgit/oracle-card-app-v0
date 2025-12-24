@@ -260,12 +260,21 @@ export default function Home() {
                     </div>
                   ) : reading.english ? (
                     <div className="text-amber-100 space-y-6">
-                      <TypewriterEffect 
-                        text={reading.english.split('[READMORE_SPLIT]')[0]} 
-                        onComplete={() => setShowReadMoreEnglish(true)}
-                        isTitle={true}
-                        delay={10}
-                      />
+                      {/* Static Hafez quote and Brief Insight header */}
+                      <div className="text-amber-200">
+                        {reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[0]}
+                      </div>
+                      
+                      {/* Type only the Brief Insight part */}
+                      <div>
+                        <div className="text-amber-200 mb-2">✧ Brief Insight ✧</div>
+                        <TypewriterEffect 
+                          text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1] || ''} 
+                          onComplete={() => setShowReadMoreEnglish(true)}
+                          isTitle={false}
+                          delay={10}
+                        />
+                      </div>
                       
                       {showReadMoreEnglish && !showFullReadingEnglish && (
                         <div className="mt-8 flex justify-center animate-fade-in">
