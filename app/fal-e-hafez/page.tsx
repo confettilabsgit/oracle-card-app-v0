@@ -58,6 +58,9 @@ export default function FaleHafez() {
   }
 
   const flipCard = (id: number) => {
+    // Only allow flipping if no card has been selected yet
+    if (selectedCard) return
+    
     if (!flippedCards.includes(id)) {
       const newFlippedCards = [...flippedCards, id]
       setFlippedCards(newFlippedCards)
@@ -80,7 +83,7 @@ export default function FaleHafez() {
     setShowFullReadingPersian(false)
     
     try {
-      // Get Hafez quote first
+      // Get Hafez quote first (English)
       const hafezResponse = await fetch('/api/hafez', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -95,6 +98,28 @@ export default function FaleHafez() {
       const hafezData = JSON.parse(hafezText);
       if (!hafezData?.text) {
         throw new Error('Invalid Hafez response format');
+      }
+
+      // Get Persian poem
+      const persianResponse = await fetch('/api/generate-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `Return the original Persian text (in Persian script) for the Hafez verse that corresponds to this English translation: "${hafezData.text}". Return only the Persian text, 2-3 lines, nothing else.`,
+          temperature: 0.3,
+          max_tokens: 150
+        }),
+      });
+
+      const persianText = await persianResponse.text();
+      let persianPoem = '';
+      if (persianResponse.ok) {
+        try {
+          const persianData = JSON.parse(persianText);
+          persianPoem = persianData?.text || '';
+        } catch (e) {
+          console.error('Failed to parse Persian response');
+        }
       }
 
       // Generate reading focused on single card + poem interpretation
@@ -139,7 +164,7 @@ export default function FaleHafez() {
         english: `✧ Poem from Hafez ✧\n${hafezData.text}\n\n✧ What This Page Reveals ✧\n${
           briefInsight
         }[READMORE_SPLIT]${deeperWisdom || 'Meditate on this verse to reveal its deeper meaning...'}`,
-        persian: `✧ شعر حافظ ✧\n${hafezData.text}\n\n✧ آنچه این صفحه آشکار می‌کند ✧\n${
+        persian: `✧ شعر حافظ ✧\n${persianPoem || hafezData.text}\n\n✧ آنچه این صفحه آشکار می‌کند ✧\n${
           card.persianName} به شما نشان می‌دهد که این شعر حافظ چه پیامی برای شما دارد.
         [READMORE_SPLIT]✧ تفسیر عمیق‌تر ✧\n
         این کارت نشان دهنده‌ی مرحله‌ای مهم در سفر معنوی شماست. ${card.persianName} با این شعر حافظ در هم می‌آمیزد تا راهنمای شما باشد. با پذیرش این حکمت و اعتماد به مسیر درونی، روشنایی در انتظار شماست.`
@@ -189,19 +214,24 @@ export default function FaleHafez() {
           
           {/* Show New Reading button only after loading is complete */}
           {selectedCard && !isLoading ? (
-            <button 
-              onClick={handleNewReading}
-              className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
-                       shadow-[0_0_15px_rgba(88,28,135,0.3)]
-                       border border-purple-500/30 hover:border-purple-400/40
-                       hover:bg-purple-800/40 
-                       transition-all"
-            >
-              📖 Turn Another Page 📖
-            </button>
+            <div className="flex flex-col items-center gap-2">
+              <button 
+                onClick={handleNewReading}
+                className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
+                         shadow-[0_0_15px_rgba(88,28,135,0.3)]
+                         border border-purple-500/30 hover:border-purple-400/40
+                         hover:bg-purple-800/40 
+                         transition-all"
+              >
+                New Reading
+              </button>
+              <p className="text-amber-200/70 text-sm text-center">
+                Turn one page to discover your verse from Hafez
+              </p>
+            </div>
           ) : !selectedCard ? (
             <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-              <span>✨ Turn one page to discover your verse from Hafez ✨</span>
+              <span>Turn one page to discover your verse from Hafez</span>
             </h2>
           ) : null}
         </div>
@@ -221,12 +251,13 @@ export default function FaleHafez() {
                 }}
               >
                 <div
-                  className="cursor-pointer relative w-full h-full transition-transform duration-700"
+                  className={`relative w-full h-full transition-transform duration-700 ${selectedCard ? '' : 'cursor-pointer'}`}
                   style={{
                     transform: flippedCards.includes(card.id) 
                       ? 'rotateY(-180deg)' 
                       : 'rotateY(0deg)',
                     transformStyle: 'preserve-3d',
+                    pointerEvents: selectedCard ? 'none' : 'auto',
                   }}
                   onClick={() => flipCard(card.id)}
                 >
@@ -264,7 +295,7 @@ export default function FaleHafez() {
                       height={420}
                       className="rounded-sm"
                       style={{
-                        objectFit: 'cover',
+                        objectFit: 'contain',
                         width: '100%',
                         height: '100%',
                       }}
@@ -306,8 +337,8 @@ export default function FaleHafez() {
                       </div>
                     ) : reading.english ? (
                       <div className="text-amber-100 space-y-6">
-                        {/* Static Hafez poem - large and prominent */}
-                        <div className="text-amber-200 text-xl md:text-2xl leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
+                        {/* Static Hafez poem - prominent but not oversized */}
+                        <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
                           {reading.english.split('[READMORE_SPLIT]')[0].split('✧ What This Page Reveals ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
                         </div>
                         
@@ -364,8 +395,8 @@ export default function FaleHafez() {
                       </div>
                     ) : reading.persian ? (
                       <div className="text-amber-100 space-y-6">
-                        {/* Static Hafez poem - large and prominent */}
-                        <div className="text-amber-200 text-xl md:text-2xl leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
+                        {/* Static Hafez poem - prominent but not oversized */}
+                        <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20" dir="rtl">
                           {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
                         </div>
                         
@@ -418,7 +449,7 @@ export default function FaleHafez() {
             {!selectedCard ? (
               <div className="flex flex-col items-center">
                 <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200 text-center px-4">
-                  ✨ Turn one page to discover your verse ✨
+                  Turn one page to discover your verse from Hafez
                 </p>
                 <div className="flex flex-col gap-4 mt-12">
                   {selectedCards.map((card, index) => (
@@ -431,12 +462,13 @@ export default function FaleHafez() {
                       }}
                     >
                       <div
-                        className="cursor-pointer relative w-full h-full transition-transform duration-700"
+                        className={`relative w-full h-full transition-transform duration-700 ${selectedCard ? '' : 'cursor-pointer'}`}
                         style={{
                           transform: flippedCards.includes(card.id) 
                             ? 'rotateY(-180deg)' 
                             : 'rotateY(0deg)',
                           transformStyle: 'preserve-3d',
+                          pointerEvents: selectedCard ? 'none' : 'auto',
                         }}
                         onClick={() => flipCard(card.id)}
                       >
@@ -474,7 +506,7 @@ export default function FaleHafez() {
                             height={420}
                             className="rounded-sm"
                             style={{
-                              objectFit: 'cover',
+                              objectFit: 'contain',
                               width: '100%',
                               height: '100%',
                             }}
@@ -537,8 +569,8 @@ export default function FaleHafez() {
                           </div>
                         ) : (
                           <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
-                            {/* Poem - large and prominent */}
-                            <div className="text-amber-200 text-xl leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
+                            {/* Poem - prominent but not oversized */}
+                            <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
                               {reading.english.split('[READMORE_SPLIT]')[0].split('✧ What This Page Reveals ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
                             </div>
                             
@@ -589,8 +621,8 @@ export default function FaleHafez() {
                           </div>
                         ) : (
                           <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
-                            {/* Poem - large and prominent */}
-                            <div className="text-amber-200 text-xl leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
+                            {/* Poem - prominent but not oversized */}
+                            <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4" dir="rtl">
                               {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
                             </div>
                             

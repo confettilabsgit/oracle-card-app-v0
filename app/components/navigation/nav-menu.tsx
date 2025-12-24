@@ -86,6 +86,14 @@ export default function NavMenu() {
     <>
       <nav className="fixed top-4 right-4 z-50 hidden md:flex gap-2">
         <Link 
+          href="/"
+          style={buttonStyle}
+          onMouseOver={e => e.currentTarget.style.opacity = '0.8'}
+          onMouseOut={e => e.currentTarget.style.opacity = '1'}
+        >
+          Persian Oracle
+        </Link>
+        <Link 
           href="/fal-e-hafez"
           style={buttonStyle}
           onMouseOver={e => e.currentTarget.style.opacity = '0.8'}
