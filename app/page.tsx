@@ -151,7 +151,7 @@ export default function Home() {
   console.log('Testing deployment - ' + new Date().toISOString())
 
   function getCardMeaning(name: string) {
-    const meanings = {
+    const meanings: Record<string, string> = {
       'Simurgh': 'The majestic phoenix of wisdom',
       'Peri': 'The fairy of divine beauty',
       'Div': 'The shadow self',
