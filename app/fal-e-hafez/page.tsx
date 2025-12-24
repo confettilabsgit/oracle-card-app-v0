@@ -6,6 +6,7 @@ import TypewriterEffect from '../components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { cardMeanings } from '../lib/cardMeanings'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -33,6 +34,7 @@ export default function FaleHafez() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     shuffleCards()
@@ -55,13 +57,19 @@ export default function FaleHafez() {
     setFlippedCards([])
     setSelectedCard(null)
     setReading({ english: '', persian: '' })
+    setErrorMessage('')
   }
 
   const flipCard = (id: number) => {
-    // Only allow flipping if no card has been selected yet
-    if (selectedCard) return
+    // Show error if trying to flip another card after one is selected
+    if (selectedCard) {
+      setErrorMessage('Only one page needs to be turned for your Fal-e-Hafez reading.')
+      setTimeout(() => setErrorMessage(''), 3000)
+      return
+    }
     
     if (!flippedCards.includes(id)) {
+      setErrorMessage('') // Clear any previous error
       const newFlippedCards = [...flippedCards, id]
       setFlippedCards(newFlippedCards)
       
@@ -101,7 +109,7 @@ export default function FaleHafez() {
       }
 
       // Get Persian poem
-      const persianResponse = await fetch('/api/generate-reading', {
+      const persianPoemResponse = await fetch('/api/generate-reading', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -111,14 +119,14 @@ export default function FaleHafez() {
         }),
       });
 
-      const persianText = await persianResponse.text();
+      const persianPoemText = await persianPoemResponse.text();
       let persianPoem = '';
-      if (persianResponse.ok) {
+      if (persianPoemResponse.ok) {
         try {
-          const persianData = JSON.parse(persianText);
-          persianPoem = persianData?.text || '';
+          const persianPoemData = JSON.parse(persianPoemText);
+          persianPoem = persianPoemData?.text || '';
         } catch (e) {
-          console.error('Failed to parse Persian response');
+          console.error('Failed to parse Persian poem response');
         }
       }
 
@@ -160,14 +168,61 @@ export default function FaleHafez() {
         .split('[READMORE_SPLIT]')
         .map((text: string) => text.trim())
 
+      // Get card meaning for Persian reading
+      const cardData = cardMeanings[card.name as keyof typeof cardMeanings]
+      const cardMeaning = cardData?.persianMeaning || 'هدایت عرفانی'
+      const cardDescription = cardData?.persianDescription || 'این کارت نماد نیرویی معنوی در اساطیر ایران است.'
+
+      // Generate Persian reading
+      const persianResponse = await fetch('/api/generate-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `For the card "${card.name}" (${card.persianName}) with meaning "${cardMeaning}", provide a brief interpretation in Persian (Farsi) that connects this card to the Hafez verse below. Write in natural, flowing Persian that makes sense for Persian readers. Follow with [READMORE_SPLIT] and then a deeper spiritual interpretation in Persian.
+
+          Card meaning: ${cardDescription}
+
+          Hafez verse (English): "${hafezData.text}"
+
+          In the deeper interpretation:
+          1. Examine this Hafez verse in relation to the ${card.persianName} card
+          2. Show how the card illuminates the verse's meaning
+          3. Offer personal guidance in Persian mystical traditions
+          5. Keep a hopeful tone while acknowledging challenges
+
+          Keep the deeper interpretation around 300-400 characters in Persian.
+          IMPORTANT: Write naturally in Persian, using appropriate Persian mystical terminology.`,
+          temperature: 0.7,
+          max_tokens: 600
+        }),
+      });
+
+      const persianReadingText = await persianResponse.text();
+      let persianBriefInsight = `${card.persianName} به شما نشان می‌دهد که این شعر حافظ چه پیامی برای شما دارد.`
+      let persianDeeperWisdom = `این کارت نشان دهنده‌ی مرحله‌ای مهم در سفر معنوی شماست. ${card.persianName} با این شعر حافظ در هم می‌آمیزد تا راهنمای شما باشد. با پذیرش این حکمت و اعتماد به مسیر درونی، روشنایی در انتظار شماست.`
+
+      if (persianResponse.ok) {
+        try {
+          const persianReadingData = JSON.parse(persianReadingText);
+          if (persianReadingData?.text) {
+            const [brief, deeper] = persianReadingData.text
+              .split('[READMORE_SPLIT]')
+              .map((text: string) => text.trim())
+            if (brief) persianBriefInsight = brief
+            if (deeper) persianDeeperWisdom = deeper
+          }
+        } catch (e) {
+          console.error('Failed to parse Persian reading response')
+        }
+      }
+
       setReading({
         english: `✧ Poem from Hafez ✧\n${hafezData.text}\n\n✧ What This Page Reveals ✧\n${
           briefInsight
         }[READMORE_SPLIT]${deeperWisdom || 'Meditate on this verse to reveal its deeper meaning...'}`,
         persian: `✧ شعر حافظ ✧\n${persianPoem || hafezData.text}\n\n✧ آنچه این صفحه آشکار می‌کند ✧\n${
-          card.persianName} به شما نشان می‌دهد که این شعر حافظ چه پیامی برای شما دارد.
-        [READMORE_SPLIT]✧ تفسیر عمیق‌تر ✧\n
-        این کارت نشان دهنده‌ی مرحله‌ای مهم در سفر معنوی شماست. ${card.persianName} با این شعر حافظ در هم می‌آمیزد تا راهنمای شما باشد. با پذیرش این حکمت و اعتماد به مسیر درونی، روشنایی در انتظار شماست.`
+          persianBriefInsight
+        }[READMORE_SPLIT]✧ تفسیر عمیق‌تر ✧\n${persianDeeperWisdom}`
       })
     } catch (error) {
       console.error('Error:', error)
@@ -230,9 +285,16 @@ export default function FaleHafez() {
               </p>
             </div>
           ) : !selectedCard ? (
-            <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-              <span>Turn one page to discover your verse from Hafez</span>
-            </h2>
+            <div className="flex flex-col items-center gap-2">
+              <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
+                <span>Turn one page to discover your verse from Hafez</span>
+              </h2>
+              {errorMessage && (
+                <p className="text-red-300 text-sm animate-fade-in px-4 text-center">
+                  {errorMessage}
+                </p>
+              )}
+            </div>
           ) : null}
         </div>
 
@@ -261,7 +323,7 @@ export default function FaleHafez() {
                   }}
                   onClick={() => flipCard(card.id)}
                 >
-                  {/* Page back (card back) */}
+                  {/* Page back (card back) - show card image darkened */}
                   <div 
                     className="absolute inset-0 w-full h-full"
                     style={{
@@ -270,13 +332,26 @@ export default function FaleHafez() {
                       border: '2px solid rgba(254, 243, 199, 0.3)',
                       borderRadius: '4px',
                       boxShadow: '0 8px 16px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      overflow: 'hidden',
                     }}
                   >
-                    <div className="text-amber-200/60 text-sm text-center px-4">
-                      {index + 1}
+                    <Image
+                      src={card.image}
+                      alt={card.name}
+                      width={280}
+                      height={420}
+                      className="rounded-sm opacity-30"
+                      style={{
+                        objectFit: 'contain',
+                        width: '100%',
+                        height: '100%',
+                        filter: 'brightness(0.3)',
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-amber-200/40 text-sm text-center px-4">
+                        {index + 1}
+                      </div>
                     </div>
                   </div>
                   
@@ -400,12 +475,15 @@ export default function FaleHafez() {
                           {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
                         </div>
                         
-                        <TypewriterEffect 
-                          text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[1] || ''} 
-                          onComplete={() => setShowReadMorePersian(true)}
-                          delay={10}
-                          direction="rtl"
-                        />
+                        <div>
+                          <div className="text-amber-200/80 mb-2 text-sm">✧ آنچه این صفحه آشکار می‌کند ✧</div>
+                          <TypewriterEffect 
+                            text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[1] || ''} 
+                            onComplete={() => setShowReadMorePersian(true)}
+                            delay={10}
+                            direction="rtl"
+                          />
+                        </div>
                         
                         {showReadMorePersian && !showFullReadingPersian && (
                           <div className="flex justify-center">
@@ -448,9 +526,16 @@ export default function FaleHafez() {
           <div className="relative min-h-screen pt-24 px-4">
             {!selectedCard ? (
               <div className="flex flex-col items-center">
-                <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200 text-center px-4">
-                  Turn one page to discover your verse from Hafez
-                </p>
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 text-center px-4">
+                  <p className="text-amber-200">
+                    Turn one page to discover your verse from Hafez
+                  </p>
+                  {errorMessage && (
+                    <p className="text-red-300 text-sm animate-fade-in mt-2">
+                      {errorMessage}
+                    </p>
+                  )}
+                </div>
                 <div className="flex flex-col gap-4 mt-12">
                   {selectedCards.map((card, index) => (
                     <div
@@ -472,7 +557,7 @@ export default function FaleHafez() {
                         }}
                         onClick={() => flipCard(card.id)}
                       >
-                        {/* Page back */}
+                        {/* Page back - show card image darkened */}
                         <div 
                           className="absolute inset-0 w-full h-full"
                           style={{
@@ -481,13 +566,26 @@ export default function FaleHafez() {
                             border: '2px solid rgba(254, 243, 199, 0.3)',
                             borderRadius: '4px',
                             boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            overflow: 'hidden',
                           }}
                         >
-                          <div className="text-amber-200/60 text-sm text-center px-4">
-                            Page {index + 1}
+                          <Image
+                            src={card.image}
+                            alt={card.name}
+                            width={280}
+                            height={420}
+                            className="rounded-sm opacity-30"
+                            style={{
+                              objectFit: 'contain',
+                              width: '100%',
+                              height: '100%',
+                              filter: 'brightness(0.3)',
+                            }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-amber-200/40 text-sm text-center px-4">
+                              Page {index + 1}
+                            </div>
                           </div>
                         </div>
                         
@@ -626,12 +724,15 @@ export default function FaleHafez() {
                               {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
                             </div>
                             
-                            <TypewriterEffect 
-                              text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[1] || ''} 
-                              onComplete={() => setShowReadMorePersian(true)}
-                              delay={10}
-                              direction="rtl"
-                            />
+                            <div>
+                              <div className="text-amber-200/80 mb-2 text-sm">✧ آنچه این صفحه آشکار می‌کند ✧</div>
+                              <TypewriterEffect 
+                                text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ آنچه این صفحه آشکار می‌کند ✧')[1] || ''} 
+                                onComplete={() => setShowReadMorePersian(true)}
+                                delay={10}
+                                direction="rtl"
+                              />
+                            </div>
 
                             {showReadMorePersian && !showFullReadingPersian && (
                               <div className="flex justify-center">
