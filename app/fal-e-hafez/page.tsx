@@ -386,7 +386,7 @@ export default function FaleHafez() {
                       <div className="text-amber-100 space-y-6">
                         {/* Static Hafez poem - prominent but not oversized */}
                         <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
-                          {reading.english.split('[READMORE_SPLIT]')[0].split('✧ Hafez Interpretation ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
+                          {reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''}
                         </div>
                         
                         {/* Brief Insight - layman's interpretation */}
@@ -445,7 +445,7 @@ export default function FaleHafez() {
                       <div className="text-amber-100 space-y-6">
                         {/* Static Hafez poem - prominent but not oversized */}
                         <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20" dir="rtl">
-                          {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر حافظ ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
+                          {reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''}
                         </div>
                         
                         {/* Brief Insight - simple interpretation */}
@@ -631,7 +631,7 @@ export default function FaleHafez() {
                           <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
                             {/* Poem - prominent but not oversized */}
                             <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
-                              {reading.english.split('[READMORE_SPLIT]')[0].split('✧ Hafez Interpretation ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
+                              {reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''}
                             </div>
                             
                             {/* Brief Insight - layman's interpretation */}
@@ -687,7 +687,7 @@ export default function FaleHafez() {
                           <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
                             {/* Poem - prominent but not oversized */}
                             <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4" dir="rtl">
-                              {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر حافظ ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
+                              {reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''}
                             </div>
                             
                             {/* Brief Insight - simple interpretation */}
