@@ -30,48 +30,54 @@ export async function POST(req: Request) {
 Your interpretations should be authentic and resonate with Persian/Iranian readers.`;
 
     const userPrompt = language === 'persian'
-      ? `این شعر حافظ را تفسیر کنید:
+      ? `این شعر حافظ را تفسیر کنید. مهم: تفسیر باید کاملاً بر شعر حافظ متمرکز باشد و کارت فقط در پایان به عنوان مکمل ذکر شود.
 
 "${verse}"
 
 لطفاً تفسیر خود را به این صورت ارائه دهید:
-1. تفسیر سطح بالا حافظ (بخش اول):
-   - تفسیر کلی و سطح بالا از شعر
-   - معانی اصلی و پیام کلیدی
-   - راهنمایی اولیه
 
-2. حکمت عرفانی عمیق‌تر (بخش دوم):
+بخش اول - تفسیر سطح بالا حافظ (شروع کنید با این، بدون ذکر کارت):
+   - تفسیر کلی و سطح بالا از شعر حافظ
+   - معانی اصلی و پیام کلیدی شعر
+   - راهنمایی اولیه بر اساس شعر
+   - هیچ اشاره‌ای به کارت نکنید در این بخش
+
+بخش دوم - حکمت عرفانی عمیق‌تر (بعد از [READMORE_SPLIT]):
    - معانی عرفانی صوفیانه عمیق‌تر (نمادهای شراب، معشوق، میخانه، ساقی)
    - بافت فرهنگی و تاریخی سنتی ایرانی
    - راهنمایی شخصی و کاربرد در زندگی
    - اهمیت تاریخی و معنوی
+   - هنوز هیچ اشاره‌ای به کارت نکنید
 
-3. اهمیت کارت ${cardPersianName} (بخش آخر، مکمل):
+بخش سوم - اهمیت کارت ${cardPersianName} (فقط در پایان، بعد از [CARD_CONNECTION]):
    - در پایان، به طور خلاصه (1-2 جمله) اشاره کنید که این کارت چگونه به عنوان مکمل این تفسیر عمل می‌کند
    - کارت باید مکمل باشد، نه بخش اصلی
 
-فرمت: [تفسیر سطح بالا حافظ][READMORE_SPLIT][حکمت عرفانی عمیق‌تر][CARD_CONNECTION][اهمیت کارت به عنوان مکمل]`
-      : `Interpret this Hafez verse:
+فرمت دقیق: [تفسیر سطح بالا حافظ - بدون ذکر کارت][READMORE_SPLIT][حکمت عرفانی عمیق‌تر - بدون ذکر کارت][CARD_CONNECTION][اهمیت کارت به عنوان مکمل]`
+      : `Interpret this Hafez verse. IMPORTANT: The interpretation must focus entirely on the Hafez verse, and the card should only be mentioned at the very end as a supplement.
 
 "${verse}"
 
 Please structure your interpretation as follows:
-1. HIGH-LEVEL Hafez Interpretation (first section):
-   - High-level, general interpretation of the verse
-   - Main meanings and key message
-   - Initial guidance
 
-2. Deeper Mystical Wisdom (second section):
+FIRST SECTION - High-level Hafez Interpretation (START HERE, do NOT mention the card):
+   - High-level, general interpretation of the Hafez verse
+   - Main meanings and key message of the verse
+   - Initial guidance based on the verse
+   - DO NOT mention the card in this section
+
+SECOND SECTION - Deeper Mystical Wisdom (after [READMORE_SPLIT]):
    - Deeper Sufi mystical meanings (wine as divine love, beloved as divine presence, tavern as spiritual freedom, cupbearer as bringer of wisdom)
    - Traditional Persian cultural and historical context
    - Personal guidance and life application
    - Historical and spiritual significance
+   - STILL do NOT mention the card in this section
 
-3. Card Significance (last section, supplement):
-   - At the end, briefly (1-2 sentences) mention how the ${cardName} card serves as a supplement to this interpretation
+THIRD SECTION - Card Significance (ONLY at the end, after [CARD_CONNECTION]):
+   - At the very end, briefly (1-2 sentences) mention how the ${cardName} card serves as a supplement to this interpretation
    - The card should complement, not be the main focus
 
-Format: [High-level Hafez interpretation][READMORE_SPLIT][Deeper mystical wisdom][CARD_CONNECTION][Card significance as supplement]`;
+EXACT FORMAT: [High-level Hafez interpretation - NO card mention][READMORE_SPLIT][Deeper mystical wisdom - NO card mention][CARD_CONNECTION][Card significance as supplement]`;
 
     const response = await openai.chat.completions.create({
       messages: [
