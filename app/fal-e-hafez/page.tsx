@@ -393,7 +393,7 @@ export default function FaleHafez() {
                         <div>
                           <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
                           <TypewriterEffect 
-                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.trim() || ''} 
+                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.replace(/\*\*/g, '').replace(/\*Brief Insight \(Layman's Interpretation\):\*/gi, '').trim() || ''} 
                             onComplete={() => setShowReadMoreEnglish(true)}
                             isTitle={false}
                             delay={10}

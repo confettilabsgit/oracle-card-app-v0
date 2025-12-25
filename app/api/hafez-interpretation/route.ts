@@ -43,6 +43,8 @@ Your interpretations should be authentic and resonate with Persian/Iranian reade
    - معانی اصلی و پیام کلیدی به زبان ساده
    - راهنمایی اولیه و کاربردی
    - بدون استفاده از اصطلاحات پیچیده عرفانی
+   - بدون تکرار عنوان یا استفاده از فرمت‌های نشانه‌گذاری
+   - فقط محتوای تفسیر را بنویسید
 
 بخش دوم - تفسیر عمیق و علمی (بعد از [READMORE_SPLIT]):
    - تفسیر عمیق بر اساس منابع معتبر و سنتی
@@ -52,19 +54,22 @@ Your interpretations should be authentic and resonate with Persian/Iranian reade
    - راهنمایی شخصی و کاربرد در زندگی
    - اهمیت تاریخی و معنوی
 
-فرمت دقیق: [تفسیر ساده و قابل فهم][READMORE_SPLIT][تفسیر عمیق و علمی]`
+فرمت دقیق: [تفسیر ساده و قابل فهم - فقط محتوا، بدون عنوان یا نشانه‌گذاری][READMORE_SPLIT][تفسیر عمیق و علمی]`
       : `Interpret this Hafez verse:
 
 "${verse}"
 
 Please structure your interpretation as follows:
 
-FIRST SECTION - Brief Insight (Layman's Interpretation):
+FIRST SECTION - Brief Insight:
    - Simple, accessible interpretation of the Hafez verse
    - Main meanings and key message in plain language
    - Initial guidance that anyone can understand
    - Avoid complex mystical terminology
    - Focus on what the verse means in everyday terms
+   - DO NOT repeat the title "Brief Insight" or "Layman's Interpretation" in the text
+   - DO NOT use markdown formatting like asterisks or bold
+   - Write only the interpretation content, nothing else
 
 SECOND SECTION - Deeper Insight (after [READMORE_SPLIT]):
    - Deep scholarly interpretation drawing from authentic traditional sources
@@ -74,7 +79,7 @@ SECOND SECTION - Deeper Insight (after [READMORE_SPLIT]):
    - Personal guidance and life application
    - Historical and spiritual significance
 
-EXACT FORMAT: [Layman's interpretation][READMORE_SPLIT][Deep scholarly interpretation from authentic sources]`;
+EXACT FORMAT: [Interpretation content only - no title, no markdown][READMORE_SPLIT][Deep scholarly interpretation from authentic sources]`;
 
     const response = await openai.chat.completions.create({
       messages: [
