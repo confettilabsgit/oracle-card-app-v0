@@ -91,7 +91,7 @@ export default function NavMenu() {
           onMouseOver={e => e.currentTarget.style.opacity = '0.8'}
           onMouseOut={e => e.currentTarget.style.opacity = '1'}
         >
-          Persian Oracle
+          The Persian Oracle
         </Link>
         <Link 
           href="/fal-e-hafez"
@@ -149,7 +149,7 @@ export default function NavMenu() {
               </button>
             </div>
             <h2 style={{ color: goldColor, marginBottom: '1.5rem', fontSize: '1.5rem' }}>
-              The Oracle of Hafez
+              The Persian Oracle
             </h2>
             <div style={{ color: 'white', marginBottom: '1.5rem', lineHeight: '1.8' }}>
               <p style={{ marginBottom: '1rem' }}>

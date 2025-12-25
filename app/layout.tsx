@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 const notoSansArabic = Noto_Sans_Arabic({ subsets: ['arabic'] })
 
 export const metadata: Metadata = {
-  title: 'Persian Oracle Cards',
+  title: 'The Persian Oracle',
   description: 'Unveil what the Persian realm holds for you',
 }
 

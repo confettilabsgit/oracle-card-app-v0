@@ -24,8 +24,6 @@ const cards = [
 ]
 
 export default function FaleHafez() {
-  const [selectedCards, setSelectedCards] = useState<typeof cards>([])
-  const [flippedCards, setFlippedCards] = useState<number[]>([])
   const [selectedCard, setSelectedCard] = useState<typeof cards[0] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [reading, setReading] = useState({ english: '', persian: '' })
@@ -35,17 +33,12 @@ export default function FaleHafez() {
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [isBookOpen, setIsBookOpen] = useState(false)
-  const [isFlippingPages, setIsFlippingPages] = useState(false)
-  const [currentPageIndex, setCurrentPageIndex] = useState(0)
-  const [finalCardIndex, setFinalCardIndex] = useState<number | null>(null)
+  const [isCoverFlipped, setIsCoverFlipped] = useState(false)
 
   useEffect(() => {
-    // Initialize book in closed state
-    setIsBookOpen(false)
-    setIsFlippingPages(false)
-    setCurrentPageIndex(0)
-    setFinalCardIndex(null)
+    // Randomly select a card on mount
+    const randomCard = cards[Math.floor(Math.random() * cards.length)]
+    setSelectedCard(randomCard)
   }, [])
 
   useEffect(() => {
@@ -59,50 +52,29 @@ export default function FaleHafez() {
     return () => window.removeEventListener('resize', checkIsDesktop)
   }, [])
 
-  const shuffleCards = () => {
-    const shuffled = [...cards].sort(() => 0.5 - Math.random())
-    setSelectedCards(shuffled.slice(0, 3))
-    setFlippedCards([])
-    setSelectedCard(null)
-    setReading({ english: '', persian: '' })
+  const flipCover = () => {
+    if (isCoverFlipped || !selectedCard) return
+    
+    setIsCoverFlipped(true)
     setErrorMessage('')
-    setIsBookOpen(false)
-    setIsFlippingPages(false)
-    setCurrentPageIndex(0)
-    setFinalCardIndex(null)
+    setIsLoading(true)
+    generateReading(selectedCard)
   }
 
-  const openBook = () => {
-    if (isBookOpen || isFlippingPages) return
+  const handleNewReading = () => {
+    // Reset all states
+    setShowReadMoreEnglish(false)
+    setShowReadMorePersian(false)
+    setShowFullReadingEnglish(false)
+    setShowFullReadingPersian(false)
+    setReading({ english: '', persian: '' })
+    setIsCoverFlipped(false)
+    setErrorMessage('')
     
-    setIsBookOpen(true)
-    setIsFlippingPages(true)
-    setCurrentPageIndex(0)
-    
-    // Randomly select final card (0-11)
-    const randomCardIndex = Math.floor(Math.random() * cards.length)
-    setFinalCardIndex(randomCardIndex)
-    
-    // Animate through 50+ pages with 3D flip effect
-    const totalPages = 55 // 50+ pages as specified
-    let pageCount = 0
-    const flipInterval = setInterval(() => {
-      pageCount++
-      setCurrentPageIndex(pageCount)
-      
-      if (pageCount >= totalPages) {
-        clearInterval(flipInterval)
-        setIsFlippingPages(false)
-        // Select the card and generate reading
-        const selectedCard = cards[randomCardIndex]
-        setSelectedCard(selectedCard)
-        setIsLoading(true)
-        generateReading(selectedCard)
-      }
-    }, 70) // ~70ms per page for rapid flipping effect
+    // Select a new random card
+    const randomCard = cards[Math.floor(Math.random() * cards.length)]
+    setSelectedCard(randomCard)
   }
-
-  // flipCard is no longer used - book opening replaces it
 
   const generateReading = async (card: typeof cards[0]) => {
     // Reset reading reveal states
@@ -220,26 +192,6 @@ export default function FaleHafez() {
     }
   }
 
-  const handleNewReading = () => {
-    // Reset all reading states
-    setShowReadMoreEnglish(false)
-    setShowReadMorePersian(false)
-    setShowFullReadingEnglish(false)
-    setShowFullReadingPersian(false)
-    setReading({ english: '', persian: '' });
-    setSelectedCard(null)
-    
-    // Close the book
-    setIsBookOpen(false)
-    setIsFlippingPages(false)
-    setCurrentPageIndex(0)
-    setFinalCardIndex(null)
-    
-    setTimeout(() => {
-      setFlippedCards([]);
-      shuffleCards()
-    }, 600);
-  };
 
   return (
     <main className="relative min-h-screen">
@@ -263,15 +215,11 @@ export default function FaleHafez() {
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
           
           {/* Show New Reading button only after loading is complete */}
-          {selectedCard && !isLoading ? (
+          {isCoverFlipped && !isLoading ? (
             <div className="flex flex-col items-center gap-6">
               <button 
                 onClick={handleNewReading}
-                className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
-                         shadow-[0_0_15px_rgba(88,28,135,0.3)]
-                         border border-purple-500/30 hover:border-purple-400/40
-                         hover:bg-purple-800/40 
-                         transition-all"
+                className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg shadow-[0_0_15px_rgba(88,28,135,0.3)] border border-purple-500/30 hover:border-purple-400/40 hover:bg-purple-800/40 transition-all"
               >
                 New Reading
               </button>
@@ -279,10 +227,10 @@ export default function FaleHafez() {
                 Flip the page to reveal your Hafez verse and fortune
               </p>
             </div>
-          ) : !isBookOpen ? (
+          ) : !isCoverFlipped ? (
             <div className="flex flex-col items-center gap-2">
               <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-                <span>Open the book to reveal your Hafez verse and fortune</span>
+                <span>Flip the page to reveal your Hafez verse and fortune</span>
               </h2>
             </div>
           ) : null}
@@ -299,157 +247,70 @@ export default function FaleHafez() {
 
         {/* Desktop Layout */}
         <div className="hidden md:flex flex-col items-center w-full">
-          {/* Book Interface */}
-          <div className="mb-16" style={{ perspective: '1200px' }}>
-            {!isBookOpen ? (
-              /* Closed Book Cover */
-              <div
-                className="cursor-pointer relative"
-                style={{
-                  width: '400px',
-                  height: '560px',
-                  transformStyle: 'preserve-3d',
-                  perspective: '1200px',
-                }}
-                onClick={openBook}
-              >
+          {/* Cover and Card Container */}
+          <div className="relative mb-16" style={{ perspective: '1200px' }}>
+            <div
+              className="relative"
+              style={{
+                width: '400px',
+                height: '560px',
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              {/* Card underneath (revealed when cover flips) */}
+              {selectedCard && (
                 <div
-                  className="relative w-full h-full transition-all duration-300 hover:scale-105"
+                  className="absolute inset-0"
                   style={{
-                    transformStyle: 'preserve-3d',
+                    transform: isCoverFlipped ? 'scale(1)' : 'scale(0.95)',
+                    opacity: isCoverFlipped ? 1 : 0,
+                    transition: 'opacity 0.3s ease-in-out 0.4s, transform 0.3s ease-in-out 0.4s',
+                    zIndex: 1,
                   }}
                 >
-                  {/* Book Cover Front */}
-                  <div
-                    className="absolute inset-0 w-full h-full"
-                    style={{
-                      backfaceVisibility: 'hidden',
-                      borderRadius: '8px',
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 3px rgba(254, 243, 199, 0.2)',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <Image
-                      src="/cards/cardback.png"
-                      alt="Book Cover"
-                      fill
-                      className="object-cover"
-                    />
-                    {/* Book Spine Effect */}
-                    <div
-                      className="absolute left-0 top-0 bottom-0 w-8"
-                      style={{
-                        background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
-                      }}
-                    />
-                    {/* Title Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-amber-200/90 text-xl font-serif italic drop-shadow-lg">
-                        Divan-e-Hafez
-                      </div>
-                    </div>
+                  <Image
+                    src={selectedCard.image}
+                    alt={selectedCard.name}
+                    fill
+                    className="object-contain rounded-lg"
+                  />
+                  <div className="absolute bottom-2 left-2 right-2 text-center">
+                    <h3 className="text-white text-sm font-semibold drop-shadow-lg">{selectedCard.name}</h3>
+                    <p className="text-white/80 text-xs drop-shadow-lg">{selectedCard.persianName}</p>
                   </div>
                 </div>
-              </div>
-            ) : (
-              /* Open Book with Page Flipping */
+              )}
+              
+              {/* Cover (flips to the left and disappears) */}
               <div
-                className="relative"
+                className={`absolute inset-0 cursor-pointer ${isCoverFlipped ? 'pointer-events-none' : ''}`}
                 style={{
-                  width: '400px',
-                  height: '560px',
+                  transform: isCoverFlipped 
+                    ? 'translateX(-100%) rotateY(-90deg) scale(0.8)' 
+                    : 'translateX(0) rotateY(0deg) scale(1)',
+                  transformOrigin: 'left center',
                   transformStyle: 'preserve-3d',
+                  transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out',
+                  opacity: isCoverFlipped ? 0 : 1,
+                  zIndex: 2,
                 }}
+                onClick={flipCover}
               >
-                {/* Book Pages Container with 3D flip effect */}
-                <div className="relative w-full h-full" style={{ perspective: '2000px', perspectiveOrigin: 'center center' }}>
-                  {isFlippingPages ? (
-                    /* 3D Page Flip Animation - Realistic page turning */
-                    <div
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        transformStyle: 'preserve-3d',
-                      }}
-                    >
-                      {/* Current page being flipped */}
-                      <div
-                        className="absolute inset-0 w-full h-full"
-                        style={{
-                          transformStyle: 'preserve-3d',
-                          transformOrigin: 'left center',
-                          // Create realistic page flip: pages rotate from left edge
-                          transform: `rotateY(${Math.min(currentPageIndex * 3.6, 180)}deg)`,
-                          transition: 'transform 0.07s linear',
-                        }}
-                      >
-                        {/* Front of page */}
-                        <div
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            background: currentPageIndex % 2 === 0 
-                              ? 'linear-gradient(90deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
-                              : 'linear-gradient(90deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
-                            border: '1px solid rgba(139, 69, 19, 0.2)',
-                            borderRadius: '2px',
-                            boxShadow: 'inset 4px 0 10px rgba(0,0,0,0.15), 8px 0 20px rgba(0,0,0,0.3)',
-                          }}
-                        >
-                          {/* Subtle page texture */}
-                          <div 
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(139, 69, 19, 0.02) 3px, rgba(139, 69, 19, 0.02) 6px)',
-                            }}
-                          />
-                          {/* Page number - very subtle */}
-                          <div className="absolute bottom-4 right-4 text-amber-900/8 text-xs font-serif">
-                            {currentPageIndex}
-                          </div>
-                        </div>
-                        {/* Back of page (when flipped) */}
-                        <div
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            transform: 'rotateY(180deg)',
-                            background: 'linear-gradient(90deg, #d4c4b0 0%, #e8d5c4 50%, #f5e6d3 100%)',
-                            border: '1px solid rgba(139, 69, 19, 0.2)',
-                            borderRadius: '2px',
-                            boxShadow: 'inset -4px 0 10px rgba(0,0,0,0.15), -8px 0 20px rgba(0,0,0,0.3)',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ) : finalCardIndex !== null ? (
-                    /* Final Card Page */
-                    <div
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        borderRadius: '4px',
-                        overflow: 'hidden',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
-                      }}
-                    >
-                      <Image
-                        src={cards[finalCardIndex].image}
-                        alt={cards[finalCardIndex].name}
-                        fill
-                        className="object-contain"
-                      />
-                      <div className="absolute bottom-2 left-2 right-2 text-center">
-                        <h3 className="text-white text-sm font-semibold drop-shadow-lg">{cards[finalCardIndex].name}</h3>
-                        <p className="text-white/80 text-xs drop-shadow-lg">{cards[finalCardIndex].persianName}</p>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+                <Image
+                  src="/cards/cardback.png"
+                  alt="Book Cover"
+                  fill
+                  className="object-cover rounded-lg"
+                  style={{
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                  }}
+                />
               </div>
-            )}
+            </div>
           </div>
 
           {/* Reading section */}
-          {selectedCard && (
+          {isCoverFlipped && selectedCard && (
             <div className="w-[95vw] md:max-w-3xl animate-fade-in">
               <Tabs defaultValue="english" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
@@ -598,290 +459,185 @@ export default function FaleHafez() {
                 </p>
               </div>
             )}
-            {!isBookOpen ? (
-              <div className="flex flex-col items-center w-full">
-                <p className="text-amber-200 text-center px-4 mb-8 text-lg">
-                  Open the book to reveal your Hafez verse and fortune
-                </p>
-                {/* Book Cover - Mobile */}
-                <div
-                  className="relative mx-auto cursor-pointer"
-                  style={{
-                    width: 'min(300px, 85vw)',
-                    aspectRatio: '5/7',
-                  }}
-                  onClick={openBook}
-                >
-                  <div className="relative w-full h-full">
+            
+            {/* Cover and Card Container - Mobile */}
+            <div className="relative mb-8" style={{ perspective: '1000px' }}>
+              <div
+                className="relative mx-auto"
+                style={{
+                  width: 'min(300px, 85vw)',
+                  aspectRatio: '5/7',
+                  transformStyle: 'preserve-3d',
+                }}
+              >
+                {/* Card underneath (revealed when cover flips) */}
+                {selectedCard && (
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      transform: isCoverFlipped ? 'scale(1)' : 'scale(0.95)',
+                      opacity: isCoverFlipped ? 1 : 0,
+                      transition: 'opacity 0.3s ease-in-out 0.4s, transform 0.3s ease-in-out 0.4s',
+                      zIndex: 1,
+                    }}
+                  >
                     <Image
-                      src="/cards/cardback.png"
-                      alt="Book Cover"
+                      src={selectedCard.image}
+                      alt={selectedCard.name}
                       fill
                       className="object-contain rounded-lg"
                     />
-                    {/* Book Spine Effect */}
-                    <div
-                      className="absolute left-0 top-0 bottom-0 w-6"
-                      style={{
-                        background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
-                      }}
-                    />
-                    {/* Title Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-amber-200/90 text-lg font-serif italic drop-shadow-lg">
-                        Divan-e-Hafez
-                      </div>
+                    <div className="absolute bottom-2 left-2 right-2 text-center">
+                      <h3 className="text-white text-sm font-semibold drop-shadow-lg">{selectedCard.name}</h3>
+                      <p className="text-white/80 text-xs drop-shadow-lg">{selectedCard.persianName}</p>
                     </div>
                   </div>
+                )}
+                
+                {/* Cover (flips to the left and disappears) */}
+                <div
+                  className={`absolute inset-0 cursor-pointer ${isCoverFlipped ? 'pointer-events-none' : ''}`}
+                  style={{
+                    transform: isCoverFlipped 
+                      ? 'translateX(-100%) rotateY(-90deg) scale(0.8)' 
+                      : 'translateX(0) rotateY(0deg) scale(1)',
+                    transformOrigin: 'left center',
+                    transformStyle: 'preserve-3d',
+                    transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out',
+                    opacity: isCoverFlipped ? 0 : 1,
+                    zIndex: 2,
+                  }}
+                  onClick={flipCover}
+                >
+                  <Image
+                    src="/cards/cardback.png"
+                    alt="Book Cover"
+                    fill
+                    className="object-contain rounded-lg"
+                  />
                 </div>
               </div>
-            ) : (
+            </div>
+            
+            {!isCoverFlipped && (
               <div className="flex flex-col items-center w-full">
-                {/* Book Pages - Mobile */}
-                <div
-                  className="relative mx-auto"
-                  style={{
-                    width: 'min(300px, 85vw)',
-                    aspectRatio: '5/7',
-                  }}
-                >
-                  {isFlippingPages ? (
-                    /* 3D Page Flip Animation - Mobile - Realistic page turning */
-                    <div
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        transformStyle: 'preserve-3d',
-                        perspective: '1500px',
-                      }}
-                    >
-                      {/* Current page being flipped */}
-                      <div
-                        className="absolute inset-0 w-full h-full"
-                        style={{
-                          transformStyle: 'preserve-3d',
-                          transformOrigin: 'left center',
-                          // Create realistic page flip: pages rotate from left edge
-                          transform: `rotateY(${Math.min(currentPageIndex * 3.6, 180)}deg)`,
-                          transition: 'transform 0.07s linear',
-                        }}
-                      >
-                        {/* Front of page */}
-                        <div
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            background: currentPageIndex % 2 === 0 
-                              ? 'linear-gradient(90deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
-                              : 'linear-gradient(90deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
-                            border: '1px solid rgba(139, 69, 19, 0.2)',
-                            borderRadius: '2px',
-                            boxShadow: 'inset 4px 0 10px rgba(0,0,0,0.15), 8px 0 20px rgba(0,0,0,0.3)',
-                          }}
-                        >
-                          {/* Subtle page texture */}
-                          <div 
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(139, 69, 19, 0.02) 3px, rgba(139, 69, 19, 0.02) 6px)',
-                            }}
-                          />
-                          {/* Page number - very subtle */}
-                          <div className="absolute bottom-4 right-4 text-amber-900/8 text-xs font-serif">
-                            {currentPageIndex}
-                          </div>
-                        </div>
-                        {/* Back of page (when flipped) */}
-                        <div
-                          className="absolute inset-0 w-full h-full"
-                          style={{
-                            backfaceVisibility: 'hidden',
-                            transform: 'rotateY(180deg)',
-                            background: 'linear-gradient(90deg, #d4c4b0 0%, #e8d5c4 50%, #f5e6d3 100%)',
-                            border: '1px solid rgba(139, 69, 19, 0.2)',
-                            borderRadius: '2px',
-                            boxShadow: 'inset -4px 0 10px rgba(0,0,0,0.15), -8px 0 20px rgba(0,0,0,0.3)',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ) : finalCardIndex !== null ? (
-                    /* Final Card Page */
-                    <div
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        borderRadius: '4px',
-                        overflow: 'hidden',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
-                      }}
-                    >
-                      <Image
-                        src={cards[finalCardIndex].image}
-                        alt={cards[finalCardIndex].name}
-                        fill
-                        className="object-contain"
-                      />
-                      <div className="absolute bottom-2 left-2 right-2 text-center">
-                        <h3 className="text-white text-sm font-semibold drop-shadow-lg">{cards[finalCardIndex].name}</h3>
-                        <p className="text-white/80 text-xs drop-shadow-lg">{cards[finalCardIndex].persianName}</p>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
+                <p className="text-amber-200 text-center px-4 mb-8 text-lg">
+                  Flip the page to reveal your Hafez verse and fortune
+                </p>
               </div>
             )}
             
-            {selectedCard && (
-              <div className="absolute top-0 left-0 right-0 animate-fade-in">
-                <div className="flex-1 flex flex-col">
-                  {/* Selected card preview */}
-                  {selectedCard && (
-                    <div className="flex justify-center mb-4">
-                      <div className="w-32 h-48 rounded-lg overflow-hidden border border-amber-200/20">
-                        <Image 
-                          src={selectedCard.image} 
-                          alt={selectedCard.name}
-                          width={128}
-                          height={192}
-                          className="object-cover"
-                        />
-                      </div>
-                    </div>
-                  )}
+            {/* Reading section for mobile */}
+            {isCoverFlipped && selectedCard && (
+              <div className="w-full animate-fade-in">
+                <Tabs defaultValue="english" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30 mb-1">
+                    <TabsTrigger 
+                      value="english" 
+                      className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                    >
+                      English Reading
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="persian" 
+                      className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                    >
+                      فال فارسی
+                    </TabsTrigger>
+                  </TabsList>
                   
-                  {/* Reading content */}
-                  <div className="flex-1">
-                    <Tabs defaultValue="english" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 
-                        rounded-t-lg border border-purple-500/30 mb-1"
-                      >
-                        <TabsTrigger 
-                          value="english" 
-                          className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-                        >
-                          English Reading
-                        </TabsTrigger>
-                        <TabsTrigger 
-                          value="persian" 
-                          className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
-                        >
-                          فال فارسی
-                        </TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="english">
-                        {isLoading ? (
-                          <div className="flex flex-col items-center justify-center gap-4 py-12">
-                            <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                            <p className="text-purple-300 text-lg text-center">
-                              ✨ The ancient verses are revealing themselves... ✨
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
-                            {/* Poem - prominent but not oversized */}
-                            <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
-                              {reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''}
-                            </div>
-                            
-                            {/* Brief Insight - layman's interpretation */}
-                            <div>
-                              <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
-                              <TypewriterEffect 
-                                text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.trim() || ''} 
-                                onComplete={() => setShowReadMoreEnglish(true)}
-                                isTitle={false}
-                                delay={10}
-                              />
-                            </div>
-                            
-                            {showReadMoreEnglish && !showFullReadingEnglish && (
-                              <div className="mt-8 flex justify-center animate-fade-in">
-                                <button 
-                                  onClick={() => setShowFullReadingEnglish(true)}
-                                  className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 
-                                           border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
-                                           transition-all duration-300
-                                           shadow-[0_0_15px_rgba(88,28,135,0.2)]
-                                           hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]
-                                           hover:bg-[#1a1033]"
-                                >
-                                  ✧ Reveal deeper meaning ✧
-                                </button>
-                              </div>
-                            )}
-                            
-                            {showFullReadingEnglish && (
-                              <div className="animate-fade-in mt-6">
-                                <div className="text-amber-200/80 mb-2 text-sm">✧ Deeper Insight ✧</div>
-                                <TypewriterEffect 
-                                  text={reading.english.split('[READMORE_SPLIT]')[1]?.trim() || ''} 
-                                  isTitle={false}
-                                  delay={15}
-                                />
-                              </div>
-                            )}
+                  <TabsContent value="english">
+                    {isLoading ? (
+                      <div className="flex flex-col items-center justify-center gap-4 py-12">
+                        <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                        <p className="text-purple-300 text-lg text-center">
+                          The ancient verses are revealing themselves...
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 pt-2 pb-8 rounded-b-lg">
+                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
+                          {reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''}
+                        </div>
+                        <div>
+                          <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
+                          <TypewriterEffect 
+                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.trim() || ''} 
+                            onComplete={() => setShowReadMoreEnglish(true)}
+                            isTitle={false}
+                            delay={10}
+                          />
+                        </div>
+                        {showReadMoreEnglish && !showFullReadingEnglish && (
+                          <div className="mt-8 flex justify-center animate-fade-in">
+                            <button 
+                              onClick={() => setShowFullReadingEnglish(true)}
+                              className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 border border-amber-200/20 hover:border-amber-100/30 rounded-lg transition-all duration-300 shadow-[0_0_15px_rgba(88,28,135,0.2)] hover:shadow-[0_0_20px_rgba(88,28,135,0.3)] hover:bg-[#1a1033]"
+                            >
+                              ✧ Reveal deeper meaning ✧
+                            </button>
                           </div>
                         )}
-                      </TabsContent>
-                      
-                      <TabsContent value="persian" dir="rtl">
-                        {isLoading ? (
-                          <div className="flex flex-col items-center justify-center gap-4 py-12">
-                            <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                            <p className="text-purple-300 text-lg text-center">
-                              اشعار کهن در حال آشکار شدن هستند...
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
-                            {/* Poem - prominent but not oversized */}
-                            <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4" dir="rtl">
-                              {reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''}
-                            </div>
-                            
-                            {/* Brief Insight - simple interpretation */}
-                            <div>
-                              <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
-                              <TypewriterEffect 
-                                text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
-                                onComplete={() => setShowReadMorePersian(true)}
-                                delay={10}
-                                direction="rtl"
-                              />
-                            </div>
-
-                            {showReadMorePersian && !showFullReadingPersian && (
-                              <div className="flex justify-center">
-                                <button 
-                                  onClick={() => setShowFullReadingPersian(true)}
-                                  className="px-6 py-2 text-amber-200 hover:text-amber-100 
-                                           border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
-                                           transition-all duration-300 animate-fade-in
-                                           bg-[#1a1033]/80 hover:bg-[#1a1033]
-                                           shadow-[0_0_15px_rgba(88,28,135,0.2)]
-                                           hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]"
-                                >
-                                  ✧ مکاشفه عمیق‌تر ✧
-                                </button>
-                              </div>
-                            )}
-                            
-                            {showFullReadingPersian && (
-                              <div className="animate-fade-in">
-                                <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر عمیق ✧</div>
-                                <TypewriterEffect 
-                                  text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 
-                                  delay={10}
-                                  direction="rtl"
-                                />
-                              </div>
-                            )}
+                        {showFullReadingEnglish && (
+                          <div className="animate-fade-in mt-6">
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ Deeper Insight ✧</div>
+                            <TypewriterEffect 
+                              text={reading.english.split('[READMORE_SPLIT]')[1]?.trim() || ''} 
+                              isTitle={false}
+                              delay={15}
+                            />
                           </div>
                         )}
-                      </TabsContent>
-                    </Tabs>
-                  </div>
-                </div>
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="persian" dir="rtl">
+                    {isLoading ? (
+                      <div className="flex flex-col items-center justify-center gap-4 py-12">
+                        <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                        <p className="text-purple-300 text-lg text-center">
+                          اشعار کهن در حال آشکار شدن هستند...
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 pt-2 pb-8 rounded-b-lg text-right">
+                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4" dir="rtl">
+                          {reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''}
+                        </div>
+                        <div>
+                          <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
+                          <TypewriterEffect 
+                            text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
+                            onComplete={() => setShowReadMorePersian(true)}
+                            delay={10}
+                            direction="rtl"
+                          />
+                        </div>
+                        {showReadMorePersian && !showFullReadingPersian && (
+                          <div className="flex justify-center">
+                            <button 
+                              onClick={() => setShowFullReadingPersian(true)}
+                              className="px-6 py-2 text-amber-200 hover:text-amber-100 border border-amber-200/20 hover:border-amber-100/30 rounded-lg transition-all duration-300 animate-fade-in bg-[#1a1033]/80 hover:bg-[#1a1033] shadow-[0_0_15px_rgba(88,28,135,0.2)] hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]"
+                            >
+                              ✧ مکاشفه عمیق‌تر ✧
+                            </button>
+                          </div>
+                        )}
+                        {showFullReadingPersian && (
+                          <div className="animate-fade-in">
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر عمیق ✧</div>
+                            <TypewriterEffect 
+                              text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 
+                              delay={10}
+                              direction="rtl"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </div>
             )}
           </div>

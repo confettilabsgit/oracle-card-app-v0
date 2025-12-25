@@ -195,7 +195,7 @@ export default function Home() {
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-8">
           <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide pt-10">
-            The Oracle of Hafez
+            The Persian Oracle
           </h1>
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
           
@@ -406,7 +406,7 @@ export default function Home() {
                         <div className="flex flex-col items-center gap-1">
                           <div>Mashallah!</div>
                           <div className="flex items-center gap-2">
-                            See the last card
+                            Next
                             <span className="text-xl">→</span>
                           </div>
                         </div>
