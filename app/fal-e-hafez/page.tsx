@@ -362,45 +362,63 @@ export default function FaleHafez() {
                 }}
               >
                 {/* Book Pages Container with 3D flip effect */}
-                <div className="relative w-full h-full" style={{ perspective: '1500px' }}>
+                <div className="relative w-full h-full" style={{ perspective: '2000px', perspectiveOrigin: 'center center' }}>
                   {isFlippingPages ? (
-                    /* 3D Page Flip Animation */
+                    /* 3D Page Flip Animation - Realistic page turning */
                     <div
                       className="absolute inset-0 w-full h-full"
                       style={{
                         transformStyle: 'preserve-3d',
-                        transformOrigin: 'left center',
-                        transform: `rotateY(${currentPageIndex % 2 === 0 ? -5 : 5}deg)`,
-                        transition: 'transform 0.07s ease-out',
                       }}
                     >
-                      {/* Page with 3D depth */}
+                      {/* Current page being flipped */}
                       <div
                         className="absolute inset-0 w-full h-full"
                         style={{
-                          background: currentPageIndex % 2 === 0 
-                            ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
-                            : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
-                          border: '1px solid rgba(139, 69, 19, 0.15)',
-                          borderRadius: '2px',
-                          boxShadow: currentPageIndex % 2 === 0
-                            ? 'inset 2px 0 8px rgba(0,0,0,0.1), 4px 0 12px rgba(0,0,0,0.2)'
-                            : 'inset -2px 0 8px rgba(0,0,0,0.1), -4px 0 12px rgba(0,0,0,0.2)',
-                          transform: `rotateY(${currentPageIndex % 2 === 0 ? 0 : 180}deg)`,
-                          backfaceVisibility: 'hidden',
+                          transformStyle: 'preserve-3d',
+                          transformOrigin: 'left center',
+                          // Create realistic page flip: pages rotate from left edge
+                          transform: `rotateY(${Math.min(currentPageIndex * 3.6, 180)}deg)`,
+                          transition: 'transform 0.07s linear',
                         }}
                       >
-                        {/* Subtle page texture */}
-                        <div 
-                          className="absolute inset-0"
+                        {/* Front of page */}
+                        <div
+                          className="absolute inset-0 w-full h-full"
                           style={{
-                            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.03) 2px, rgba(139, 69, 19, 0.03) 4px)',
+                            backfaceVisibility: 'hidden',
+                            background: currentPageIndex % 2 === 0 
+                              ? 'linear-gradient(90deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
+                              : 'linear-gradient(90deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
+                            border: '1px solid rgba(139, 69, 19, 0.2)',
+                            borderRadius: '2px',
+                            boxShadow: 'inset 4px 0 10px rgba(0,0,0,0.15), 8px 0 20px rgba(0,0,0,0.3)',
+                          }}
+                        >
+                          {/* Subtle page texture */}
+                          <div 
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(139, 69, 19, 0.02) 3px, rgba(139, 69, 19, 0.02) 6px)',
+                            }}
+                          />
+                          {/* Page number - very subtle */}
+                          <div className="absolute bottom-4 right-4 text-amber-900/8 text-xs font-serif">
+                            {currentPageIndex}
+                          </div>
+                        </div>
+                        {/* Back of page (when flipped) */}
+                        <div
+                          className="absolute inset-0 w-full h-full"
+                          style={{
+                            backfaceVisibility: 'hidden',
+                            transform: 'rotateY(180deg)',
+                            background: 'linear-gradient(90deg, #d4c4b0 0%, #e8d5c4 50%, #f5e6d3 100%)',
+                            border: '1px solid rgba(139, 69, 19, 0.2)',
+                            borderRadius: '2px',
+                            boxShadow: 'inset -4px 0 10px rgba(0,0,0,0.15), -8px 0 20px rgba(0,0,0,0.3)',
                           }}
                         />
-                        {/* Page number - very subtle */}
-                        <div className="absolute bottom-4 right-4 text-amber-900/10 text-xs font-serif">
-                          {currentPageIndex}
-                        </div>
                       </div>
                     </div>
                   ) : finalCardIndex !== null ? (
@@ -628,43 +646,62 @@ export default function FaleHafez() {
                   }}
                 >
                   {isFlippingPages ? (
-                    /* 3D Page Flip Animation - Mobile */
+                    /* 3D Page Flip Animation - Mobile - Realistic page turning */
                     <div
                       className="absolute inset-0 w-full h-full"
                       style={{
                         transformStyle: 'preserve-3d',
-                        transformOrigin: 'left center',
-                        transform: `rotateY(${currentPageIndex % 2 === 0 ? -5 : 5}deg)`,
-                        transition: 'transform 0.07s ease-out',
+                        perspective: '1500px',
                       }}
                     >
-                      {/* Page with 3D depth */}
+                      {/* Current page being flipped */}
                       <div
                         className="absolute inset-0 w-full h-full"
                         style={{
-                          background: currentPageIndex % 2 === 0 
-                            ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
-                            : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
-                          border: '1px solid rgba(139, 69, 19, 0.15)',
-                          borderRadius: '2px',
-                          boxShadow: currentPageIndex % 2 === 0
-                            ? 'inset 2px 0 8px rgba(0,0,0,0.1), 4px 0 12px rgba(0,0,0,0.2)'
-                            : 'inset -2px 0 8px rgba(0,0,0,0.1), -4px 0 12px rgba(0,0,0,0.2)',
-                          transform: `rotateY(${currentPageIndex % 2 === 0 ? 0 : 180}deg)`,
-                          backfaceVisibility: 'hidden',
+                          transformStyle: 'preserve-3d',
+                          transformOrigin: 'left center',
+                          // Create realistic page flip: pages rotate from left edge
+                          transform: `rotateY(${Math.min(currentPageIndex * 3.6, 180)}deg)`,
+                          transition: 'transform 0.07s linear',
                         }}
                       >
-                        {/* Subtle page texture */}
-                        <div 
-                          className="absolute inset-0"
+                        {/* Front of page */}
+                        <div
+                          className="absolute inset-0 w-full h-full"
                           style={{
-                            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.03) 2px, rgba(139, 69, 19, 0.03) 4px)',
+                            backfaceVisibility: 'hidden',
+                            background: currentPageIndex % 2 === 0 
+                              ? 'linear-gradient(90deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
+                              : 'linear-gradient(90deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
+                            border: '1px solid rgba(139, 69, 19, 0.2)',
+                            borderRadius: '2px',
+                            boxShadow: 'inset 4px 0 10px rgba(0,0,0,0.15), 8px 0 20px rgba(0,0,0,0.3)',
+                          }}
+                        >
+                          {/* Subtle page texture */}
+                          <div 
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(139, 69, 19, 0.02) 3px, rgba(139, 69, 19, 0.02) 6px)',
+                            }}
+                          />
+                          {/* Page number - very subtle */}
+                          <div className="absolute bottom-4 right-4 text-amber-900/8 text-xs font-serif">
+                            {currentPageIndex}
+                          </div>
+                        </div>
+                        {/* Back of page (when flipped) */}
+                        <div
+                          className="absolute inset-0 w-full h-full"
+                          style={{
+                            backfaceVisibility: 'hidden',
+                            transform: 'rotateY(180deg)',
+                            background: 'linear-gradient(90deg, #d4c4b0 0%, #e8d5c4 50%, #f5e6d3 100%)',
+                            border: '1px solid rgba(139, 69, 19, 0.2)',
+                            borderRadius: '2px',
+                            boxShadow: 'inset -4px 0 10px rgba(0,0,0,0.15), -8px 0 20px rgba(0,0,0,0.3)',
                           }}
                         />
-                        {/* Page number - very subtle */}
-                        <div className="absolute bottom-4 right-4 text-amber-900/10 text-xs font-serif">
-                          {currentPageIndex}
-                        </div>
                       </div>
                     </div>
                   ) : finalCardIndex !== null ? (
