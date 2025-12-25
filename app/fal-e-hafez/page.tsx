@@ -130,14 +130,12 @@ export default function FaleHafez() {
         }
       }
 
-      // Generate Hafez interpretation (primary) with card connection (secondary)
+      // Generate Hafez interpretation (no card mention)
       const englishResponse = await fetch('/api/hafez-interpretation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           verse: hafezData.text,
-          cardName: card.name,
-          cardPersianName: card.persianName,
           language: 'english'
         }),
       });
@@ -153,67 +151,33 @@ export default function FaleHafez() {
         throw new Error('Invalid English response format');
       }
 
-      // Parse the structured response: [High-level interpretation][READMORE_SPLIT][Deeper wisdom][CARD_CONNECTION][Card supplement]
+      // Parse the structured response: [Layman's interpretation][READMORE_SPLIT][Deep scholarly interpretation]
       const parts = englishData.text.split('[READMORE_SPLIT]');
-      const highLevelPart = parts[0] || '';
-      const deeperPart = parts[1] || '';
-      
-      // Split deeper part to separate deeper wisdom from card connection
-      let deeperWisdom = '';
-      let cardConnection = '';
-      
-      if (deeperPart.includes('[CARD_CONNECTION]')) {
-        const deeperParts = deeperPart.split('[CARD_CONNECTION]');
-        deeperWisdom = deeperParts[0]?.trim() || '';
-        cardConnection = deeperParts[1]?.trim() || '';
-      } else {
-        // Fallback: if structure is missing, use entire deeper part as wisdom
-        deeperWisdom = deeperPart.trim();
-      }
-      
-      const hafezInterpretation = highLevelPart.trim();
+      const briefInsight = parts[0]?.trim() || '';
+      const deeperWisdom = parts[1]?.trim() || '';
 
-      // Get card meaning for Persian reading
-      const cardData = cardMeanings[card.name as keyof typeof cardMeanings]
-      const cardMeaning = cardData?.persianMeaning || 'هدایت عرفانی'
-      const cardDescription = cardData?.persianDescription || 'این کارت نماد نیرویی معنوی در اساطیر ایران است.'
-
-      // Generate Persian Hafez interpretation (primary) with card connection (secondary)
+      // Generate Persian Hafez interpretation (no card mention)
       const persianResponse = await fetch('/api/hafez-interpretation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           verse: persianPoem || hafezData.text,
-          cardName: card.name,
-          cardPersianName: card.persianName,
           language: 'persian'
         }),
       });
 
       const persianReadingText = await persianResponse.text();
-      let persianHafezInterpretation = 'تفسیر حافظ در حال آماده‌سازی است...'
-      let persianCardConnection = ''
+      let persianBriefInsight = 'تفسیر حافظ در حال آماده‌سازی است...'
       let persianDeeperWisdom = ''
 
       if (persianResponse.ok) {
         try {
           const persianReadingData = JSON.parse(persianReadingText);
           if (persianReadingData?.text) {
-            // Parse structured response: [تفسیر سطح بالا][READMORE_SPLIT][حکمت عمیق‌تر][CARD_CONNECTION][اهمیت کارت]
+            // Parse structured response: [تفسیر ساده][READMORE_SPLIT][تفسیر عمیق]
             const parts = persianReadingData.text.split('[READMORE_SPLIT]');
-            const highLevelPart = parts[0] || '';
-            const deeperPart = parts[1] || '';
-            
-            // Split deeper part to separate deeper wisdom from card connection
-            if (deeperPart.includes('[CARD_CONNECTION]')) {
-              const deeperParts = deeperPart.split('[CARD_CONNECTION]');
-              persianDeeperWisdom = deeperParts[0]?.trim() || '';
-              persianCardConnection = deeperParts[1]?.trim() || '';
-            } else {
-              // Fallback: if structure is missing, use entire deeper part as wisdom
-              persianDeeperWisdom = deeperPart.trim();
-            }
-            persianHafezInterpretation = highLevelPart.trim();
+            persianBriefInsight = parts[0]?.trim() || '';
+            persianDeeperWisdom = parts[1]?.trim() || '';
           }
         } catch (e) {
           console.error('Failed to parse Persian reading response', e)
@@ -221,12 +185,12 @@ export default function FaleHafez() {
       }
 
       setReading({
-        english: `✧ Poem from Hafez ✧\n${hafezData.text}\n\n✧ Hafez Interpretation ✧\n${
-          hafezInterpretation
-        }[READMORE_SPLIT]${deeperWisdom || 'Meditate on this verse to reveal its deeper meaning...'}${cardConnection ? `\n\n✧ Card Significance ✧\n${cardConnection}` : ''}`,
-        persian: `✧ شعر حافظ ✧\n${persianPoem || hafezData.text}\n\n✧ تفسیر حافظ ✧\n${
-          persianHafezInterpretation
-        }[READMORE_SPLIT]✧ حکمت عرفانی عمیق‌تر ✧\n${persianDeeperWisdom || 'در این شعر حافظ، حکمتی عمیق نهفته است که با تأمل بیشتر آشکار می‌شود.'}${persianCardConnection ? `\n\n✧ اهمیت کارت ✧\n${persianCardConnection}` : ''}`
+        english: `✧ Poem from Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${
+          briefInsight
+        }[READMORE_SPLIT]${deeperWisdom || 'Meditate on this verse to reveal its deeper meaning...'}`,
+        persian: `✧ شعر حافظ ✧\n${persianPoem || hafezData.text}\n\n✧ تفسیر ساده ✧\n${
+          persianBriefInsight
+        }[READMORE_SPLIT]✧ تفسیر عمیق ✧\n${persianDeeperWisdom || 'در این شعر حافظ، حکمتی عمیق نهفته است که با تأمل بیشتر آشکار می‌شود.'}`
       })
     } catch (error) {
       console.error('Error:', error)
@@ -425,11 +389,11 @@ export default function FaleHafez() {
                           {reading.english.split('[READMORE_SPLIT]')[0].split('✧ Hafez Interpretation ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
                         </div>
                         
-                        {/* Hafez Interpretation - high-level, primary */}
+                        {/* Brief Insight - layman's interpretation */}
                         <div>
-                          <div className="text-amber-200/80 mb-2 text-sm">✧ Hafez Interpretation ✧</div>
+                          <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
                           <TypewriterEffect 
-                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Hafez Interpretation ✧')[1]?.trim() || ''} 
+                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.trim() || ''} 
                             onComplete={() => setShowReadMoreEnglish(true)}
                             isTitle={false}
                             delay={10}
@@ -454,22 +418,12 @@ export default function FaleHafez() {
                         
                         {showFullReadingEnglish && (
                           <div className="animate-fade-in mt-6">
-                            <div className="text-amber-200/80 mb-2 text-sm">✧ Deeper Mystical Wisdom ✧</div>
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ Deeper Insight ✧</div>
                             <TypewriterEffect 
-                              text={reading.english.split('[READMORE_SPLIT]')[1]?.split('✧ Card Significance ✧')[0]?.trim() || ''} 
+                              text={reading.english.split('[READMORE_SPLIT]')[1]?.trim() || ''} 
                               isTitle={false}
                               delay={15}
                             />
-                            
-                            {/* Card Significance - supplement, at the end */}
-                            {reading.english.includes('✧ Card Significance ✧') && (
-                              <div className="mt-6 pt-6 border-t border-amber-200/10">
-                                <div className="text-amber-200/70 mb-2 text-xs">✧ Card Significance ✧</div>
-                                <div className="text-amber-100/80 text-sm">
-                                  {reading.english.split('✧ Card Significance ✧')[1]?.trim() || ''}
-                                </div>
-                              </div>
-                            )}
                           </div>
                         )}
                       </div>
@@ -494,11 +448,11 @@ export default function FaleHafez() {
                           {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر حافظ ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
                         </div>
                         
-                        {/* Hafez Interpretation - high-level, primary */}
+                        {/* Brief Insight - simple interpretation */}
                         <div>
-                          <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر حافظ ✧</div>
+                          <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
                           <TypewriterEffect 
-                            text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر حافظ ✧')[1]?.trim() || ''} 
+                            text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
                             onComplete={() => setShowReadMorePersian(true)}
                             delay={10}
                             direction="rtl"
@@ -523,22 +477,12 @@ export default function FaleHafez() {
                         
                         {showFullReadingPersian && (
                           <div className="animate-fade-in">
-                            <div className="text-amber-200/80 mb-2 text-sm">✧ حکمت عرفانی عمیق‌تر ✧</div>
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر عمیق ✧</div>
                             <TypewriterEffect 
-                              text={reading.persian.split('[READMORE_SPLIT]')[1]?.split('✧ اهمیت کارت ✧')[0]?.replace('✧ حکمت عرفانی عمیق‌تر ✧\n', '')?.trim() || ''} 
+                              text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 
                               delay={10}
                               direction="rtl"
                             />
-                            
-                            {/* Card Significance - supplement, at the end */}
-                            {reading.persian.includes('✧ اهمیت کارت ✧') && (
-                              <div className="mt-6 pt-6 border-t border-amber-200/10">
-                                <div className="text-amber-200/70 mb-2 text-xs">✧ اهمیت کارت ✧</div>
-                                <div className="text-amber-100/80 text-sm" dir="rtl">
-                                  {reading.persian.split('✧ اهمیت کارت ✧')[1]?.trim() || ''}
-                                </div>
-                              </div>
-                            )}
                           </div>
                         )}
                       </div>
@@ -690,11 +634,11 @@ export default function FaleHafez() {
                               {reading.english.split('[READMORE_SPLIT]')[0].split('✧ Hafez Interpretation ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
                             </div>
                             
-                            {/* Hafez Interpretation - high-level, primary */}
+                            {/* Brief Insight - layman's interpretation */}
                             <div>
-                              <div className="text-amber-200/80 mb-2 text-sm">✧ Hafez Interpretation ✧</div>
+                              <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
                               <TypewriterEffect 
-                                text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Hafez Interpretation ✧')[1]?.trim() || ''} 
+                                text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.trim() || ''} 
                                 onComplete={() => setShowReadMoreEnglish(true)}
                                 isTitle={false}
                                 delay={10}
@@ -719,22 +663,12 @@ export default function FaleHafez() {
                             
                             {showFullReadingEnglish && (
                               <div className="animate-fade-in mt-6">
-                                <div className="text-amber-200/80 mb-2 text-sm">✧ Deeper Mystical Wisdom ✧</div>
+                                <div className="text-amber-200/80 mb-2 text-sm">✧ Deeper Insight ✧</div>
                                 <TypewriterEffect 
-                                  text={reading.english.split('[READMORE_SPLIT]')[1]?.split('✧ Card Significance ✧')[0]?.trim() || ''} 
+                                  text={reading.english.split('[READMORE_SPLIT]')[1]?.trim() || ''} 
                                   isTitle={false}
                                   delay={15}
                                 />
-                                
-                                {/* Card Significance - supplement, at the end */}
-                                {reading.english.includes('✧ Card Significance ✧') && (
-                                  <div className="mt-6 pt-6 border-t border-amber-200/10">
-                                    <div className="text-amber-200/70 mb-2 text-xs">✧ Card Significance ✧</div>
-                                    <div className="text-amber-100/80 text-sm">
-                                      {reading.english.split('✧ Card Significance ✧')[1]?.trim() || ''}
-                                    </div>
-                                  </div>
-                                )}
                               </div>
                             )}
                           </div>
@@ -756,11 +690,11 @@ export default function FaleHafez() {
                               {reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر حافظ ✧')[0].replace('✧ شعر حافظ ✧\n', '')}
                             </div>
                             
-                            {/* Hafez Interpretation - high-level, primary */}
+                            {/* Brief Insight - simple interpretation */}
                             <div>
-                              <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر حافظ ✧</div>
+                              <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
                               <TypewriterEffect 
-                                text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر حافظ ✧')[1]?.trim() || ''} 
+                                text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
                                 onComplete={() => setShowReadMorePersian(true)}
                                 delay={10}
                                 direction="rtl"
@@ -785,22 +719,12 @@ export default function FaleHafez() {
                             
                             {showFullReadingPersian && (
                               <div className="animate-fade-in">
-                                <div className="text-amber-200/80 mb-2 text-sm">✧ حکمت عرفانی عمیق‌تر ✧</div>
+                                <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر عمیق ✧</div>
                                 <TypewriterEffect 
-                                  text={reading.persian.split('[READMORE_SPLIT]')[1]?.split('✧ اهمیت کارت ✧')[0]?.replace('✧ حکمت عرفانی عمیق‌تر ✧\n', '')?.trim() || ''} 
+                                  text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 
                                   delay={10}
                                   direction="rtl"
                                 />
-                                
-                                {/* Card Significance - supplement, at the end */}
-                                {reading.persian.includes('✧ اهمیت کارت ✧') && (
-                                  <div className="mt-6 pt-6 border-t border-amber-200/10">
-                                    <div className="text-amber-200/70 mb-2 text-xs">✧ اهمیت کارت ✧</div>
-                                    <div className="text-amber-100/80 text-sm" dir="rtl">
-                                      {reading.persian.split('✧ اهمیت کارت ✧')[1]?.trim() || ''}
-                                    </div>
-                                  </div>
-                                )}
                               </div>
                             )}
                           </div>

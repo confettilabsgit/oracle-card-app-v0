@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    const { verse, cardName, cardPersianName, language } = await req.json();
+    const { verse, language } = await req.json();
 
     const systemMessage = language === 'persian' 
       ? `شما یک محقق و عارف متخصص در دیوان حافظ هستید با دانش عمیق از عرفان صوفیانه و سنت‌های فرهنگی ایرانی. شما در تفسیر اشعار حافظ با توجه به:
@@ -21,63 +21,60 @@ export async function POST(req: Request) {
 - بافت فرهنگی و تاریخی سنتی ایرانی
 - روش‌های تفسیر سنتی و علمی
 - کاربرد شخصی و راهنمایی معنوی
+- تفسیرهای معتبر از منابع سنتی و علمی
 تخصص دارید. تفسیرهای شما باید برای خوانندگان ایرانی اصیل و قابل درک باشد.`
-      : `You are a scholar and mystic specializing in Hafez's Divan with deep knowledge of Sufi mysticism and Persian cultural traditions. You are an expert in interpreting Hafez's poetry, considering:
+      : `You are a scholar and mystic specializing in Hafez's Divan with deep knowledge of Sufi mysticism and Persian cultural traditions. You have access to traditional scholarly interpretations and authentic sources. You are an expert in interpreting Hafez's poetry, considering:
 - Sufi mystical meanings (wine as divine love, tavern as spiritual freedom, beloved as divine presence, cupbearer as bringer of wisdom)
 - Traditional Persian cultural and historical context
-- Traditional and scholarly interpretation methodologies
+- Traditional and scholarly interpretation methodologies from authentic sources
 - Personal application and spiritual guidance
+- Authentic interpretations from traditional and scholarly sources
 Your interpretations should be authentic and resonate with Persian/Iranian readers.`;
 
     const userPrompt = language === 'persian'
-      ? `این شعر حافظ را تفسیر کنید. مهم: تفسیر باید کاملاً بر شعر حافظ متمرکز باشد و کارت فقط در پایان به عنوان مکمل ذکر شود.
+      ? `این شعر حافظ را تفسیر کنید:
 
 "${verse}"
 
 لطفاً تفسیر خود را به این صورت ارائه دهید:
 
-بخش اول - تفسیر سطح بالا حافظ (شروع کنید با این، بدون ذکر کارت):
-   - تفسیر کلی و سطح بالا از شعر حافظ
-   - معانی اصلی و پیام کلیدی شعر
-   - راهنمایی اولیه بر اساس شعر
-   - هیچ اشاره‌ای به کارت نکنید در این بخش
+بخش اول - تفسیر ساده و قابل فهم (برای عموم):
+   - تفسیر ساده و قابل فهم از شعر حافظ
+   - معانی اصلی و پیام کلیدی به زبان ساده
+   - راهنمایی اولیه و کاربردی
+   - بدون استفاده از اصطلاحات پیچیده عرفانی
 
-بخش دوم - حکمت عرفانی عمیق‌تر (بعد از [READMORE_SPLIT]):
-   - معانی عرفانی صوفیانه عمیق‌تر (نمادهای شراب، معشوق، میخانه، ساقی)
+بخش دوم - تفسیر عمیق و علمی (بعد از [READMORE_SPLIT]):
+   - تفسیر عمیق بر اساس منابع معتبر و سنتی
+   - معانی عرفانی صوفیانه (نمادهای شراب، معشوق، میخانه، ساقی)
    - بافت فرهنگی و تاریخی سنتی ایرانی
+   - تفسیرهای معتبر از منابع سنتی و علمی
    - راهنمایی شخصی و کاربرد در زندگی
    - اهمیت تاریخی و معنوی
-   - هنوز هیچ اشاره‌ای به کارت نکنید
 
-بخش سوم - اهمیت کارت ${cardPersianName} (فقط در پایان، بعد از [CARD_CONNECTION]):
-   - در پایان، به طور خلاصه (1-2 جمله) اشاره کنید که این کارت چگونه به عنوان مکمل این تفسیر عمل می‌کند
-   - کارت باید مکمل باشد، نه بخش اصلی
-
-فرمت دقیق: [تفسیر سطح بالا حافظ - بدون ذکر کارت][READMORE_SPLIT][حکمت عرفانی عمیق‌تر - بدون ذکر کارت][CARD_CONNECTION][اهمیت کارت به عنوان مکمل]`
-      : `Interpret this Hafez verse. IMPORTANT: The interpretation must focus entirely on the Hafez verse, and the card should only be mentioned at the very end as a supplement.
+فرمت دقیق: [تفسیر ساده و قابل فهم][READMORE_SPLIT][تفسیر عمیق و علمی]`
+      : `Interpret this Hafez verse:
 
 "${verse}"
 
 Please structure your interpretation as follows:
 
-FIRST SECTION - High-level Hafez Interpretation (START HERE, do NOT mention the card):
-   - High-level, general interpretation of the Hafez verse
-   - Main meanings and key message of the verse
-   - Initial guidance based on the verse
-   - DO NOT mention the card in this section
+FIRST SECTION - Brief Insight (Layman's Interpretation):
+   - Simple, accessible interpretation of the Hafez verse
+   - Main meanings and key message in plain language
+   - Initial guidance that anyone can understand
+   - Avoid complex mystical terminology
+   - Focus on what the verse means in everyday terms
 
-SECOND SECTION - Deeper Mystical Wisdom (after [READMORE_SPLIT]):
-   - Deeper Sufi mystical meanings (wine as divine love, beloved as divine presence, tavern as spiritual freedom, cupbearer as bringer of wisdom)
+SECOND SECTION - Deeper Insight (after [READMORE_SPLIT]):
+   - Deep scholarly interpretation drawing from authentic traditional sources
+   - Sufi mystical meanings (wine as divine love, beloved as divine presence, tavern as spiritual freedom, cupbearer as bringer of wisdom)
    - Traditional Persian cultural and historical context
+   - Authentic interpretations from traditional and scholarly sources
    - Personal guidance and life application
    - Historical and spiritual significance
-   - STILL do NOT mention the card in this section
 
-THIRD SECTION - Card Significance (ONLY at the end, after [CARD_CONNECTION]):
-   - At the very end, briefly (1-2 sentences) mention how the ${cardName} card serves as a supplement to this interpretation
-   - The card should complement, not be the main focus
-
-EXACT FORMAT: [High-level Hafez interpretation - NO card mention][READMORE_SPLIT][Deeper mystical wisdom - NO card mention][CARD_CONNECTION][Card significance as supplement]`;
+EXACT FORMAT: [Layman's interpretation][READMORE_SPLIT][Deep scholarly interpretation from authentic sources]`;
 
     const response = await openai.chat.completions.create({
       messages: [
