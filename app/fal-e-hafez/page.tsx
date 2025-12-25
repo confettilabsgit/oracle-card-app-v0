@@ -217,7 +217,7 @@ export default function FaleHafez() {
       }
 
       setReading({
-        english: `✧ Poem from Hafez ✧\n${hafezData.text}\n\n✧ What This Page Reveals ✧\n${
+        english: `✧ Poem from Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${
           briefInsight
         }[READMORE_SPLIT]${deeperWisdom || 'Meditate on this verse to reveal its deeper meaning...'}`,
         persian: `✧ شعر حافظ ✧\n${persianPoem || hafezData.text}\n\n✧ آنچه این صفحه آشکار می‌کند ✧\n${
@@ -269,7 +269,7 @@ export default function FaleHafez() {
           
           {/* Show New Reading button only after loading is complete */}
           {selectedCard && !isLoading ? (
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-6">
               <button 
                 onClick={handleNewReading}
                 className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg
@@ -280,7 +280,7 @@ export default function FaleHafez() {
               >
                 New Reading
               </button>
-              <p className="text-amber-200/70 text-sm text-center">
+              <p className="text-amber-200/80 text-sm text-center">
                 Flip the page to reveal your Hafez verse and fortune
               </p>
             </div>
@@ -418,14 +418,14 @@ export default function FaleHafez() {
                       <div className="text-amber-100 space-y-6">
                         {/* Static Hafez poem - prominent but not oversized */}
                         <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
-                          {reading.english.split('[READMORE_SPLIT]')[0].split('✧ What This Page Reveals ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
+                          {reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
                         </div>
                         
-                        {/* What This Page Reveals - smaller, secondary */}
+                        {/* Brief Insight - smaller, secondary */}
                         <div>
-                          <div className="text-amber-200/80 mb-2 text-sm">✧ What This Page Reveals ✧</div>
+                          <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
                           <TypewriterEffect 
-                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ What This Page Reveals ✧')[1] || ''} 
+                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1] || ''} 
                             onComplete={() => setShowReadMoreEnglish(true)}
                             isTitle={false}
                             delay={10}
@@ -543,12 +543,10 @@ export default function FaleHafez() {
                 </p>
                 {/* Single card back */}
                 <div
-                  className="relative"
+                  className="relative mx-auto"
                   style={{
-                    width: '280px',
-                    height: '420px',
-                    maxWidth: '90vw',
-                    maxHeight: '60vh',
+                    width: 'min(280px, 85vw)',
+                    aspectRatio: '2/3',
                   }}
                 >
                   <div
@@ -579,14 +577,8 @@ export default function FaleHafez() {
                       <Image
                         src="/cards/cardback.png"
                         alt="Card back"
-                        width={280}
-                        height={420}
-                        className="rounded-sm"
-                        style={{
-                          objectFit: 'contain',
-                          width: '100%',
-                          height: '100%',
-                        }}
+                        fill
+                        className="object-contain rounded-sm"
                       />
                     </div>
                     
@@ -605,14 +597,8 @@ export default function FaleHafez() {
                           <Image
                             src={selectedCards[0].image}
                             alt={selectedCards[0].name}
-                            width={280}
-                            height={420}
-                            className="rounded-sm"
-                            style={{
-                              objectFit: 'contain',
-                              width: '100%',
-                              height: '100%',
-                            }}
+                            fill
+                            className="object-contain rounded-sm"
                           />
                           <div className="absolute bottom-2 left-2 right-2 text-center">
                             <h3 className="text-white text-sm font-semibold drop-shadow-lg">{selectedCards[0].name}</h3>
@@ -674,12 +660,12 @@ export default function FaleHafez() {
                           <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
                             {/* Poem - prominent but not oversized */}
                             <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
-                              {reading.english.split('[READMORE_SPLIT]')[0].split('✧ What This Page Reveals ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
+                              {reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[0].replace('✧ Poem from Hafez ✧\n', '')}
                             </div>
                             
-                            <div className="text-amber-200/80 mb-2 text-sm">✧ What This Page Reveals ✧</div>
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
                             <TypewriterEffect 
-                              text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ What This Page Reveals ✧')[1] || ''} 
+                              text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1] || ''} 
                               onComplete={() => setShowReadMoreEnglish(true)}
                               isTitle={false}
                               delay={10}
