@@ -35,9 +35,17 @@ export default function FaleHafez() {
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isBookOpen, setIsBookOpen] = useState(false)
+  const [isFlippingPages, setIsFlippingPages] = useState(false)
+  const [currentPageIndex, setCurrentPageIndex] = useState(0)
+  const [finalCardIndex, setFinalCardIndex] = useState<number | null>(null)
 
   useEffect(() => {
-    shuffleCards()
+    // Initialize book in closed state
+    setIsBookOpen(false)
+    setIsFlippingPages(false)
+    setCurrentPageIndex(0)
+    setFinalCardIndex(null)
   }, [])
 
   useEffect(() => {
@@ -58,30 +66,43 @@ export default function FaleHafez() {
     setSelectedCard(null)
     setReading({ english: '', persian: '' })
     setErrorMessage('')
+    setIsBookOpen(false)
+    setIsFlippingPages(false)
+    setCurrentPageIndex(0)
+    setFinalCardIndex(null)
   }
 
-  const flipCard = (id: number) => {
-    // Show error if trying to flip another card after one is selected
-    if (selectedCard) {
-      setErrorMessage('Only one page needs to be turned for your Fal-e-Hafez reading.')
-      setTimeout(() => setErrorMessage(''), 3000)
-      return
-    }
+  const openBook = () => {
+    if (isBookOpen || isFlippingPages) return
     
-    if (!flippedCards.includes(id)) {
-      setErrorMessage('') // Clear any previous error
-      const newFlippedCards = [...flippedCards, id]
-      setFlippedCards(newFlippedCards)
+    setIsBookOpen(true)
+    setIsFlippingPages(true)
+    setCurrentPageIndex(0)
+    
+    // Randomly select final card (0-11)
+    const randomCardIndex = Math.floor(Math.random() * cards.length)
+    setFinalCardIndex(randomCardIndex)
+    
+    // Animate through 50+ pages
+    const totalPages = 55 // 50+ pages as specified
+    let pageCount = 0
+    const flipInterval = setInterval(() => {
+      pageCount++
+      setCurrentPageIndex(pageCount)
       
-      // Find the selected card
-      const card = selectedCards.find(c => c.id === id)
-      if (card) {
-        setSelectedCard(card)
+      if (pageCount >= totalPages) {
+        clearInterval(flipInterval)
+        setIsFlippingPages(false)
+        // Select the card and generate reading
+        const selectedCard = cards[randomCardIndex]
+        setSelectedCard(selectedCard)
         setIsLoading(true)
-        generateReading(card)
+        generateReading(selectedCard)
       }
-    }
+    }, 80) // ~80ms per page for rapid flipping effect
   }
+
+  // flipCard is no longer used - book opening replaces it
 
   const generateReading = async (card: typeof cards[0]) => {
     // Reset reading reveal states
@@ -208,6 +229,12 @@ export default function FaleHafez() {
     setReading({ english: '', persian: '' });
     setSelectedCard(null)
     
+    // Close the book
+    setIsBookOpen(false)
+    setIsFlippingPages(false)
+    setCurrentPageIndex(0)
+    setFinalCardIndex(null)
+    
     setTimeout(() => {
       setFlippedCards([]);
       shuffleCards()
@@ -252,10 +279,10 @@ export default function FaleHafez() {
                 Flip the page to reveal your Hafez verse and fortune
               </p>
             </div>
-          ) : !selectedCard ? (
+          ) : !isBookOpen ? (
             <div className="flex flex-col items-center gap-2">
               <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-                <span>Flip the page to reveal your Hafez verse and fortune</span>
+                <span>Open the book to reveal your Hafez verse and fortune</span>
               </h2>
             </div>
           ) : null}
@@ -272,89 +299,117 @@ export default function FaleHafez() {
 
         {/* Desktop Layout */}
         <div className="hidden md:flex flex-col items-center w-full">
-          {/* Book pages - styled as portrait pages */}
-          <div className="flex gap-2 mb-16" style={{ perspective: '1000px' }}>
-            {selectedCards.map((card, index) => (
+          {/* Book Interface */}
+          <div className="mb-16" style={{ perspective: '1200px' }}>
+            {!isBookOpen ? (
+              /* Closed Book Cover */
               <div
-                key={card.id}
-                className="relative"
+                className="cursor-pointer relative"
                 style={{
-                  width: '280px',
-                  height: '420px',
+                  width: '400px',
+                  height: '560px',
                   transformStyle: 'preserve-3d',
                 }}
+                onClick={openBook}
               >
                 <div
-                  className={`relative w-full h-full transition-transform duration-700 ${flippedCards.includes(card.id) ? '' : 'cursor-pointer'}`}
+                  className="relative w-full h-full transition-transform duration-1000"
                   style={{
-                    transform: flippedCards.includes(card.id) 
-                      ? 'rotateY(-180deg)' 
-                      : 'rotateY(0deg)',
                     transformStyle: 'preserve-3d',
-                    pointerEvents: flippedCards.includes(card.id) ? 'none' : 'auto',
                   }}
-                  onClick={() => flipCard(card.id)}
                 >
-                  {/* Page back (card back) - show card image darkened */}
-                  <div 
+                  {/* Book Cover Front */}
+                  <div
                     className="absolute inset-0 w-full h-full"
                     style={{
                       backfaceVisibility: 'hidden',
-                      background: 'linear-gradient(135deg, #2a1a4a 0%, #1a0f2e 100%)',
-                      border: '2px solid rgba(254, 243, 199, 0.3)',
-                      borderRadius: '4px',
-                      boxShadow: '0 8px 16px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.2)',
+                      borderRadius: '8px',
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.5), inset 0 0 0 3px rgba(254, 243, 199, 0.2)',
                       overflow: 'hidden',
                     }}
                   >
                     <Image
-                      src={card.image}
-                      alt={card.name}
-                      width={280}
-                      height={420}
-                      className="rounded-sm opacity-30"
+                      src="/cards/cardback.png"
+                      alt="Book Cover"
+                      fill
+                      className="object-cover"
+                    />
+                    {/* Book Spine Effect */}
+                    <div
+                      className="absolute left-0 top-0 bottom-0 w-8"
                       style={{
-                        objectFit: 'contain',
-                        width: '100%',
-                        height: '100%',
-                        filter: 'brightness(0.3)',
+                        background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
                       }}
                     />
+                    {/* Optional Title Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-amber-200/40 text-sm text-center px-4">
-                        {index + 1}
+                      <div className="text-amber-200/90 text-xl font-serif italic drop-shadow-lg">
+                        Divan-e-Hafez
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Page front (card image) */}
-                  <div 
-                    className="absolute inset-0 w-full h-full"
-                    style={{
-                      backfaceVisibility: 'hidden',
-                      transform: 'rotateY(180deg)',
-                    }}
-                  >
-                    <Image
-                      src={card.image}
-                      alt={card.name}
-                      width={280}
-                      height={420}
-                      className="rounded-sm"
-                      style={{
-                        objectFit: 'contain',
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    />
-                    <div className="absolute bottom-2 left-2 right-2 text-center">
-                      <h3 className="text-white text-sm font-semibold drop-shadow-lg">{card.name}</h3>
-                      <p className="text-white/80 text-xs drop-shadow-lg">{card.persianName}</p>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
+            ) : (
+              /* Open Book with Page Flipping */
+              <div
+                className="relative"
+                style={{
+                  width: '400px',
+                  height: '560px',
+                  transformStyle: 'preserve-3d',
+                }}
+              >
+                {/* Book Pages Container */}
+                <div className="relative w-full h-full">
+                  {/* Show current page during flipping, or final card when done */}
+                  {isFlippingPages ? (
+                    /* Generic pages flipping rapidly - create page-like appearance */
+                    <div
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        background: currentPageIndex % 2 === 0 
+                          ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%)'
+                          : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 100%)',
+                        border: '2px solid rgba(139, 69, 19, 0.2)',
+                        borderRadius: '4px',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'opacity 0.08s ease-in-out',
+                      }}
+                    >
+                      {/* Page number or text to show it's flipping */}
+                      <div className="text-amber-900/15 text-xs font-serif">
+                        {currentPageIndex > 0 ? currentPageIndex : ''}
+                      </div>
+                    </div>
+                  ) : finalCardIndex !== null ? (
+                    /* Final Card Page */
+                    <div
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
+                      }}
+                    >
+                      <Image
+                        src={cards[finalCardIndex].image}
+                        alt={cards[finalCardIndex].name}
+                        fill
+                        className="object-contain"
+                      />
+                      <div className="absolute bottom-2 left-2 right-2 text-center">
+                        <h3 className="text-white text-sm font-semibold drop-shadow-lg">{cards[finalCardIndex].name}</h3>
+                        <p className="text-white/80 text-xs drop-shadow-lg">{cards[finalCardIndex].persianName}</p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Reading section */}
@@ -507,81 +562,102 @@ export default function FaleHafez() {
                 </p>
               </div>
             )}
-            {!selectedCard ? (
+            {!isBookOpen ? (
               <div className="flex flex-col items-center w-full">
                 <p className="text-amber-200 text-center px-4 mb-8 text-lg">
-                  Flip the page to reveal your Hafez verse and fortune
+                  Open the book to reveal your Hafez verse and fortune
                 </p>
-                {/* Single card back */}
+                {/* Book Cover - Mobile */}
                 <div
-                  className="relative mx-auto"
+                  className="relative mx-auto cursor-pointer"
                   style={{
-                    width: 'min(280px, 85vw)',
-                    aspectRatio: '2/3',
+                    width: 'min(300px, 85vw)',
+                    aspectRatio: '5/7',
                   }}
+                  onClick={openBook}
                 >
-                  <div
-                    className="relative w-full h-full transition-transform duration-700 cursor-pointer"
-                    style={{
-                      transform: flippedCards.length > 0 
-                        ? 'rotateY(-180deg)' 
-                        : 'rotateY(0deg)',
-                      transformStyle: 'preserve-3d',
-                    }}
-                    onClick={() => {
-                      // Flip the first card from selectedCards
-                      if (selectedCards.length > 0 && flippedCards.length === 0) {
-                        flipCard(selectedCards[0].id)
-                      }
-                    }}
-                  >
-                    {/* Card back - using cardback.png */}
-                    <div 
-                      className="absolute inset-0 w-full h-full"
+                  <div className="relative w-full h-full">
+                    <Image
+                      src="/cards/cardback.png"
+                      alt="Book Cover"
+                      fill
+                      className="object-contain rounded-lg"
+                    />
+                    {/* Book Spine Effect */}
+                    <div
+                      className="absolute left-0 top-0 bottom-0 w-6"
                       style={{
-                        backfaceVisibility: 'hidden',
-                        borderRadius: '4px',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
-                        overflow: 'hidden',
+                        background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
                       }}
-                    >
-                      <Image
-                        src="/cards/cardback.png"
-                        alt="Card back"
-                        fill
-                        className="object-contain rounded-sm"
-                      />
-                    </div>
-                    
-                    {/* Card front - show the selected card */}
-                    <div 
-                      className="absolute inset-0 w-full h-full"
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        transform: 'rotateY(180deg)',
-                        borderRadius: '4px',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {selectedCards.length > 0 && (
-                        <>
-                          <Image
-                            src={selectedCards[0].image}
-                            alt={selectedCards[0].name}
-                            fill
-                            className="object-contain rounded-sm"
-                          />
-                          <div className="absolute bottom-2 left-2 right-2 text-center">
-                            <h3 className="text-white text-sm font-semibold drop-shadow-lg">{selectedCards[0].name}</h3>
-                            <p className="text-white/80 text-xs drop-shadow-lg">{selectedCards[0].persianName}</p>
-                          </div>
-                        </>
-                      )}
+                    />
+                    {/* Title Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-amber-200/90 text-lg font-serif italic drop-shadow-lg">
+                        Divan-e-Hafez
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
+              <div className="flex flex-col items-center w-full">
+                {/* Book Pages - Mobile */}
+                <div
+                  className="relative mx-auto"
+                  style={{
+                    width: 'min(300px, 85vw)',
+                    aspectRatio: '5/7',
+                  }}
+                >
+                  {isFlippingPages ? (
+                    /* Generic pages flipping rapidly - create page-like appearance */
+                    <div
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        background: currentPageIndex % 2 === 0 
+                          ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%)'
+                          : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 100%)',
+                        border: '2px solid rgba(139, 69, 19, 0.2)',
+                        borderRadius: '4px',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'opacity 0.08s ease-in-out',
+                      }}
+                    >
+                      {/* Page number or text to show it's flipping */}
+                      <div className="text-amber-900/15 text-xs font-serif">
+                        {currentPageIndex > 0 ? currentPageIndex : ''}
+                      </div>
+                    </div>
+                  ) : finalCardIndex !== null ? (
+                    /* Final Card Page */
+                    <div
+                      className="absolute inset-0 w-full h-full"
+                      style={{
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.4)',
+                      }}
+                    >
+                      <Image
+                        src={cards[finalCardIndex].image}
+                        alt={cards[finalCardIndex].name}
+                        fill
+                        className="object-contain"
+                      />
+                      <div className="absolute bottom-2 left-2 right-2 text-center">
+                        <h3 className="text-white text-sm font-semibold drop-shadow-lg">{cards[finalCardIndex].name}</h3>
+                        <p className="text-white/80 text-xs drop-shadow-lg">{cards[finalCardIndex].persianName}</p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            )}
+            
+            {selectedCard && (
               <div className="absolute top-0 left-0 right-0 animate-fade-in">
                 <div className="flex-1 flex flex-col">
                   {/* Selected card preview */}
