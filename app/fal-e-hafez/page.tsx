@@ -83,7 +83,7 @@ export default function FaleHafez() {
     const randomCardIndex = Math.floor(Math.random() * cards.length)
     setFinalCardIndex(randomCardIndex)
     
-    // Animate through 50+ pages
+    // Animate through 50+ pages with 3D flip effect
     const totalPages = 55 // 50+ pages as specified
     let pageCount = 0
     const flipInterval = setInterval(() => {
@@ -99,7 +99,7 @@ export default function FaleHafez() {
         setIsLoading(true)
         generateReading(selectedCard)
       }
-    }, 80) // ~80ms per page for rapid flipping effect
+    }, 70) // ~70ms per page for rapid flipping effect
   }
 
   // flipCard is no longer used - book opening replaces it
@@ -309,11 +309,12 @@ export default function FaleHafez() {
                   width: '400px',
                   height: '560px',
                   transformStyle: 'preserve-3d',
+                  perspective: '1200px',
                 }}
                 onClick={openBook}
               >
                 <div
-                  className="relative w-full h-full transition-transform duration-1000"
+                  className="relative w-full h-full transition-all duration-300 hover:scale-105"
                   style={{
                     transformStyle: 'preserve-3d',
                   }}
@@ -341,7 +342,7 @@ export default function FaleHafez() {
                         background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
                       }}
                     />
-                    {/* Optional Title Overlay */}
+                    {/* Title Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-amber-200/90 text-xl font-serif italic drop-shadow-lg">
                         Divan-e-Hafez
@@ -360,29 +361,46 @@ export default function FaleHafez() {
                   transformStyle: 'preserve-3d',
                 }}
               >
-                {/* Book Pages Container */}
-                <div className="relative w-full h-full">
-                  {/* Show current page during flipping, or final card when done */}
+                {/* Book Pages Container with 3D flip effect */}
+                <div className="relative w-full h-full" style={{ perspective: '1500px' }}>
                   {isFlippingPages ? (
-                    /* Generic pages flipping rapidly - create page-like appearance */
+                    /* 3D Page Flip Animation */
                     <div
                       className="absolute inset-0 w-full h-full"
                       style={{
-                        background: currentPageIndex % 2 === 0 
-                          ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%)'
-                          : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 100%)',
-                        border: '2px solid rgba(139, 69, 19, 0.2)',
-                        borderRadius: '4px',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'opacity 0.08s ease-in-out',
+                        transformStyle: 'preserve-3d',
+                        transformOrigin: 'left center',
+                        transform: `rotateY(${currentPageIndex % 2 === 0 ? -5 : 5}deg)`,
+                        transition: 'transform 0.07s ease-out',
                       }}
                     >
-                      {/* Page number or text to show it's flipping */}
-                      <div className="text-amber-900/15 text-xs font-serif">
-                        {currentPageIndex > 0 ? currentPageIndex : ''}
+                      {/* Page with 3D depth */}
+                      <div
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                          background: currentPageIndex % 2 === 0 
+                            ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
+                            : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
+                          border: '1px solid rgba(139, 69, 19, 0.15)',
+                          borderRadius: '2px',
+                          boxShadow: currentPageIndex % 2 === 0
+                            ? 'inset 2px 0 8px rgba(0,0,0,0.1), 4px 0 12px rgba(0,0,0,0.2)'
+                            : 'inset -2px 0 8px rgba(0,0,0,0.1), -4px 0 12px rgba(0,0,0,0.2)',
+                          transform: `rotateY(${currentPageIndex % 2 === 0 ? 0 : 180}deg)`,
+                          backfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {/* Subtle page texture */}
+                        <div 
+                          className="absolute inset-0"
+                          style={{
+                            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.03) 2px, rgba(139, 69, 19, 0.03) 4px)',
+                          }}
+                        />
+                        {/* Page number - very subtle */}
+                        <div className="absolute bottom-4 right-4 text-amber-900/10 text-xs font-serif">
+                          {currentPageIndex}
+                        </div>
                       </div>
                     </div>
                   ) : finalCardIndex !== null ? (
@@ -610,25 +628,43 @@ export default function FaleHafez() {
                   }}
                 >
                   {isFlippingPages ? (
-                    /* Generic pages flipping rapidly - create page-like appearance */
+                    /* 3D Page Flip Animation - Mobile */
                     <div
                       className="absolute inset-0 w-full h-full"
                       style={{
-                        background: currentPageIndex % 2 === 0 
-                          ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%)'
-                          : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 100%)',
-                        border: '2px solid rgba(139, 69, 19, 0.2)',
-                        borderRadius: '4px',
-                        boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'opacity 0.08s ease-in-out',
+                        transformStyle: 'preserve-3d',
+                        transformOrigin: 'left center',
+                        transform: `rotateY(${currentPageIndex % 2 === 0 ? -5 : 5}deg)`,
+                        transition: 'transform 0.07s ease-out',
                       }}
                     >
-                      {/* Page number or text to show it's flipping */}
-                      <div className="text-amber-900/15 text-xs font-serif">
-                        {currentPageIndex > 0 ? currentPageIndex : ''}
+                      {/* Page with 3D depth */}
+                      <div
+                        className="absolute inset-0 w-full h-full"
+                        style={{
+                          background: currentPageIndex % 2 === 0 
+                            ? 'linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 50%, #d4c4b0 100%)'
+                            : 'linear-gradient(135deg, #e8d5c4 0%, #f5e6d3 50%, #d4c4b0 100%)',
+                          border: '1px solid rgba(139, 69, 19, 0.15)',
+                          borderRadius: '2px',
+                          boxShadow: currentPageIndex % 2 === 0
+                            ? 'inset 2px 0 8px rgba(0,0,0,0.1), 4px 0 12px rgba(0,0,0,0.2)'
+                            : 'inset -2px 0 8px rgba(0,0,0,0.1), -4px 0 12px rgba(0,0,0,0.2)',
+                          transform: `rotateY(${currentPageIndex % 2 === 0 ? 0 : 180}deg)`,
+                          backfaceVisibility: 'hidden',
+                        }}
+                      >
+                        {/* Subtle page texture */}
+                        <div 
+                          className="absolute inset-0"
+                          style={{
+                            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139, 69, 19, 0.03) 2px, rgba(139, 69, 19, 0.03) 4px)',
+                          }}
+                        />
+                        {/* Page number - very subtle */}
+                        <div className="absolute bottom-4 right-4 text-amber-900/10 text-xs font-serif">
+                          {currentPageIndex}
+                        </div>
                       </div>
                     </div>
                   ) : finalCardIndex !== null ? (
