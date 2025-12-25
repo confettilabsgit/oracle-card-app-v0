@@ -30,38 +30,48 @@ export async function POST(req: Request) {
 Your interpretations should be authentic and resonate with Persian/Iranian readers.`;
 
     const userPrompt = language === 'persian'
-      ? `این شعر حافظ را به طور جامع تفسیر کنید:
+      ? `این شعر حافظ را تفسیر کنید:
 
 "${verse}"
 
 لطفاً تفسیر خود را به این صورت ارائه دهید:
-1. تفسیر جامع حافظ (بخش اصلی):
-   - معانی عرفانی صوفیانه (نمادهای شراب، معشوق، میخانه، ساقی)
+1. تفسیر سطح بالا حافظ (بخش اول):
+   - تفسیر کلی و سطح بالا از شعر
+   - معانی اصلی و پیام کلیدی
+   - راهنمایی اولیه
+
+2. حکمت عرفانی عمیق‌تر (بخش دوم):
+   - معانی عرفانی صوفیانه عمیق‌تر (نمادهای شراب، معشوق، میخانه، ساقی)
    - بافت فرهنگی و تاریخی سنتی ایرانی
    - راهنمایی شخصی و کاربرد در زندگی
    - اهمیت تاریخی و معنوی
 
-2. ارتباط با کارت ${cardPersianName} (بخش کوتاه، 1-2 جمله):
-   - به طور خلاصه اشاره کنید که این کارت چگونه با این تفسیر مرتبط است یا آن را روشن می‌کند
-   - کارت باید مکمل باشد، نه غالب
+3. اهمیت کارت ${cardPersianName} (بخش آخر، مکمل):
+   - در پایان، به طور خلاصه (1-2 جمله) اشاره کنید که این کارت چگونه به عنوان مکمل این تفسیر عمل می‌کند
+   - کارت باید مکمل باشد، نه بخش اصلی
 
-فرمت: [تفسیر جامع حافظ][CARD_CONNECTION][ارتباط کوتاه با کارت][READMORE_SPLIT][حکمت عرفانی عمیق‌تر + ارتباط مختصر با کارت]`
-      : `Provide a comprehensive interpretation of this Hafez verse:
+فرمت: [تفسیر سطح بالا حافظ][READMORE_SPLIT][حکمت عرفانی عمیق‌تر][CARD_CONNECTION][اهمیت کارت به عنوان مکمل]`
+      : `Interpret this Hafez verse:
 
 "${verse}"
 
 Please structure your interpretation as follows:
-1. PRIMARY - Comprehensive Hafez Interpretation:
-   - Sufi mystical meanings (wine as divine love, beloved as divine presence, tavern as spiritual freedom, cupbearer as bringer of wisdom)
+1. HIGH-LEVEL Hafez Interpretation (first section):
+   - High-level, general interpretation of the verse
+   - Main meanings and key message
+   - Initial guidance
+
+2. Deeper Mystical Wisdom (second section):
+   - Deeper Sufi mystical meanings (wine as divine love, beloved as divine presence, tavern as spiritual freedom, cupbearer as bringer of wisdom)
    - Traditional Persian cultural and historical context
    - Personal guidance and life application
    - Historical and spiritual significance
 
-2. SECONDARY - Brief Card Connection (1-2 sentences only):
-   - Briefly mention how the ${cardName} card relates to or illuminates this interpretation
-   - The card should complement, not dominate the interpretation
+3. Card Significance (last section, supplement):
+   - At the end, briefly (1-2 sentences) mention how the ${cardName} card serves as a supplement to this interpretation
+   - The card should complement, not be the main focus
 
-Format: [Comprehensive Hafez interpretation][CARD_CONNECTION][Brief card connection][READMORE_SPLIT][Deeper mystical wisdom + brief card illumination]`;
+Format: [High-level Hafez interpretation][READMORE_SPLIT][Deeper mystical wisdom][CARD_CONNECTION][Card significance as supplement]`;
 
     const response = await openai.chat.completions.create({
       messages: [
