@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const { feedback } = await request.json()
     
     const response = await fetch(
-      'https://api.github.com/repos/confettilabsgit/oracle-card-app/issues',
+      'https://api.github.com/repos/confettilabsgit/oracle-card-app-v0/issues',
       {
         method: 'POST',
         headers: {
