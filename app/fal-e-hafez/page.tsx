@@ -334,7 +334,7 @@ export default function FaleHafez() {
                     {isLoading ? (
                       <div className="flex flex-col items-center justify-center gap-4">
                         <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                        <p className="text-purple-300">The ancient verses are revealing themselves...</p>
+                        <p className="text-purple-300 animate-float">The ancient verses are revealing themselves...</p>
                       </div>
                     ) : reading.english ? (
                       <div className="text-amber-100 space-y-6">
@@ -452,7 +452,7 @@ export default function FaleHafez() {
 
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
-          <div className="relative min-h-screen pt-10 px-4 flex flex-col items-center">
+          <div className="relative min-h-screen px-4 flex flex-col items-center" style={{ paddingTop: '0px' }}>
             {/* Header section - Mobile */}
             <div className="flex flex-col items-center mb-6" style={{ marginBottom: '24px' }}>
               <h1 className="text-2xl text-center font-serif font-light text-amber-100 tracking-wide">
@@ -575,7 +575,7 @@ export default function FaleHafez() {
                         <circle cx="40" cy="40" r="3" fill="currentColor" />
                       </svg>
                     </div>
-                    <p className="text-purple-300 text-lg text-center font-serif italic">
+                    <p className="text-purple-300 text-lg text-center font-serif italic animate-float">
                       The ancient verses are revealing themselves...
                     </p>
                   </div>

@@ -156,10 +156,18 @@ export default function Home() {
 
   function getCardMeaning(name: string) {
     const meanings: Record<string, string> = {
-      'Simurgh': 'The majestic phoenix of wisdom',
-      'Peri': 'The fairy of divine beauty',
-      'Div': 'The shadow self',
-      // ... add other cards
+      'Simurgh': 'The majestic phoenix of wisdom, guardian of ancient knowledge',
+      'Peri': 'The fairy of divine beauty, messenger of celestial grace',
+      'Div': 'The shadow self, the inner darkness we must face',
+      'Anahita': 'Goddess of waters and fertility, source of life and abundance',
+      'Faravahar': 'The divine essence, connection to the eternal spirit',
+      'Huma': 'The bird of fortune, bringer of happiness and good omens',
+      'Azhdaha': 'The dragon of transformation, keeper of hidden treasures',
+      'Cypress': 'The tree of eternity, symbol of resilience and growth',
+      'Moon': 'The celestial guide, reflection of inner emotions and cycles',
+      'Dervish': 'The wandering mystic, seeker of truth and enlightenment',
+      'Sun Lion': 'The royal protector, symbol of strength and sovereignty',
+      'Zahhak': 'The tyrant king, warning of corruption and inner demons',
     };
     return meanings[name] || '';
   }
@@ -225,15 +233,27 @@ export default function Home() {
             {/* Cards */}
             <div className="flex gap-6 mb-16 justify-center items-start" style={{ marginLeft: '10px' }}>
               {selectedCards.map((card) => (
-                <OracleCard
-                  key={card.id}
-                  isFlipped={flippedCards.includes(card.id)}
-                  onClick={() => flipCard(card.id)}
-                  frontImage={card.image}
-                  name={card.name}
-                  persianName={card.persianName}
-                  isDesktop={isDesktop}
-                />
+                <div key={card.id} className="flex flex-col items-center">
+                  {/* Card info above card - only show when flipped */}
+                  {flippedCards.includes(card.id) && (
+                    <div className="text-center mb-4">
+                      <p className="text-white font-semibold">
+                        {card.name} <span className="text-white/80">{card.persianName}</span>
+                      </p>
+                      <p className="text-white/80 text-sm mt-2 leading-relaxed max-w-[224px]">
+                        {getCardMeaning(card.name)}
+                      </p>
+                    </div>
+                  )}
+                  <OracleCard
+                    isFlipped={flippedCards.includes(card.id)}
+                    onClick={() => flipCard(card.id)}
+                    frontImage={card.image}
+                    name={card.name}
+                    persianName={card.persianName}
+                    isDesktop={isDesktop}
+                  />
+                </div>
               ))}
             </div>
 
@@ -423,12 +443,6 @@ export default function Home() {
           <div className="relative min-h-screen pt-24">
             {flippedCards.length < 3 ? (
               <div className="w-full">
-                {/* Only show instruction if current card is not flipped */}
-                {!flippedCards.includes(selectedCards[currentCardIndex]?.id) && (
-                  <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200 text-center w-full">
-                    ✨ Tap the card to continue ✨
-                  </p>
-                )}
                 {selectedCards.map((card, index) => (
                   <OracleCard
                     key={card.id}
@@ -441,6 +455,7 @@ export default function Home() {
                     show={index === currentCardIndex}
                     zIndex={2}
                     className="w-[80%]"
+                    style={flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 ? { top: '120px' } : { top: '30px' }}
                   />
                 ))}
                 
@@ -452,28 +467,25 @@ export default function Home() {
                       className="absolute top-4 left-1/2 -translate-x-1/2  
                                 text-amber-200 hover:text-amber-100 
                                 bg-purple-900/30 px-6 py-2 rounded-lg
-                                min-w-[220px] text-center
+                                text-center
                                 leading-tight
                                 shadow-[0_0_15px_rgba(88,28,135,0.3)]
                                 border border-purple-500/30 hover:border-purple-400/40
                                 hover:bg-purple-800/40"
                     >
                       {currentCardIndex === 1 ? (
-                        <div className="flex flex-col items-center gap-1">
-                          <div>Mashallah!</div>
-                          <div className="flex items-center gap-2">
-                            Next
-                            <span className="text-xl">→</span>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <span>Mashallah!</span>
+                          <span className="text-xl">→</span>
                         </div>
                       ) : (
                         "Yallah! Next Card →"
                       )}
                     </button>
-                    {/* Add card info below button */}
-                    <div className="absolute top-20 left-1/2 -translate-x-1/2 text-center">
-                      <p className="text-amber-200">{selectedCards[currentCardIndex].name}</p>
-                      <p className="text-amber-100/80 text-sm mt-1">
+                    {/* Card info between button and card - 2 lines of space */}
+                    <div className="absolute top-16 left-1/2 -translate-x-1/2 text-center" style={{ lineHeight: '1.75' }}>
+                      <p className="text-white mb-2">{selectedCards[currentCardIndex].name}</p>
+                      <p className="text-white/80 text-sm leading-relaxed">
                         {getCardMeaning(selectedCards[currentCardIndex].name)}
                       </p>
                     </div>

@@ -104,3 +104,31 @@
   height: auto;
   transition: height 0.3s ease-out;
 }
+
+@keyframes slide-horizontal {
+  0%, 100% { 
+    transform: translateX(0); 
+  }
+  50% { 
+    transform: translateX(8px); 
+  }
+}
+
+@layer utilities {
+  .animate-slide-horizontal {
+    animation: slide-horizontal 2s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
