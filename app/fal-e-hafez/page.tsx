@@ -40,6 +40,24 @@ export default function FaleHafez() {
     }
   }, [])
 
+  function getCardMeaning(name: string) {
+    const meanings: Record<string, string> = {
+      'Simurgh': 'The majestic phoenix of wisdom, guardian of ancient knowledge',
+      'Peri': 'The fairy of divine beauty, messenger of celestial grace',
+      'Div': 'The shadow self, the inner darkness we must face',
+      'Anahita': 'Goddess of waters and fertility, source of life and abundance',
+      'Faravahar': 'The divine essence, connection to the eternal spirit',
+      'Huma': 'The bird of fortune, bringer of happiness and good omens',
+      'Azhdaha': 'The dragon of transformation, keeper of hidden treasures',
+      'Cypress': 'The tree of eternity, symbol of resilience and growth',
+      'Moon': 'The celestial guide, reflection of inner emotions and cycles',
+      'Dervish': 'The wandering mystic, seeker of truth and enlightenment',
+      'Sun Lion': 'The royal protector, symbol of strength and sovereignty',
+      'Zahhak': 'The tyrant king, warning of corruption and inner demons',
+    };
+    return meanings[name] || '';
+  }
+
   const flipCover = () => {
     if (isCoverFlipped || !selectedCard) return
     
@@ -302,52 +320,15 @@ export default function FaleHafez() {
 
         {/* Desktop Layout */}
         <div className="hidden md:flex flex-col items-center w-full">
-          {/* Cover and Card Container */}
-          <div className="relative mb-8" style={{ perspective: '1200px' }}>
-            <div
-              className="relative"
-              style={{
-                width: '308px',
-                height: '431px',
-                transformStyle: 'preserve-3d',
-              }}
-            >
-              {/* Card underneath (revealed when cover flips) */}
-              {selectedCard && (
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    transform: isCoverFlipped ? 'scale(1)' : 'scale(0.95)',
-                    opacity: isCoverFlipped ? 1 : 0,
-                    transition: 'opacity 0.3s ease-in-out 0.4s, transform 0.3s ease-in-out 0.4s',
-                    zIndex: 1,
-                  }}
-                >
-                  <Image
-                    src={selectedCard.image}
-                    alt={selectedCard.name}
-                    fill
-                    className="object-contain rounded-lg"
-                  />
-                  <div className="absolute bottom-2 left-2 right-2 text-center">
-                    <h3 className="text-white text-sm font-semibold drop-shadow-lg">{selectedCard.name}</h3>
-                    <p className="text-white/80 text-xs drop-shadow-lg">{selectedCard.persianName}</p>
-                  </div>
-                </div>
-              )}
-              
-              {/* Cover (flips to the left and disappears) */}
+          {/* Cover - only shown when not flipped */}
+          {!isCoverFlipped && (
+            <div className="relative mb-8" style={{ perspective: '1200px' }}>
               <div
-                className={`absolute inset-0 cursor-pointer ${isCoverFlipped ? 'pointer-events-none' : ''}`}
+                className="relative cursor-pointer"
                 style={{
-                  transform: isCoverFlipped 
-                    ? 'rotateY(-180deg)' 
-                    : 'rotateY(0deg)',
-                  transformOrigin: 'left center',
+                  width: '308px',
+                  height: '431px',
                   transformStyle: 'preserve-3d',
-                  transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out',
-                  opacity: isCoverFlipped ? 0 : 1,
-                  zIndex: 2,
                 }}
                 onClick={flipCover}
               >
@@ -363,14 +344,16 @@ export default function FaleHafez() {
                 />
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Dedication */}
-          <p className="text-amber-200/60 text-sm font-light mb-8" dir="rtl">
-            تقدیم به والدینم
-          </p>
+          {/* Dedication - only shown when cover not flipped */}
+          {!isCoverFlipped && (
+            <p className="text-amber-200/60 text-sm font-light mb-8" dir="rtl">
+              تقدیم به والدینم
+            </p>
+          )}
 
-          {/* Reading section */}
+          {/* Reading section - shown when cover is flipped */}
           {isCoverFlipped && selectedCard && (
             <div className="w-[95vw] md:max-w-3xl animate-fade-in">
               {/* Loader - shown above tabs when loading */}
@@ -526,6 +509,30 @@ export default function FaleHafez() {
               </Tabs>
             </div>
           )}
+
+          {/* Card with description - shown below reading, disappears when reading starts */}
+          {isCoverFlipped && selectedCard && !reading.english && (
+            <div 
+              className="flex flex-col items-center mt-8 transition-opacity duration-500"
+              style={{ opacity: reading.english ? 0 : 1 }}
+            >
+              <div className="relative" style={{ width: '200px', height: '280px' }}>
+                <Image
+                  src={selectedCard.image}
+                  alt={selectedCard.name}
+                  fill
+                  className="object-contain rounded-lg"
+                />
+              </div>
+              <div className="mt-4 text-center max-w-md">
+                <h3 className="text-amber-100 text-lg font-semibold mb-2">{selectedCard.name}</h3>
+                <p className="text-amber-200/80 text-sm mb-2">{selectedCard.persianName}</p>
+                <p className="text-amber-200/60 text-sm leading-relaxed">
+                  {getCardMeaning(selectedCard.name)}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Mobile Layout */}
@@ -591,61 +598,51 @@ export default function FaleHafez() {
               )}
             </div>
             
-            {/* Cover and Card Container - Mobile */}
-            {/* Show large card only when cover is not flipped */}
+            {/* Cover - Mobile - only shown when not flipped */}
             {!isCoverFlipped && (
-              <div className="relative mb-8" style={{ 
-                perspective: '1000px', 
-                marginBottom: '32px',
-              }}>
-                <div
-                  className="relative mx-auto overflow-hidden"
-                  style={{
-                    width: 'min(414px, calc(90vw - 24px))',
-                    height: 'min(548px, calc((min(440px, 90vw) - 24px) * 1.245))',
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
-                  {/* Cover (flips to the left and disappears) */}
+              <>
+                <div className="relative mb-8" style={{ 
+                  perspective: '1000px', 
+                  marginBottom: '32px',
+                }}>
                   <div
-                    className="absolute cursor-pointer"
+                    className="relative mx-auto overflow-hidden cursor-pointer"
                     style={{
-                      left: '12px',
-                      right: '12px',
-                      top: 0,
-                      bottom: 0,
-                      transform: 'rotateY(0deg)',
-                      transformOrigin: 'left center',
+                      width: 'min(392px, calc(90vw - 46px))',
+                      height: 'min(548px, calc((min(440px, 90vw) - 24px) * 1.245))',
                       transformStyle: 'preserve-3d',
-                      transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out',
-                      opacity: 1,
-                      zIndex: 2,
                     }}
                     onClick={flipCover}
                   >
-                    <Image
-                      src="/cards/bookcover.png"
-                      alt="Book Cover"
-                      fill
-                      className="object-cover rounded-lg"
-                      style={{
-                        boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-                        pointerEvents: 'none',
-                      }}
-                    />
+                    <div style={{
+                      position: 'absolute',
+                      left: '-11px',
+                      top: 0,
+                      right: '-11px',
+                      bottom: 0,
+                    }}>
+                      <Image
+                        src="/cards/bookcover.png"
+                        alt="Book Cover"
+                        fill
+                        className="object-cover rounded-lg"
+                        style={{
+                          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+                
+                {/* Dedication - Mobile */}
+                <p className="text-amber-200/60 text-sm font-light" style={{ marginBottom: '32px' }} dir="rtl">
+                  تقدیم به والدینم
+                </p>
+              </>
             )}
             
-            {/* Dedication - Mobile */}
-            {!isCoverFlipped && (
-              <p className="text-amber-200/60 text-sm font-light" style={{ marginBottom: '32px' }} dir="rtl">
-                تقدیم به والدینم
-              </p>
-            )}
-            
-            {/* Reading section for mobile */}
+            {/* Reading section for mobile - shown when cover is flipped */}
             {isCoverFlipped && selectedCard && (
               <div className="w-full animate-fade-in">
                 {/* Loading state - shown above mini card */}
@@ -783,6 +780,30 @@ export default function FaleHafez() {
                     )}
                   </TabsContent>
                 </Tabs>
+              </div>
+            )}
+
+            {/* Card with description - Mobile - shown below reading, disappears when reading starts */}
+            {isCoverFlipped && selectedCard && !reading.english && (
+              <div 
+                className="flex flex-col items-center mt-6 transition-opacity duration-500 px-4"
+                style={{ opacity: reading.english ? 0 : 1 }}
+              >
+                <div className="relative" style={{ width: '150px', height: '210px' }}>
+                  <Image
+                    src={selectedCard.image}
+                    alt={selectedCard.name}
+                    fill
+                    className="object-contain rounded-lg"
+                  />
+                </div>
+                <div className="mt-4 text-center max-w-sm">
+                  <h3 className="text-amber-100 text-base font-semibold mb-2">{selectedCard.name}</h3>
+                  <p className="text-amber-200/80 text-xs mb-2">{selectedCard.persianName}</p>
+                  <p className="text-amber-200/60 text-xs leading-relaxed">
+                    {getCardMeaning(selectedCard.name)}
+                  </p>
+                </div>
               </div>
             )}
           </div>
