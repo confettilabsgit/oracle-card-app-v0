@@ -1,11 +1,9 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import OracleCard from '../components/OracleCard'
 import TypewriterEffect from '../components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from 'next/image'
-import { cardMeanings } from '../lib/cardMeanings'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -26,34 +24,20 @@ export default function FaleHafez() {
   const [selectedCard, setSelectedCard] = useState<typeof cards[0] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [reading, setReading] = useState({ english: '', persian: '' })
-  const [isDesktop, setIsDesktop] = useState(true)
   const [showReadMoreEnglish, setShowReadMoreEnglish] = useState(false)
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isCoverFlipped, setIsCoverFlipped] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
   const [userIntention, setUserIntention] = useState('')
 
   useEffect(() => {
-    setIsMounted(true)
     // Randomly select a card on mount (client-side only to avoid hydration mismatch)
     if (typeof window !== 'undefined') {
       const randomCard = cards[Math.floor(Math.random() * cards.length)]
       setSelectedCard(randomCard)
     }
-  }, [])
-
-  useEffect(() => {
-    const checkIsDesktop = () => {
-      setIsDesktop(window.innerWidth >= 768)
-    }
-    
-    checkIsDesktop()
-    window.addEventListener('resize', checkIsDesktop)
-    
-    return () => window.removeEventListener('resize', checkIsDesktop)
   }, [])
 
   const flipCover = () => {
@@ -96,8 +80,9 @@ export default function FaleHafez() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
         });
-      } catch (fetchError: any) {
-        throw new Error(`Network error: ${fetchError.message || 'Failed to connect to server'}`);
+      } catch (fetchError: unknown) {
+        const errorMessage = fetchError instanceof Error ? fetchError.message : 'Failed to connect to server';
+        throw new Error(`Network error: ${errorMessage}`);
       }
 
       const hafezText = await hafezResponse.text();
@@ -109,7 +94,7 @@ export default function FaleHafez() {
           if (errorData?.error) {
             errorMessage = errorData.error;
           }
-        } catch (e) {
+        } catch (_e) {
           // If parsing fails, use the raw text
           errorMessage = hafezText || errorMessage;
         }
@@ -119,7 +104,7 @@ export default function FaleHafez() {
       let hafezData;
       try {
         hafezData = JSON.parse(hafezText);
-      } catch (parseError) {
+      } catch (_parseError) {
         console.error('Failed to parse Hafez response:', hafezText);
         throw new Error(`Invalid response format from server: ${hafezText.substring(0, 100)}`);
       }
@@ -145,7 +130,7 @@ export default function FaleHafez() {
         try {
           const persianPoemData = JSON.parse(persianPoemText);
           persianPoem = persianPoemData?.text || '';
-        } catch (e) {
+        } catch (_e) {
           console.error('Failed to parse Persian poem response');
         }
       }
@@ -170,7 +155,7 @@ export default function FaleHafez() {
           if (errorData?.error) {
             errorMessage = errorData.error;
           }
-        } catch (e) {
+        } catch (_e) {
           errorMessage = englishText || errorMessage;
         }
         throw new Error(errorMessage);
@@ -179,7 +164,7 @@ export default function FaleHafez() {
       let englishData;
       try {
         englishData = JSON.parse(englishText);
-      } catch (parseError) {
+      } catch (_parseError) {
         console.error('Failed to parse English response:', englishText);
         throw new Error(`Invalid response format from server: ${englishText.substring(0, 100)}`);
       }
