@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    const { verse, language } = await req.json();
+    const { verse, language, intention } = await req.json();
 
     const systemMessage = language === 'persian' 
       ? `شما یک محقق و عارف متخصص در دیوان حافظ هستید با دانش عمیق از عرفان صوفیانه و سنت‌های فرهنگی ایرانی. شما در تفسیر اشعار حافظ با توجه به:
@@ -31,17 +31,22 @@ export async function POST(req: Request) {
 - Authentic interpretations from traditional and scholarly sources
 Your interpretations should be authentic and resonate with Persian/Iranian readers.`;
 
+    const intentionContext = intention && intention.trim() 
+      ? `\n\nسوال یا نیت کاربر: "${intention.trim()}"\nلطفاً تفسیر خود را با توجه به این سوال یا نیت ارائه دهید و راهنمایی مرتبط با آن ارائه کنید.`
+      : '';
+
     const userPrompt = language === 'persian'
       ? `این شعر حافظ را تفسیر کنید:
 
-"${verse}"
+"${verse}"${intentionContext}
 
 لطفاً تفسیر خود را به این صورت ارائه دهید:
 
 بخش اول - تفسیر ساده و قابل فهم (برای عموم):
+   ${intention && intention.trim() ? `- در ابتدای تفسیر، به طور مستقیم و طبیعی به سوال یا نیت کاربر اشاره کنید (مثلاً: "در مورد سوال شما درباره..." یا "با توجه به نیت شما...")` : ''}
    - تفسیر ساده و قابل فهم از شعر حافظ
    - معانی اصلی و پیام کلیدی به زبان ساده
-   - راهنمایی اولیه و کاربردی
+   - راهنمایی اولیه و کاربردی مرتبط با سوال کاربر
    - بدون استفاده از اصطلاحات پیچیده عرفانی
    - بدون تکرار عنوان یا استفاده از فرمت‌های نشانه‌گذاری
    - فقط محتوای تفسیر را بنویسید
@@ -57,16 +62,19 @@ Your interpretations should be authentic and resonate with Persian/Iranian reade
 فرمت دقیق: [تفسیر ساده و قابل فهم - فقط محتوا، بدون عنوان یا نشانه‌گذاری][READMORE_SPLIT][تفسیر عمیق و علمی]`
       : `Interpret this Hafez verse:
 
-"${verse}"
+"${verse}"${intention && intention.trim() 
+      ? `\n\nUser's question or intention: "${intention.trim()}"\nPlease provide your interpretation with consideration to this question or intention, offering relevant guidance.`
+      : ''}
 
 Please structure your interpretation as follows:
 
 FIRST SECTION - Brief Insight:
+   ${intention && intention.trim() ? `- BEGIN the interpretation by directly and naturally referencing the user's question or intention (e.g., "Regarding your question about..." or "In light of your intention to..."). Make it feel personal and tailored from the very start.` : ''}
    - Simple, accessible interpretation of the Hafez verse
    - Main meanings and key message in plain language
-   - Initial guidance that anyone can understand
+   - Initial guidance that anyone can understand, specifically related to the user's question
    - Avoid complex mystical terminology
-   - Focus on what the verse means in everyday terms
+   - Focus on what the verse means in everyday terms and how it relates to their specific situation
    - DO NOT repeat the title "Brief Insight" or "Layman's Interpretation" in the text
    - DO NOT use markdown formatting like asterisks or bold
    - Write only the interpretation content, nothing else

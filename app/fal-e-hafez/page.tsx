@@ -34,6 +34,7 @@ export default function FaleHafez() {
   const [errorMessage, setErrorMessage] = useState('')
   const [isCoverFlipped, setIsCoverFlipped] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [userIntention, setUserIntention] = useState('')
 
   useEffect(() => {
     setIsMounted(true)
@@ -61,7 +62,7 @@ export default function FaleHafez() {
     setIsCoverFlipped(true)
     setErrorMessage('')
     setIsLoading(true)
-    generateReading(selectedCard)
+    generateReading(selectedCard, userIntention)
   }
 
   const handleNewReading = () => {
@@ -73,13 +74,14 @@ export default function FaleHafez() {
     setReading({ english: '', persian: '' })
     setIsCoverFlipped(false)
     setErrorMessage('')
+    setUserIntention('')
     
     // Select a new random card
     const randomCard = cards[Math.floor(Math.random() * cards.length)]
     setSelectedCard(randomCard)
   }
 
-  const generateReading = async (card: typeof cards[0]) => {
+  const generateReading = async (card: typeof cards[0], intention?: string) => {
     // Reset reading reveal states
     setShowReadMoreEnglish(false)
     setShowReadMorePersian(false)
@@ -154,7 +156,8 @@ export default function FaleHafez() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           verse: hafezData.text,
-          language: 'english'
+          language: 'english',
+          intention: intention?.trim() || undefined
         }),
       });
 
@@ -196,7 +199,8 @@ export default function FaleHafez() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           verse: persianPoem || hafezData.text,
-          language: 'persian'
+          language: 'persian',
+          intention: intention?.trim() || undefined
         }),
       });
 
@@ -269,10 +273,35 @@ export default function FaleHafez() {
               </button>
             </div>
           ) : !isCoverFlipped ? (
-            <div className="flex flex-col items-center gap-2">
-              <h2 className="text-sm md:text-lg text-center text-amber-200 font-light px-8 md:px-12">
-                <span>Open the book to discover your verse</span>
-              </h2>
+            <div className="flex flex-col items-center gap-4 w-full max-w-md">
+              <div className="w-full px-4">
+                <label htmlFor="intention" className="sr-only">
+                  What brings you here? (Optional)
+                </label>
+                <h2 className="text-sm md:text-lg text-center text-amber-100 font-light px-8 md:px-12 mb-3">
+                  <span>Open the book to discover your verse. What brings you here? (Optional)</span>
+                </h2>
+                <textarea
+                  id="intention"
+                  value={userIntention}
+                  onChange={(e) => setUserIntention(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey && !isCoverFlipped && selectedCard) {
+                      e.preventDefault()
+                      flipCover()
+                    }
+                  }}
+                  placeholder="Enter your question or intention..."
+                  className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
+                  rows={3}
+                  maxLength={200}
+                />
+                {userIntention.length > 0 && (
+                  <p className="text-amber-200/60 text-xs mt-1 text-right">
+                    {userIntention.length}/200
+                  </p>
+                )}
+              </div>
             </div>
           ) : null}
           
@@ -535,10 +564,35 @@ export default function FaleHafez() {
                   </button>
                 </div>
               ) : !isCoverFlipped ? (
-                <div className="flex flex-col items-center" style={{ marginTop: '8px' }}>
-                  <h2 className="text-sm text-center text-amber-200 font-light px-8">
-                    <span>Open the book to discover your verse</span>
-                  </h2>
+                <div className="flex flex-col items-center gap-3 w-full px-4" style={{ marginTop: '8px' }}>
+                  <div className="w-full">
+                    <label htmlFor="intention-mobile" className="sr-only">
+                      What brings you here? (Optional)
+                    </label>
+                    <h2 className="text-sm text-center text-amber-100 font-light px-8 mb-3">
+                      <span>Open the book to discover your verse. What brings you here? (Optional)</span>
+                    </h2>
+                    <textarea
+                      id="intention-mobile"
+                      value={userIntention}
+                      onChange={(e) => setUserIntention(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey && !isCoverFlipped && selectedCard) {
+                          e.preventDefault()
+                          flipCover()
+                        }
+                      }}
+                      placeholder="Enter your question or intention..."
+                      className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-sm text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
+                      rows={3}
+                      maxLength={200}
+                    />
+                    {userIntention.length > 0 && (
+                      <p className="text-amber-200/60 text-xs mt-1 text-right">
+                        {userIntention.length}/200
+                      </p>
+                    )}
+                  </div>
                 </div>
               ) : null}
               
@@ -645,21 +699,6 @@ export default function FaleHafez() {
                     </p>
                   </div>
                 )}
-                
-                {/* Mini card at top - shown immediately when cover flips */}
-                <div className="flex justify-center mb-4">
-                  <div 
-                    className="w-[106px] h-[176px] rounded-lg overflow-hidden border border-amber-200/20"
-                  >
-                    <Image 
-                      src={selectedCard.image} 
-                      alt={selectedCard.name}
-                      width={106}
-                      height={176}
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-                </div>
                 
                 <Tabs defaultValue="english" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30" style={{ marginBottom: '32px' }}>
