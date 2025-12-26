@@ -478,7 +478,7 @@ export default function FaleHafez() {
                           <div className="flex justify-center">
                             <button 
                               onClick={() => setShowFullReadingPersian(true)}
-                              className="px-6 py-2 text-amber-200 hover:text-amber-100 
+                              className="px-6 py-2 text-base text-amber-200 hover:text-amber-100 
                                        border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                        transition-all duration-300 animate-fade-in
                                        bg-[#1a1033]/80 hover:bg-[#1a1033]
@@ -492,7 +492,7 @@ export default function FaleHafez() {
                         
                         {showFullReadingPersian && (
                           <div className="animate-fade-in">
-                            <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر عمیق ✧</div>
+                            <div className="text-amber-200/80 mb-2 text-base">✧ تفسیر عمیق ✧</div>
                             <TypewriterEffect 
                               text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 
                               delay={10}
@@ -550,7 +550,7 @@ export default function FaleHafez() {
                 <div className="flex flex-col items-center" style={{ marginTop: '16px', marginBottom: '16px' }}>
                   <button 
                     onClick={handleNewReading}
-                    className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg shadow-[0_0_15px_rgba(88,28,135,0.3)] border border-purple-500/30 hover:border-purple-400/40 hover:bg-purple-800/40 transition-all"
+                    className="bg-purple-900/30 text-[#FFFDD0] text-base px-6 py-2 rounded-lg shadow-[0_0_15px_rgba(88,28,135,0.3)] border border-purple-500/30 hover:border-purple-400/40 hover:bg-purple-800/40 transition-all"
                   >
                     New Reading
                   </button>
@@ -561,7 +561,7 @@ export default function FaleHafez() {
                     <label htmlFor="intention-mobile" className="sr-only">
                       What brings you here? (Optional)
                     </label>
-                    <h2 className="text-sm text-center text-amber-100 font-light px-8 mb-3">
+                    <h2 className="text-base text-center text-amber-100 font-light px-8 mb-3">
                       <span>Open the book to discover your verse. What brings you here? (Optional)</span>
                     </h2>
                     <textarea
@@ -575,12 +575,12 @@ export default function FaleHafez() {
                         }
                       }}
                       placeholder="Enter your question or intention..."
-                      className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-sm text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
+                      className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-base text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
                       rows={3}
                       maxLength={200}
                     />
                     {userIntention.length > 0 && (
-                      <p className="text-amber-200/60 text-xs mt-1 text-right">
+                      <p className="text-amber-200/60 text-sm mt-1 text-right">
                         {userIntention.length}/200
                       </p>
                     )}
@@ -591,7 +591,7 @@ export default function FaleHafez() {
               {/* Error message - always visible when present */}
               {errorMessage && (
                 <div className="mt-4 animate-fade-in" style={{ marginTop: '16px' }}>
-                  <p className="text-red-300 text-sm px-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg py-2">
+                  <p className="text-red-300 text-base px-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg py-2">
                     {errorMessage}
                   </p>
                 </div>
@@ -636,7 +636,7 @@ export default function FaleHafez() {
                 </div>
                 
                 {/* Dedication - Mobile */}
-                <p className="text-amber-200/60 text-sm font-light" style={{ marginBottom: '32px' }} dir="rtl">
+                <p className="text-amber-200/60 text-base font-light" style={{ marginBottom: '32px' }} dir="rtl">
                   تقدیم به والدینم
                 </p>
               </>
@@ -676,7 +676,7 @@ export default function FaleHafez() {
                         <circle cx="40" cy="40" r="3" fill="currentColor" />
                       </svg>
                     </div>
-                    <p className="text-purple-300 text-lg text-center font-serif italic animate-float">
+                    <p className="text-purple-300 text-xl text-center font-serif italic animate-float">
                       The ancient verses are revealing themselves...
                     </p>
                   </div>
@@ -686,13 +686,13 @@ export default function FaleHafez() {
                   <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30" style={{ marginBottom: '32px' }}>
                     <TabsTrigger 
                       value="english" 
-                      className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                      className="text-xl data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                     >
                       English Reading
                     </TabsTrigger>
                     <TabsTrigger 
                       value="persian" 
-                      className="text-lg font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
+                      className="text-xl font-arabic data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
                     >
                       فال فارسی
                     </TabsTrigger>
@@ -798,9 +798,9 @@ export default function FaleHafez() {
                   />
                 </div>
                 <div className="mt-4 text-center max-w-sm">
-                  <h3 className="text-amber-100 text-base font-semibold mb-2">{selectedCard.name}</h3>
-                  <p className="text-amber-200/80 text-xs mb-2">{selectedCard.persianName}</p>
-                  <p className="text-amber-200/60 text-xs leading-relaxed">
+                  <h3 className="text-amber-100 text-lg font-semibold mb-2">{selectedCard.name}</h3>
+                  <p className="text-amber-200/80 text-sm mb-2">{selectedCard.persianName}</p>
+                  <p className="text-amber-200/60 text-sm leading-relaxed">
                     {getCardMeaning(selectedCard.name)}
                   </p>
                 </div>
