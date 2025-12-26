@@ -212,8 +212,8 @@ export default function Home() {
               ✨ New Reading ✨
             </button>
           ) : (
-            <h2 className="text-sm md:text-lg text-center text-amber-200 font-light px-8 md:px-12 italic">
-              <span>Turn three cards mindfully and invite the cosmos to share its secrets</span>
+            <h2 className="text-base md:text-xl text-center text-amber-200 font-light px-8 md:px-12 italic">
+              <span>Flip three cards mindfully and invite the cosmos to share its secrets</span>
             </h2>
           )}
         </div>
@@ -223,7 +223,7 @@ export default function Home() {
           {/* Shared container for cards and reading */}
           <div className="w-full max-w-3xl">
             {/* Cards */}
-            <div className="flex gap-6 mb-16 justify-center items-start">
+            <div className="flex gap-6 mb-16 justify-center items-start" style={{ marginLeft: '10px' }}>
               {selectedCards.map((card) => (
                 <OracleCard
                   key={card.id}
@@ -420,12 +420,12 @@ export default function Home() {
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
           {/* Main Card Selection Area */}
-          <div className="relative min-h-screen pt-24 px-4 flex flex-col items-center">
+          <div className="relative min-h-screen pt-24">
             {flippedCards.length < 3 ? (
-              <div className="flex flex-col items-center w-full">
+              <div className="w-full">
                 {/* Only show instruction if current card is not flipped */}
                 {!flippedCards.includes(selectedCards[currentCardIndex]?.id) && (
-                  <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200">
+                  <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200 text-center w-full">
                     ✨ Tap the card to continue ✨
                   </p>
                 )}
@@ -440,7 +440,7 @@ export default function Home() {
                     isDesktop={isDesktop}
                     show={index === currentCardIndex}
                     zIndex={2}
-                    className="w-[80%] mx-auto"
+                    className="w-[80%]"
                   />
                 ))}
                 

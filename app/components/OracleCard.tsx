@@ -29,12 +29,16 @@ export default function OracleCard({
   return (
     <div className={`
       ${isDesktop ? 'flex flex-col' : 'absolute transition-all duration-500'}
-      ${!isDesktop && !show ? 'translate-x-[100%] opacity-0' : !isDesktop ? 'translate-x-[-50%] opacity-100' : ''}
       ${className}
     `}
     style={{
       zIndex: zIndex,
-      left: isDesktop ? 'auto' : '50%',
+      ...(isDesktop ? {} : {
+        left: '50%',
+        right: 'auto',
+        transform: !show ? 'translateX(100%)' : 'translateX(calc(-50% + 25px))',
+        opacity: !show ? 0 : 1,
+      }),
     }}>
       <div
         className={`
@@ -70,7 +74,7 @@ export default function OracleCard({
         </div>
       </div>
       {isFlipped && show && (
-        <div className="absolute bottom-[-40px] w-full text-center">
+        <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 w-full text-center">
           <h3 className={`font-semibold text-white ${isDesktop ? 'text-base' : 'text-sm'}`}>{name}</h3>
           <p className={`font-semibold text-white/80 ${isDesktop ? 'text-base' : 'text-sm'}`}>{persianName}</p>
         </div>
