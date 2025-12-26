@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 interface TypewriterEffectProps {
   text: string
   delay?: number
   onComplete?: () => void
+  onStart?: () => void
   isTitle?: boolean
   direction?: 'ltr' | 'rtl'
 }
@@ -14,15 +15,30 @@ const TypewriterEffect = ({
   text, 
   delay = 10,
   onComplete,
+  onStart,
   isTitle = false,
   direction = 'ltr'
 }: TypewriterEffectProps) => {
   const [currentText, setCurrentText] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
+  const hasStartedRef = useRef(false)
+
+  // Reset hasStartedRef when text changes
+  useEffect(() => {
+    hasStartedRef.current = false
+    setCurrentIndex(0)
+    setCurrentText('')
+  }, [text])
 
   useEffect(() => {
     // Guard against undefined text
     if (!text) return;
+    
+    // Trigger onStart when typing begins (first character)
+    if (currentIndex === 0 && text.length > 0 && !hasStartedRef.current && onStart) {
+      hasStartedRef.current = true
+      onStart()
+    }
     
     if (currentIndex < text.length) {
       const timeout = setTimeout(() => {
@@ -33,7 +49,7 @@ const TypewriterEffect = ({
     } else if (onComplete) {
       onComplete()
     }
-  }, [currentIndex, delay, text, onComplete])
+  }, [currentIndex, delay, text, onComplete, onStart])
 
   // Add extra line breaks before section titles
   const formattedText = currentText.replace(

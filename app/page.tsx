@@ -35,7 +35,10 @@ export default function Home() {
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
 
   useEffect(() => {
-    shuffleCards()
+    // Only shuffle on client-side to avoid hydration mismatch
+    if (typeof window !== 'undefined') {
+      shuffleCards()
+    }
   }, [])
 
   useEffect(() => {
@@ -438,9 +441,9 @@ export default function Home() {
         </div>
 
         {/* Mobile Layout */}
-        <div className="md:hidden w-full">
+        <div className="md:hidden w-full overflow-x-hidden" style={{ touchAction: 'pan-y', maxWidth: '100vw' }}>
           {/* Main Card Selection Area */}
-          <div className="relative min-h-screen pt-24">
+          <div className="relative min-h-screen pt-[91px] overflow-x-hidden" style={{ touchAction: 'pan-y', maxWidth: '100vw' }}>
             {flippedCards.length < 3 ? (
               <div className="w-full">
                 {selectedCards.map((card, index) => (
@@ -455,7 +458,7 @@ export default function Home() {
                     show={index === currentCardIndex}
                     zIndex={2}
                     className="w-[80%]"
-                    style={flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 ? { top: '120px' } : { top: '30px' }}
+                    style={flippedCards.includes(selectedCards[currentCardIndex]?.id) && currentCardIndex < 2 ? { top: '115px' } : { top: '25px' }}
                   />
                 ))}
                 

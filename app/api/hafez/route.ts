@@ -15,6 +15,26 @@ export async function POST() {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error('Hafez generation error:', errorMessage)
-    return NextResponse.json({ error: 'Failed to generate wisdom' }, { status: 500 })
+    
+    // Check for specific OpenAI API errors
+    if (errorMessage.includes('quota') || errorMessage.includes('429')) {
+      return NextResponse.json(
+        { error: 'API quota exceeded. Please check your OpenAI billing.' },
+        { status: 503 }
+      )
+    }
+    
+    if (errorMessage.includes('401') || errorMessage.includes('Invalid API key')) {
+      return NextResponse.json(
+        { error: 'Invalid API key. Please check your OpenAI configuration.' },
+        { status: 401 }
+      )
+    }
+    
+    // Return more specific error message
+    return NextResponse.json(
+      { error: `Failed to generate wisdom: ${errorMessage}` },
+      { status: 500 }
+    )
   }
 } 

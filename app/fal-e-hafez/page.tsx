@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react'
 import OracleCard from '../components/OracleCard'
 import TypewriterEffect from '../components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { cardMeanings } from '../lib/cardMeanings'
 
@@ -34,11 +33,15 @@ export default function FaleHafez() {
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isCoverFlipped, setIsCoverFlipped] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    // Randomly select a card on mount
-    const randomCard = cards[Math.floor(Math.random() * cards.length)]
-    setSelectedCard(randomCard)
+    setIsMounted(true)
+    // Randomly select a card on mount (client-side only to avoid hydration mismatch)
+    if (typeof window !== 'undefined') {
+      const randomCard = cards[Math.floor(Math.random() * cards.length)]
+      setSelectedCard(randomCard)
+    }
   }, [])
 
   useEffect(() => {
@@ -85,20 +88,42 @@ export default function FaleHafez() {
     
     try {
       // Get Hafez quote first (English)
-      const hafezResponse = await fetch('/api/hafez', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
+      let hafezResponse;
+      try {
+        hafezResponse = await fetch('/api/hafez', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (fetchError: any) {
+        throw new Error(`Network error: ${fetchError.message || 'Failed to connect to server'}`);
+      }
 
       const hafezText = await hafezResponse.text();
       if (!hafezResponse.ok) {
         console.error('Hafez Response:', hafezText);
-        throw new Error('Failed to fetch Hafez quote');
+        let errorMessage = 'Failed to fetch Hafez quote';
+        try {
+          const errorData = JSON.parse(hafezText);
+          if (errorData?.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          // If parsing fails, use the raw text
+          errorMessage = hafezText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
-      const hafezData = JSON.parse(hafezText);
+      let hafezData;
+      try {
+        hafezData = JSON.parse(hafezText);
+      } catch (parseError) {
+        console.error('Failed to parse Hafez response:', hafezText);
+        throw new Error(`Invalid response format from server: ${hafezText.substring(0, 100)}`);
+      }
+      
       if (!hafezData?.text) {
-        throw new Error('Invalid Hafez response format');
+        throw new Error('Invalid Hafez response format: missing text field');
       }
 
       // Get Persian poem
@@ -136,12 +161,28 @@ export default function FaleHafez() {
       const englishText = await englishResponse.text();
       if (!englishResponse.ok) {
         console.error('English Response:', englishText);
-        throw new Error('Failed to fetch English reading');
+        let errorMessage = 'Failed to fetch English reading';
+        try {
+          const errorData = JSON.parse(englishText);
+          if (errorData?.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          errorMessage = englishText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
-      const englishData = JSON.parse(englishText);
+      let englishData;
+      try {
+        englishData = JSON.parse(englishText);
+      } catch (parseError) {
+        console.error('Failed to parse English response:', englishText);
+        throw new Error(`Invalid response format from server: ${englishText.substring(0, 100)}`);
+      }
+      
       if (!englishData?.text) {
-        throw new Error('Invalid English response format');
+        throw new Error('Invalid English response format: missing text field');
       }
 
       // Parse the structured response: [Layman's interpretation][READMORE_SPLIT][Deep scholarly interpretation]
@@ -187,6 +228,9 @@ export default function FaleHafez() {
       })
     } catch (error) {
       console.error('Error:', error)
+      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.'
+      setErrorMessage(errorMsg)
+      setIsCoverFlipped(false) // Reset cover state on error
     } finally {
       setIsLoading(false)
     }
@@ -249,8 +293,8 @@ export default function FaleHafez() {
             <div
               className="relative"
               style={{
-                width: '400px',
-                height: '560px',
+                width: '308px',
+                height: '431px',
                 transformStyle: 'preserve-3d',
               }}
             >
@@ -300,6 +344,7 @@ export default function FaleHafez() {
                   className="object-cover rounded-lg"
                   style={{
                     boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                    pointerEvents: 'none',
                   }}
                 />
               </div>
@@ -314,6 +359,37 @@ export default function FaleHafez() {
           {/* Reading section */}
           {isCoverFlipped && selectedCard && (
             <div className="w-[95vw] md:max-w-3xl animate-fade-in">
+              {/* Loader - shown above tabs when loading */}
+              {isLoading && (
+                <div className="flex flex-col items-center justify-center gap-4 mb-6">
+                  {/* Persian-themed loader - ornate spinning pattern */}
+                  <div className="relative w-20 h-20 text-amber-400">
+                    <svg
+                      className="animate-spin"
+                      width="80"
+                      height="80"
+                      viewBox="0 0 80 80"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ animationDuration: '2s' }}
+                    >
+                      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.2" />
+                      <circle cx="40" cy="40" r="30" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.3" />
+                      <circle cx="40" cy="40" r="24" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+                      <path
+                        d="M40 8 L44 20 L40 16 L36 20 Z M40 72 L44 60 L40 64 L36 60 Z M8 40 L20 36 L16 40 L20 44 Z M72 40 L60 44 L64 40 L60 36 Z M20 20 L28 24 L24 28 L16 24 Z M60 20 L52 24 L56 28 L64 24 Z M20 60 L28 56 L24 52 L16 56 Z M60 60 L52 56 L56 52 L64 56 Z"
+                        fill="currentColor"
+                        opacity="0.7"
+                      />
+                      <circle cx="40" cy="40" r="6" fill="currentColor" opacity="0.9" />
+                      <circle cx="40" cy="40" r="3" fill="currentColor" />
+                    </svg>
+                  </div>
+                  <p className="text-purple-300 text-lg text-center font-serif italic animate-float">
+                    The ancient verses are revealing themselves...
+                  </p>
+                </div>
+              )}
               <Tabs defaultValue="english" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
                   <TabsTrigger 
@@ -331,12 +407,7 @@ export default function FaleHafez() {
                 </TabsList>
                 <TabsContent value="english">
                   <div className="min-h-[200px] bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg">
-                    {isLoading ? (
-                      <div className="flex flex-col items-center justify-center gap-4">
-                        <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                        <p className="text-purple-300 animate-float">The ancient verses are revealing themselves...</p>
-                      </div>
-                    ) : reading.english ? (
+                    {reading.english ? (
                       <div className="text-amber-100 space-y-6">
                         {/* Static Hafez poem - prominent but not oversized */}
                         <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
@@ -388,14 +459,7 @@ export default function FaleHafez() {
                 </TabsContent>
                 <TabsContent value="persian">
                   <div className="min-h-[200px] bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg text-right" dir="rtl">
-                    {isLoading ? (
-                      <div className="flex flex-col items-center justify-center gap-4 py-12">
-                        <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                        <p className="text-purple-300 text-lg text-center">
-                          اشعار کهن در حال آشکار شدن هستند...
-                        </p>
-                      </div>
-                    ) : reading.persian ? (
+                    {reading.persian ? (
                       <div className="text-amber-100 space-y-6">
                         {/* Static Hafez poem - prominent but not oversized */}
                         <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20" dir="rtl">
@@ -451,8 +515,8 @@ export default function FaleHafez() {
         </div>
 
         {/* Mobile Layout */}
-        <div className="md:hidden w-full">
-          <div className="relative min-h-screen px-4 flex flex-col items-center" style={{ paddingTop: '0px' }}>
+        <div className="md:hidden w-full overflow-x-hidden" style={{ touchAction: 'pan-y', maxWidth: '100vw' }}>
+          <div className="relative min-h-screen px-4 flex flex-col items-center overflow-x-hidden" style={{ paddingTop: '0px', marginTop: '-5px', touchAction: 'pan-y', maxWidth: '100vw' }}>
             {/* Header section - Mobile */}
             <div className="flex flex-col items-center mb-6" style={{ marginBottom: '24px' }}>
               <h1 className="text-2xl text-center font-serif font-light text-amber-100 tracking-wide">
@@ -498,8 +562,8 @@ export default function FaleHafez() {
                 <div
                   className="relative mx-auto overflow-hidden"
                   style={{
-                    width: 'min(376px, calc(90vw - 24px))',
-                    height: 'min(498px, calc((min(400px, 90vw) - 24px) * 1.245))',
+                    width: 'min(414px, calc(90vw - 24px))',
+                    height: 'min(548px, calc((min(440px, 90vw) - 24px) * 1.245))',
                     transformStyle: 'preserve-3d',
                   }}
                 >
@@ -527,6 +591,7 @@ export default function FaleHafez() {
                       className="object-cover rounded-lg"
                       style={{
                         boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                        pointerEvents: 'none',
                       }}
                     />
                   </div>
@@ -584,13 +649,13 @@ export default function FaleHafez() {
                 {/* Mini card at top - shown immediately when cover flips */}
                 <div className="flex justify-center mb-4">
                   <div 
-                    className="w-24 h-40 rounded-lg overflow-hidden border border-amber-200/20"
+                    className="w-[106px] h-[176px] rounded-lg overflow-hidden border border-amber-200/20"
                   >
                     <Image 
                       src={selectedCard.image} 
                       alt={selectedCard.name}
-                      width={96}
-                      height={160}
+                      width={106}
+                      height={176}
                       className="object-cover w-full h-full"
                     />
                   </div>

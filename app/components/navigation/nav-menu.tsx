@@ -32,11 +32,14 @@ export default function NavMenu() {
     transform: 'translate(-50%, -50%)',
     backgroundColor: '#1a1a2e',  // Dark navy matching your theme
     padding: '2rem',
+    paddingTop: 'calc(2rem + 16px)', // Add 16px extra padding on top for mobile browser URL bar
     borderRadius: '8px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     zIndex: 100,
     maxWidth: '600px',
     width: '90%',
+    maxHeight: '90vh',
+    overflowY: 'auto',
   }
 
   const overlayStyle: React.CSSProperties = {
@@ -222,7 +225,8 @@ export default function NavMenu() {
             <div style={{ 
               display: 'flex', 
               justifyContent: 'flex-end',
-              marginBottom: '1rem'
+              marginBottom: '1rem',
+              marginTop: '16px' // Extra top margin for mobile browser URL bar
             }}>
               <button 
                 onClick={() => setShowAbout(false)}
