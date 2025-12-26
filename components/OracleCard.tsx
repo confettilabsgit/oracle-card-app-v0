@@ -33,7 +33,7 @@ const OracleCard: React.FC<OracleCardProps> = ({ isFlipped, onClick, frontImage,
       >
         <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] flex items-center justify-center rounded-lg overflow-hidden">
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-2nVDZYNZPDSm62r2ALrTYoAeYoxJcb.webp"
+            src="/cards/cardback.png"
             alt="Card Back"
             width={220}
             height={380}

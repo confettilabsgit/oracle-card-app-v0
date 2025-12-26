@@ -9,6 +9,7 @@ export default function NavMenu() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const goldColor = 'rgb(254 243 199)'  // Matches your title's color
 
@@ -84,6 +85,7 @@ export default function NavMenu() {
 
   return (
     <>
+      {/* Desktop Navigation */}
       <nav className="fixed top-4 right-4 z-50 hidden md:flex gap-2">
         <Link 
           href="/"
@@ -117,6 +119,92 @@ export default function NavMenu() {
         >
           Feedback
         </button>
+      </nav>
+
+      {/* Mobile Navigation */}
+      <nav className="fixed top-4 right-4 z-50 md:hidden">
+        {/* Persian-themed menu button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2"
+          aria-label="Toggle menu"
+          style={buttonStyle}
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgb(254 243 199)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            className="transition-transform duration-300"
+          >
+            {/* Persian-inspired pattern: three horizontal lines with decorative dots */}
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <circle cx="6" cy="6" r="1.5" fill="rgb(254 243 199)" />
+            <circle cx="18" cy="6" r="1.5" fill="rgb(254 243 199)" />
+            
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <circle cx="6" cy="12" r="1.5" fill="rgb(254 243 199)" />
+            <circle cx="18" cy="12" r="1.5" fill="rgb(254 243 199)" />
+            
+            <line x1="3" y1="18" x2="21" y2="18" />
+            <circle cx="6" cy="18" r="1.5" fill="rgb(254 243 199)" />
+            <circle cx="18" cy="18" r="1.5" fill="rgb(254 243 199)" />
+          </svg>
+        </button>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <>
+            <div
+              className="fixed inset-0 bg-black/70 z-40"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <div
+              className="fixed top-16 right-4 bg-[#1a1a2e] rounded-lg shadow-lg z-50 min-w-[200px] border border-amber-200/20"
+              style={{ padding: '1rem' }}
+            >
+              <Link
+                href="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2 px-4 text-amber-200 hover:text-amber-100 transition-colors"
+                style={{ color: goldColor }}
+              >
+                The Persian Oracle
+              </Link>
+              <Link
+                href="/fal-e-hafez"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2 px-4 text-amber-200 hover:text-amber-100 transition-colors"
+                style={{ color: goldColor }}
+              >
+                Fal-e-Hafez
+              </Link>
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  setShowAbout(true)
+                }}
+                className="block w-full text-left py-2 px-4 text-amber-200 hover:text-amber-100 transition-colors"
+                style={{ color: goldColor }}
+              >
+                About
+              </button>
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  setShowFeedback(true)
+                }}
+                className="block w-full text-left py-2 px-4 text-amber-200 hover:text-amber-100 transition-colors"
+                style={{ color: goldColor }}
+              >
+                Feedback
+              </button>
+            </div>
+          </>
+        )}
       </nav>
 
       {showAbout && (

@@ -28,9 +28,8 @@ export default function OracleCard({
 }: OracleCardProps) {
   return (
     <div className={`
-      flex flex-col items-center
-      ${isDesktop ? 'mb-4' : 'absolute transition-all duration-500'}
-      ${!isDesktop && !show ? 'translate-x-[100%] opacity-0' : 'translate-x-[-50%] opacity-100'}
+      ${isDesktop ? 'flex flex-col' : 'absolute transition-all duration-500'}
+      ${!isDesktop && !show ? 'translate-x-[100%] opacity-0' : !isDesktop ? 'translate-x-[-50%] opacity-100' : ''}
       ${className}
     `}
     style={{
@@ -40,7 +39,7 @@ export default function OracleCard({
       <div
         className={`
           cursor-pointer relative
-          ${isDesktop ? 'w-[300px] h-[420px]' : 'w-[380px] h-[532px]'}
+          ${isDesktop ? 'w-[224px] h-[420px]' : 'w-[320px] h-[532px]'}
         `}
         onClick={onClick}
       >
@@ -50,7 +49,7 @@ export default function OracleCard({
         >
           <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] flex items-center justify-center">
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/cardback.png-ss1uEfrMEuuHWNF9VddK5P6D3UZoFg.webp"
+              src="/cards/cardback.png"
               alt="Card Back"
               width={isDesktop ? 224 : 320}
               height={isDesktop ? 320 : 448}

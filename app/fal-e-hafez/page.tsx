@@ -206,31 +206,28 @@ export default function FaleHafez() {
           zIndex: -1
         }}
       />
-      <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
-        {/* Header section */}
-        <div className="flex flex-col items-center space-y-4 mb-8">
-          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide pt-10">
+      <div className="container mx-auto px-4 flex flex-col items-center pt-[100px]">
+        {/* Header section - Desktop only */}
+        <div className="hidden md:flex flex-col items-center space-y-4 mb-6">
+          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
             Fal-e-Hafez
           </h1>
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
           
           {/* Show New Reading button only after loading is complete */}
           {isCoverFlipped && !isLoading ? (
-            <div className="flex flex-col items-center gap-6">
+            <div className="flex flex-col items-center gap-4 mb-4">
               <button 
                 onClick={handleNewReading}
                 className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg shadow-[0_0_15px_rgba(88,28,135,0.3)] border border-purple-500/30 hover:border-purple-400/40 hover:bg-purple-800/40 transition-all"
               >
                 New Reading
               </button>
-              <p className="text-amber-200/80 text-sm text-center">
-                Flip the page to reveal your Hafez verse and fortune
-              </p>
             </div>
           ) : !isCoverFlipped ? (
             <div className="flex flex-col items-center gap-2">
-              <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-                <span>Flip the page to reveal your Hafez verse and fortune</span>
+              <h2 className="text-sm md:text-lg text-center text-amber-200 font-light px-8 md:px-12">
+                <span>Open the book to discover your verse</span>
               </h2>
             </div>
           ) : null}
@@ -248,7 +245,7 @@ export default function FaleHafez() {
         {/* Desktop Layout */}
         <div className="hidden md:flex flex-col items-center w-full">
           {/* Cover and Card Container */}
-          <div className="relative mb-16" style={{ perspective: '1200px' }}>
+          <div className="relative mb-8" style={{ perspective: '1200px' }}>
             <div
               className="relative"
               style={{
@@ -286,8 +283,8 @@ export default function FaleHafez() {
                 className={`absolute inset-0 cursor-pointer ${isCoverFlipped ? 'pointer-events-none' : ''}`}
                 style={{
                   transform: isCoverFlipped 
-                    ? 'translateX(-100%) rotateY(-90deg) scale(0.8)' 
-                    : 'translateX(0) rotateY(0deg) scale(1)',
+                    ? 'rotateY(-180deg)' 
+                    : 'rotateY(0deg)',
                   transformOrigin: 'left center',
                   transformStyle: 'preserve-3d',
                   transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out',
@@ -297,7 +294,7 @@ export default function FaleHafez() {
                 onClick={flipCover}
               >
                 <Image
-                  src="/cards/cardback.png"
+                  src="/cards/bookcover.png"
                   alt="Book Cover"
                   fill
                   className="object-cover rounded-lg"
@@ -308,6 +305,11 @@ export default function FaleHafez() {
               </div>
             </div>
           </div>
+
+          {/* Dedication */}
+          <p className="text-amber-200/60 text-sm font-light mb-8" dir="rtl">
+            تقدیم به والدینم
+          </p>
 
           {/* Reading section */}
           {isCoverFlipped && selectedCard && (
@@ -450,88 +452,152 @@ export default function FaleHafez() {
 
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
-          <div className="relative min-h-screen pt-24 px-4 flex flex-col items-center">
-            {/* Error message for mobile */}
-            {errorMessage && (
-              <div className="w-[90%] mb-4 animate-fade-in z-50">
-                <p className="text-red-300 text-sm px-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg py-2">
-                  {errorMessage}
-                </p>
+          <div className="relative min-h-screen pt-10 px-4 flex flex-col items-center">
+            {/* Header section - Mobile */}
+            <div className="flex flex-col items-center mb-6" style={{ marginBottom: '24px' }}>
+              <h1 className="text-2xl text-center font-serif font-light text-amber-100 tracking-wide">
+                Fal-e-Hafez
+              </h1>
+              <div className="w-16 h-0.5 bg-amber-400 mx-auto rounded-full" style={{ marginTop: '8px', marginBottom: '8px' }}></div>
+              
+              {/* Show New Reading button only after loading is complete */}
+              {isCoverFlipped && !isLoading ? (
+                <div className="flex flex-col items-center" style={{ marginTop: '16px', marginBottom: '16px' }}>
+                  <button 
+                    onClick={handleNewReading}
+                    className="bg-purple-900/30 text-[#FFFDD0] px-6 py-2 rounded-lg shadow-[0_0_15px_rgba(88,28,135,0.3)] border border-purple-500/30 hover:border-purple-400/40 hover:bg-purple-800/40 transition-all"
+                  >
+                    New Reading
+                  </button>
+                </div>
+              ) : !isCoverFlipped ? (
+                <div className="flex flex-col items-center" style={{ marginTop: '8px' }}>
+                  <h2 className="text-sm text-center text-amber-200 font-light px-8">
+                    <span>Open the book to discover your verse</span>
+                  </h2>
+                </div>
+              ) : null}
+              
+              {/* Error message - always visible when present */}
+              {errorMessage && (
+                <div className="mt-4 animate-fade-in" style={{ marginTop: '16px' }}>
+                  <p className="text-red-300 text-sm px-4 text-center bg-red-900/20 border border-red-500/30 rounded-lg py-2">
+                    {errorMessage}
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {/* Cover and Card Container - Mobile */}
+            {/* Show large card only when cover is not flipped */}
+            {!isCoverFlipped && (
+              <div className="relative mb-8" style={{ 
+                perspective: '1000px', 
+                marginBottom: '32px',
+              }}>
+                <div
+                  className="relative mx-auto overflow-hidden"
+                  style={{
+                    width: 'min(376px, calc(90vw - 24px))',
+                    height: 'min(498px, calc((min(400px, 90vw) - 24px) * 1.245))',
+                    transformStyle: 'preserve-3d',
+                  }}
+                >
+                  {/* Cover (flips to the left and disappears) */}
+                  <div
+                    className="absolute cursor-pointer"
+                    style={{
+                      left: '12px',
+                      right: '12px',
+                      top: 0,
+                      bottom: 0,
+                      transform: 'rotateY(0deg)',
+                      transformOrigin: 'left center',
+                      transformStyle: 'preserve-3d',
+                      transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out',
+                      opacity: 1,
+                      zIndex: 2,
+                    }}
+                    onClick={flipCover}
+                  >
+                    <Image
+                      src="/cards/bookcover.png"
+                      alt="Book Cover"
+                      fill
+                      className="object-cover rounded-lg"
+                      style={{
+                        boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             )}
             
-            {/* Cover and Card Container - Mobile */}
-            <div className="relative mb-8" style={{ perspective: '1000px' }}>
-              <div
-                className="relative mx-auto"
-                style={{
-                  width: 'min(300px, 85vw)',
-                  aspectRatio: '5/7',
-                  transformStyle: 'preserve-3d',
-                }}
-              >
-                {/* Card underneath (revealed when cover flips) */}
-                {selectedCard && (
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      transform: isCoverFlipped ? 'scale(1)' : 'scale(0.95)',
-                      opacity: isCoverFlipped ? 1 : 0,
-                      transition: 'opacity 0.3s ease-in-out 0.4s, transform 0.3s ease-in-out 0.4s',
-                      zIndex: 1,
-                    }}
-                  >
-                    <Image
-                      src={selectedCard.image}
-                      alt={selectedCard.name}
-                      fill
-                      className="object-contain rounded-lg"
-                    />
-                    <div className="absolute bottom-2 left-2 right-2 text-center">
-                      <h3 className="text-white text-sm font-semibold drop-shadow-lg">{selectedCard.name}</h3>
-                      <p className="text-white/80 text-xs drop-shadow-lg">{selectedCard.persianName}</p>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Cover (flips to the left and disappears) */}
-                <div
-                  className={`absolute inset-0 cursor-pointer ${isCoverFlipped ? 'pointer-events-none' : ''}`}
-                  style={{
-                    transform: isCoverFlipped 
-                      ? 'translateX(-100%) rotateY(-90deg) scale(0.8)' 
-                      : 'translateX(0) rotateY(0deg) scale(1)',
-                    transformOrigin: 'left center',
-                    transformStyle: 'preserve-3d',
-                    transition: 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out',
-                    opacity: isCoverFlipped ? 0 : 1,
-                    zIndex: 2,
-                  }}
-                  onClick={flipCover}
-                >
-                  <Image
-                    src="/cards/cardback.png"
-                    alt="Book Cover"
-                    fill
-                    className="object-contain rounded-lg"
-                  />
-                </div>
-              </div>
-            </div>
-            
+            {/* Dedication - Mobile */}
             {!isCoverFlipped && (
-              <div className="flex flex-col items-center w-full">
-                <p className="text-amber-200 text-center px-4 mb-8 text-lg">
-                  Flip the page to reveal your Hafez verse and fortune
-                </p>
-              </div>
+              <p className="text-amber-200/60 text-sm font-light" style={{ marginBottom: '32px' }} dir="rtl">
+                تقدیم به والدینم
+              </p>
             )}
             
             {/* Reading section for mobile */}
             {isCoverFlipped && selectedCard && (
               <div className="w-full animate-fade-in">
+                {/* Loading state - shown above mini card */}
+                {isLoading && (
+                  <div className="flex flex-col items-center justify-center gap-4 mb-4" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+                    {/* Persian-themed loader - ornate spinning pattern */}
+                    <div className="relative w-20 h-20">
+                      <svg 
+                        className="animate-spin text-amber-400" 
+                        width="80" 
+                        height="80" 
+                        viewBox="0 0 80 80" 
+                        fill="none" 
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ animationDuration: '2s' }}
+                      >
+                        {/* Outer decorative circles */}
+                        <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.2" />
+                        <circle cx="40" cy="40" r="30" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.3" />
+                        <circle cx="40" cy="40" r="24" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+                        
+                        {/* Ornate Persian geometric pattern - 8-pointed star design */}
+                        <path 
+                          d="M40 8 L44 20 L40 16 L36 20 Z M40 72 L44 60 L40 64 L36 60 Z M8 40 L20 36 L16 40 L20 44 Z M72 40 L60 44 L64 40 L60 36 Z M20 20 L28 24 L24 28 L16 24 Z M60 20 L52 24 L56 28 L64 24 Z M20 60 L28 56 L24 52 L16 56 Z M60 60 L52 56 L56 52 L64 56 Z" 
+                          fill="currentColor" 
+                          opacity="0.7"
+                        />
+                        
+                        {/* Central circle */}
+                        <circle cx="40" cy="40" r="6" fill="currentColor" opacity="0.9" />
+                        <circle cx="40" cy="40" r="3" fill="currentColor" />
+                      </svg>
+                    </div>
+                    <p className="text-purple-300 text-lg text-center font-serif italic">
+                      The ancient verses are revealing themselves...
+                    </p>
+                  </div>
+                )}
+                
+                {/* Mini card at top - shown immediately when cover flips */}
+                <div className="flex justify-center mb-4">
+                  <div 
+                    className="w-24 h-40 rounded-lg overflow-hidden border border-amber-200/20"
+                  >
+                    <Image 
+                      src={selectedCard.image} 
+                      alt={selectedCard.name}
+                      width={96}
+                      height={160}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                </div>
+                
                 <Tabs defaultValue="english" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30 mb-1">
+                  <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30" style={{ marginBottom: '32px' }}>
                     <TabsTrigger 
                       value="english" 
                       className="text-lg data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
@@ -548,15 +614,10 @@ export default function FaleHafez() {
                   
                   <TabsContent value="english">
                     {isLoading ? (
-                      <div className="flex flex-col items-center justify-center gap-4 py-12">
-                        <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                        <p className="text-purple-300 text-lg text-center">
-                          The ancient verses are revealing themselves...
-                        </p>
-                      </div>
+                      <div className="min-h-[100px]"></div>
                     ) : (
-                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 pt-2 pb-8 rounded-b-lg">
-                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4">
+                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 rounded-b-lg" style={{ paddingTop: '8px', paddingBottom: '32px' }}>
+                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center border-b border-amber-200/20" style={{ paddingTop: '16px', paddingBottom: '16px', marginBottom: '32px' }}>
                           {reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''}
                         </div>
                         <div>
@@ -569,7 +630,7 @@ export default function FaleHafez() {
                           />
                         </div>
                         {showReadMoreEnglish && !showFullReadingEnglish && (
-                          <div className="mt-8 flex justify-center animate-fade-in">
+                          <div className="flex justify-center animate-fade-in" style={{ marginTop: '32px' }}>
                             <button 
                               onClick={() => setShowFullReadingEnglish(true)}
                               className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 border border-amber-200/20 hover:border-amber-100/30 rounded-lg transition-all duration-300 shadow-[0_0_15px_rgba(88,28,135,0.2)] hover:shadow-[0_0_20px_rgba(88,28,135,0.3)] hover:bg-[#1a1033]"
@@ -594,15 +655,10 @@ export default function FaleHafez() {
                   
                   <TabsContent value="persian" dir="rtl">
                     {isLoading ? (
-                      <div className="flex flex-col items-center justify-center gap-4 py-12">
-                        <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                        <p className="text-purple-300 text-lg text-center">
-                          اشعار کهن در حال آشکار شدن هستند...
-                        </p>
-                      </div>
+                      <div className="min-h-[100px]"></div>
                     ) : (
-                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 pt-2 pb-8 rounded-b-lg text-right">
-                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20 mb-4" dir="rtl">
+                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 rounded-b-lg text-right" style={{ paddingTop: '8px', paddingBottom: '32px' }}>
+                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center border-b border-amber-200/20" style={{ paddingTop: '16px', paddingBottom: '16px', marginBottom: '32px' }} dir="rtl">
                           {reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''}
                         </div>
                         <div>
@@ -625,7 +681,7 @@ export default function FaleHafez() {
                           </div>
                         )}
                         {showFullReadingPersian && (
-                          <div className="animate-fade-in">
+                          <div className="animate-fade-in" style={{ marginTop: '32px' }}>
                             <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر عمیق ✧</div>
                             <TypewriterEffect 
                               text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 

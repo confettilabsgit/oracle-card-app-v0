@@ -191,10 +191,10 @@ export default function Home() {
           zIndex: -1
         }}
       />
-      <div className="container mx-auto px-4 flex flex-col items-center justify-center min-h-screen">
+      <div className="container mx-auto flex flex-col items-center pt-[100px]">
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-8">
-          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide pt-10">
+          <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
             The Persian Oracle
           </h1>
           <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
@@ -212,30 +212,32 @@ export default function Home() {
               ✨ New Reading ✨
             </button>
           ) : (
-            <h2 className="text-base md:text-2xl text-center text-amber-200 font-light px-8 md:px-12">
-              <span>✨ Turn three cards mindfully and invite the cosmos to share its secrets ✨</span>
+            <h2 className="text-sm md:text-lg text-center text-amber-200 font-light px-8 md:px-12 italic">
+              <span>Turn three cards mindfully and invite the cosmos to share its secrets</span>
             </h2>
           )}
         </div>
 
         {/* Desktop Layout - in its own container */}
-        <div className="hidden md:flex flex-col items-center w-full">
-          <div className="flex -space-x-4 mb-16" style={{ width: '900px', transform: 'translateX(160px)' }}>
-            {selectedCards.map((card) => (
-              <OracleCard
-                key={card.id}
-                isFlipped={flippedCards.includes(card.id)}
-                onClick={() => flipCard(card.id)}
-                frontImage={card.image}
-                name={card.name}
-                persianName={card.persianName}
-                isDesktop={isDesktop}
-              />
-            ))}
-          </div>
+        <div className="hidden md:flex flex-col items-center w-full px-4">
+          {/* Shared container for cards and reading */}
+          <div className="w-full max-w-3xl">
+            {/* Cards */}
+            <div className="flex gap-6 mb-16 justify-center items-start">
+              {selectedCards.map((card) => (
+                <OracleCard
+                  key={card.id}
+                  isFlipped={flippedCards.includes(card.id)}
+                  onClick={() => flipCard(card.id)}
+                  frontImage={card.image}
+                  name={card.name}
+                  persianName={card.persianName}
+                  isDesktop={isDesktop}
+                />
+              ))}
+            </div>
 
-          {/* Desktop-only reading section */}
-          <div className="w-[95vw] md:max-w-3xl">
+            {/* Desktop-only reading section */}
             <Tabs defaultValue="english" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30">
                 <TabsTrigger 
@@ -252,11 +254,38 @@ export default function Home() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="english">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg">
+                <div className="bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg">
                   {isLoading ? (
-                    <div className="flex flex-col items-center justify-center gap-4">
-                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
-                      <p className="text-purple-300">The mystical forces are gathering...</p>
+                    <div className="flex flex-col items-center justify-center gap-4 py-12">
+                      {/* Persian-themed loader - ornate spinning pattern */}
+                      <div className="relative w-20 h-20">
+                        <svg 
+                          className="animate-spin text-amber-400" 
+                          width="80" 
+                          height="80" 
+                          viewBox="0 0 80 80" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{ animationDuration: '2s' }}
+                        >
+                          {/* Outer decorative circles */}
+                          <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.2" />
+                          <circle cx="40" cy="40" r="30" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.3" />
+                          <circle cx="40" cy="40" r="24" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+                          
+                          {/* Ornate Persian geometric pattern - 8-pointed star design */}
+                          <path 
+                            d="M40 8 L44 20 L40 16 L36 20 Z M40 72 L44 60 L40 64 L36 60 Z M8 40 L20 36 L16 40 L20 44 Z M72 40 L60 44 L64 40 L60 36 Z M20 20 L28 24 L24 28 L16 24 Z M60 20 L52 24 L56 28 L64 24 Z M20 60 L28 56 L24 52 L16 56 Z M60 60 L52 56 L56 52 L64 56 Z" 
+                            fill="currentColor" 
+                            opacity="0.7"
+                          />
+                          
+                          {/* Central circle */}
+                          <circle cx="40" cy="40" r="6" fill="currentColor" opacity="0.9" />
+                          <circle cx="40" cy="40" r="3" fill="currentColor" />
+                        </svg>
+                      </div>
+                      <p className="text-purple-300 text-lg text-center font-serif italic">The mystical forces are gathering...</p>
                     </div>
                   ) : reading.english ? (
                     <div className="text-amber-100 space-y-6">
@@ -309,11 +338,38 @@ export default function Home() {
                 </div>
               </TabsContent>
               <TabsContent value="persian">
-                <div className="min-h-[200px] bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg text-right" dir="rtl">
+                <div className="bg-black/10 backdrop-blur-sm px-8 pt-2 pb-8 rounded-b-lg text-right" dir="rtl">
                   {isLoading ? (
                     <div className="flex flex-col items-center justify-center gap-4 py-12">
-                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-purple-300 text-lg text-center">
+                      {/* Persian-themed loader - ornate spinning pattern */}
+                      <div className="relative w-20 h-20">
+                        <svg 
+                          className="animate-spin text-amber-400" 
+                          width="80" 
+                          height="80" 
+                          viewBox="0 0 80 80" 
+                          fill="none" 
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{ animationDuration: '2s' }}
+                        >
+                          {/* Outer decorative circles */}
+                          <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.2" />
+                          <circle cx="40" cy="40" r="30" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.3" />
+                          <circle cx="40" cy="40" r="24" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4" />
+                          
+                          {/* Ornate Persian geometric pattern - 8-pointed star design */}
+                          <path 
+                            d="M40 8 L44 20 L40 16 L36 20 Z M40 72 L44 60 L40 64 L36 60 Z M8 40 L20 36 L16 40 L20 44 Z M72 40 L60 44 L64 40 L60 36 Z M20 20 L28 24 L24 28 L16 24 Z M60 20 L52 24 L56 28 L64 24 Z M20 60 L28 56 L24 52 L16 56 Z M60 60 L52 56 L56 52 L64 56 Z" 
+                            fill="currentColor" 
+                            opacity="0.7"
+                          />
+                          
+                          {/* Central circle */}
+                          <circle cx="40" cy="40" r="6" fill="currentColor" opacity="0.9" />
+                          <circle cx="40" cy="40" r="3" fill="currentColor" />
+                        </svg>
+                      </div>
+                      <p className="text-purple-300 text-lg text-center font-serif italic">
                         نیروهای عرفانی در حال جمع شدن هستند...
                       </p>
                     </div>
@@ -364,9 +420,9 @@ export default function Home() {
         {/* Mobile Layout */}
         <div className="md:hidden w-full">
           {/* Main Card Selection Area */}
-          <div className="relative min-h-screen pt-24 px-4">
+          <div className="relative min-h-screen pt-24 px-4 flex flex-col items-center">
             {flippedCards.length < 3 ? (
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center w-full">
                 {/* Only show instruction if current card is not flipped */}
                 {!flippedCards.includes(selectedCards[currentCardIndex]?.id) && (
                   <p className="absolute top-4 left-1/2 -translate-x-1/2 text-amber-200">
@@ -426,11 +482,11 @@ export default function Home() {
               </div>
             ) : (
               // Reading view - absolutely positioned
-              <div className="absolute top-0 left-0 right-0 animate-fade-in">
+              <div className="absolute top-0 left-0 right-0 animate-fade-in w-full">
                 {/* Rest of reading content */}
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col items-center w-full px-4">
                   {/* Mini cards at top */}
-                  <div className="flex justify-center gap-2 mb-4">
+                  <div className="flex justify-center gap-2 mb-4 w-full">
                     {selectedCards.map((card) => (
                       <div 
                         key={card.id}
@@ -448,7 +504,7 @@ export default function Home() {
                   </div>
                   
                   {/* Reading content */}
-                  <div className="flex-1">
+                  <div className="flex-1 w-full">
                     <Tabs defaultValue="english" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 
                         rounded-t-lg border border-purple-500/30 mb-1"
