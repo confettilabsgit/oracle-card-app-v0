@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, Noto_Sans_Arabic } from 'next/font/google'
 import NavMenu from './components/navigation/nav-menu'
+import { Analytics } from '@vercel/analytics/next'
 
 const inter = Inter({ subsets: ['latin'] })
 const notoSansArabic = Noto_Sans_Arabic({ subsets: ['arabic'] })
@@ -26,6 +27,7 @@ export default function RootLayout({
       >
         <NavMenu />
         {children}
+        <Analytics />
       </body>
     </html>
   )
