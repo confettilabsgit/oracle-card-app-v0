@@ -78,7 +78,7 @@ export default function OracleCard({
                     <path d="M12 2 L14 8 L12 6 L10 8 Z M12 22 L14 16 L12 18 L10 16 Z M2 12 L8 10 L6 12 L8 14 Z M22 12 L16 14 L18 12 L16 10 Z" fill="currentColor" opacity="0.8" />
                     <circle cx="12" cy="12" r="2" fill="currentColor" />
                   </svg>
-                  <span className="text-base font-light italic">tap or swipe</span>
+                  <span className="text-base font-light italic">tap to flip card</span>
                   {/* Right arrow - Persianesque (8-pointed star pattern) */}
                   <svg 
                     className="w-6 h-6 animate-slide-horizontal text-amber-300" 
