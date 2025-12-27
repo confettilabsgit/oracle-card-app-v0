@@ -131,40 +131,32 @@ export default function FaleHafez() {
         throw new Error('Invalid Hafez response format: missing text field');
       }
 
-      // Get Persian poem and generate interpretations in parallel
-      const [persianPoemResponse, englishResponse] = await Promise.all([
-        fetch('/api/generate-reading', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: `Return the original Persian text (in Persian script) for the Hafez verse that corresponds to this English translation: "${hafezData.text}". Return only the Persian text, 2-3 lines, nothing else.`,
-            temperature: 0.3,
-            max_tokens: 100
-          }),
+      // Start English interpretation immediately (most important)
+      const englishResponsePromise = fetch('/api/hafez-interpretation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          verse: hafezData.text,
+          language: 'english',
+          intention: intention?.trim() || undefined
         }),
-        fetch('/api/hafez-interpretation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            verse: hafezData.text,
-            language: 'english',
-            intention: intention?.trim() || undefined
-          }),
-        })
-      ]);
+      });
 
-      const persianPoemText = await persianPoemResponse.text();
-      let persianPoem = '';
-      if (persianPoemResponse.ok) {
-        try {
-          const persianPoemData = JSON.parse(persianPoemText);
-          persianPoem = persianPoemData?.text || '';
-        } catch (_e) {
-          console.error('Failed to parse Persian poem response');
-        }
-      }
+      // Get Persian poem in parallel (non-blocking)
+      const persianPoemResponsePromise = fetch('/api/generate-reading', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `Persian for: "${hafezData.text}". Persian only, 2-3 lines.`,
+            temperature: 0.2,
+            max_tokens: 50
+        }),
+      });
 
+      // Process English response first (most important)
+      const englishResponse = await englishResponsePromise;
       const englishText = await englishResponse.text();
+      
       if (!englishResponse.ok) {
         console.error('English Response:', englishText);
         let errorMessage = 'Failed to fetch English reading';
@@ -196,22 +188,39 @@ export default function FaleHafez() {
       const briefInsight = parts[0]?.trim() || '';
       const deeperWisdom = parts[1]?.trim() || '';
 
-      // Generate Persian Hafez interpretation (no card mention) - can run in parallel with English
-      const persianResponse = await fetch('/api/hafez-interpretation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          verse: persianPoem || hafezData.text,
-          language: 'persian',
-          intention: intention?.trim() || undefined
-        }),
-      });
+      // Get Persian poem and start Persian interpretation
+      const persianPoemResponse = await persianPoemResponsePromise;
+      const persianPoemText = await persianPoemResponse.text();
+      let persianPoem = '';
+      if (persianPoemResponse.ok) {
+        try {
+          const persianPoemData = JSON.parse(persianPoemText);
+          persianPoem = persianPoemData?.text || '';
+        } catch (_e) {
+          console.error('Failed to parse Persian poem response');
+        }
+      }
 
-      const persianReadingText = await persianResponse.text();
+      // Start Persian interpretation (runs in background)
+      const persianResponsePromise = persianPoem 
+        ? fetch('/api/hafez-interpretation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              verse: persianPoem,
+              language: 'persian',
+              intention: intention?.trim() || undefined
+            }),
+          })
+        : Promise.resolve(null);
+
+      // Get Persian interpretation text
+      const persianResponse = await persianResponsePromise;
+      const persianReadingText = persianResponse ? await persianResponse.text() : '';
       let persianBriefInsight = 'تفسیر حافظ در حال آماده‌سازی است...'
       let persianDeeperWisdom = ''
 
-      if (persianResponse.ok) {
+      if (persianResponse && persianResponse.ok) {
         try {
           const persianReadingData = JSON.parse(persianReadingText);
           if (persianReadingData?.text) {

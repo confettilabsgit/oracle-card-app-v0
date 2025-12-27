@@ -182,10 +182,13 @@ export default function Home() {
     setShowFullReadingEnglish(false)
     setShowFullReadingPersian(false)
     setReading({ english: '', persian: '' });
+    setIsLoading(false);
+    setCurrentCardIndex(0);
     
     setTimeout(() => {
-      // Reset the flip state without removing cards
+      // Reset the flip state and shuffle new cards
       setFlippedCards([]);
+      shuffleCards();
     }, 600); // Match this duration with your CSS transition
   };
 
