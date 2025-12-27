@@ -29,8 +29,8 @@ export async function POST(req: Request) {
           content: prompt
         }
       ],
-      model: "gpt-4-turbo-preview",
-      max_tokens: 800,
+      model: "gpt-3.5-turbo",
+      max_tokens: 500,
       temperature: 0.7,
       presence_penalty: 0.0,
       frequency_penalty: 0.0,

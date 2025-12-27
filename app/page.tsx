@@ -115,10 +115,10 @@ export default function Home() {
           4. Offer practical guidance while staying grounded in Persian mystical traditions
           5. Keep a hopeful tone while acknowledging challenges
 
-          Keep the deeper interpretation around 500-600 characters.
+          Keep the deeper interpretation around 400-500 characters.
           IMPORTANT: Do not generate or quote any other Hafez verses - only interpret the one provided above.`,
           temperature: 0.7,
-          max_tokens: 800
+          max_tokens: 500
         }),
       });
 
@@ -237,8 +237,8 @@ export default function Home() {
             <div className="flex gap-6 mb-16 justify-center items-start" style={{ marginLeft: '10px' }}>
               {selectedCards.map((card) => (
                 <div key={card.id} className="flex flex-col items-center">
-                  {/* Card info above card - only show when flipped */}
-                  {flippedCards.includes(card.id) && (
+                  {/* Card info above card - only show when flipped and reading hasn't started */}
+                  {flippedCards.includes(card.id) && !reading.english && (
                     <div className="text-center mb-4">
                       <p className="text-white font-semibold">
                         {card.name} <span className="text-white/80">{card.persianName}</span>
@@ -572,7 +572,8 @@ export default function Home() {
                             )}
                             
                             {showFullReadingEnglish && (
-                              <div className="animate-fade-in">
+                              <div className="animate-fade-in mt-6">
+                                <div className="text-amber-200 mb-2 text-base">✧ Deeper Wisdom ✧</div>
                                 <TypewriterEffect 
                                   text={reading.english.split('[READMORE_SPLIT]')[1]} 
                                   isTitle={false}
@@ -620,7 +621,8 @@ export default function Home() {
                             )}
                             
                             {showFullReadingPersian && (
-                              <div className="animate-fade-in">
+                              <div className="animate-fade-in mt-6">
+                                <div className="text-amber-200 mb-2 text-base">✧ حکمت عمیق ✧</div>
                                 <TypewriterEffect 
                                   text={reading.persian.split('[READMORE_SPLIT]')[1]} 
                                   delay={10}

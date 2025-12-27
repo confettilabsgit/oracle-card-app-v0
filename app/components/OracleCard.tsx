@@ -107,12 +107,6 @@ export default function OracleCard({
           </div>
         </div>
       </div>
-      {isFlipped && show && (
-        <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 w-full text-center">
-          <h3 className={`font-semibold text-white ${isDesktop ? 'text-base' : 'text-sm'}`}>{name}</h3>
-          <p className={`font-semibold text-white/80 ${isDesktop ? 'text-base' : 'text-sm'}`}>{persianName}</p>
-        </div>
-      )}
     </div>
   )
 }

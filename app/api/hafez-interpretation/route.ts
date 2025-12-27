@@ -48,6 +48,7 @@ Your interpretations should be authentic and resonate with Persian/Iranian reade
    - معانی اصلی و پیام کلیدی به زبان ساده
    - راهنمایی اولیه و کاربردی مرتبط با سوال کاربر
    - بدون استفاده از اصطلاحات پیچیده عرفانی
+   - فقط یک پاراگراف (حدود 3-4 جمله، حداکثر 150-200 کلمه)
    - بدون تکرار عنوان یا استفاده از فرمت‌های نشانه‌گذاری
    - فقط محتوای تفسیر را بنویسید
 
@@ -58,8 +59,10 @@ Your interpretations should be authentic and resonate with Persian/Iranian reade
    - تفسیرهای معتبر از منابع سنتی و علمی
    - راهنمایی شخصی و کاربرد در زندگی
    - اهمیت تاریخی و معنوی
+   - ارائه تحلیل خاص و دقیق - از عبارات کلی یا تکرار خودداری کنید
+   - هر تفسیر باید منحصر به فرد و متناسب با شعر خاص باشد
 
-فرمت دقیق: [تفسیر ساده و قابل فهم - فقط محتوا، بدون عنوان یا نشانه‌گذاری][READMORE_SPLIT][تفسیر عمیق و علمی]`
+فرمت دقیق: [تفسیر ساده و قابل فهم - فقط محتوا، بدون عنوان یا نشانه‌گذاری][READMORE_SPLIT][تفسیر عمیق و علمی - خاص و دقیق، نه کلی]`
       : `Interpret this Hafez verse:
 
 "${verse}"${intention && intention.trim() 
@@ -75,6 +78,7 @@ FIRST SECTION - Brief Insight:
    - Initial guidance that anyone can understand, specifically related to the user's question
    - Avoid complex mystical terminology
    - Focus on what the verse means in everyday terms and how it relates to their specific situation
+   - KEEP IT TO ONE PARAGRAPH (approximately 3-4 sentences, 150-200 words maximum)
    - DO NOT repeat the title "Brief Insight" or "Layman's Interpretation" in the text
    - DO NOT use markdown formatting like asterisks or bold
    - Write only the interpretation content, nothing else
@@ -86,8 +90,10 @@ SECOND SECTION - Deeper Insight (after [READMORE_SPLIT]):
    - Authentic interpretations from traditional and scholarly sources
    - Personal guidance and life application
    - Historical and spiritual significance
+   - Provide specific, detailed analysis - avoid generic phrases or repetition
+   - Each interpretation should be unique and tailored to the specific verse
 
-EXACT FORMAT: [Interpretation content only - no title, no markdown][READMORE_SPLIT][Deep scholarly interpretation from authentic sources]`;
+EXACT FORMAT: [Interpretation content only - no title, no markdown][READMORE_SPLIT][Deep scholarly interpretation from authentic sources - specific and detailed, not generic]`;
 
     const response = await openai.chat.completions.create({
       messages: [

@@ -131,16 +131,27 @@ export default function FaleHafez() {
         throw new Error('Invalid Hafez response format: missing text field');
       }
 
-      // Get Persian poem
-      const persianPoemResponse = await fetch('/api/generate-reading', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: `Return the original Persian text (in Persian script) for the Hafez verse that corresponds to this English translation: "${hafezData.text}". Return only the Persian text, 2-3 lines, nothing else.`,
-          temperature: 0.3,
-          max_tokens: 150
+      // Get Persian poem and generate interpretations in parallel
+      const [persianPoemResponse, englishResponse] = await Promise.all([
+        fetch('/api/generate-reading', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: `Return the original Persian text (in Persian script) for the Hafez verse that corresponds to this English translation: "${hafezData.text}". Return only the Persian text, 2-3 lines, nothing else.`,
+            temperature: 0.3,
+            max_tokens: 100
+          }),
         }),
-      });
+        fetch('/api/hafez-interpretation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            verse: hafezData.text,
+            language: 'english',
+            intention: intention?.trim() || undefined
+          }),
+        })
+      ]);
 
       const persianPoemText = await persianPoemResponse.text();
       let persianPoem = '';
@@ -152,17 +163,6 @@ export default function FaleHafez() {
           console.error('Failed to parse Persian poem response');
         }
       }
-
-      // Generate Hafez interpretation (no card mention)
-      const englishResponse = await fetch('/api/hafez-interpretation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          verse: hafezData.text,
-          language: 'english',
-          intention: intention?.trim() || undefined
-        }),
-      });
 
       const englishText = await englishResponse.text();
       if (!englishResponse.ok) {
@@ -196,7 +196,7 @@ export default function FaleHafez() {
       const briefInsight = parts[0]?.trim() || '';
       const deeperWisdom = parts[1]?.trim() || '';
 
-      // Generate Persian Hafez interpretation (no card mention)
+      // Generate Persian Hafez interpretation (no card mention) - can run in parallel with English
       const persianResponse = await fetch('/api/hafez-interpretation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -512,10 +512,7 @@ export default function FaleHafez() {
 
           {/* Card with description - shown below reading, disappears when reading starts */}
           {isCoverFlipped && selectedCard && !reading.english && (
-            <div 
-              className="flex flex-col items-center mt-8 transition-opacity duration-500"
-              style={{ opacity: reading.english ? 0 : 1 }}
-            >
+            <div className="flex flex-col items-center mt-8">
               <div className="relative" style={{ width: '200px', height: '280px' }}>
                 <Image
                   src={selectedCard.image}
@@ -727,7 +724,7 @@ export default function FaleHafez() {
                         )}
                         {showFullReadingEnglish && (
                           <div className="animate-fade-in mt-6">
-                            <div className="text-amber-200/80 mb-2 text-sm">✧ Deeper Insight ✧</div>
+                            <div className="text-amber-200/80 mb-2 text-base">✧ Deeper Insight ✧</div>
                             <TypewriterEffect 
                               text={reading.english.split('[READMORE_SPLIT]')[1]?.trim() || ''} 
                               isTitle={false}
@@ -768,7 +765,7 @@ export default function FaleHafez() {
                         )}
                         {showFullReadingPersian && (
                           <div className="animate-fade-in" style={{ marginTop: '32px' }}>
-                            <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر عمیق ✧</div>
+                            <div className="text-amber-200/80 mb-2 text-base">✧ تفسیر عمیق ✧</div>
                             <TypewriterEffect 
                               text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 
                               delay={10}
@@ -785,10 +782,7 @@ export default function FaleHafez() {
 
             {/* Card with description - Mobile - shown below reading, disappears when reading starts */}
             {isCoverFlipped && selectedCard && !reading.english && (
-              <div 
-                className="flex flex-col items-center mt-6 transition-opacity duration-500 px-4"
-                style={{ opacity: reading.english ? 0 : 1 }}
-              >
+              <div className="flex flex-col items-center mt-6 px-4">
                 <div className="relative" style={{ width: '150px', height: '210px' }}>
                   <Image
                     src={selectedCard.image}

@@ -18,7 +18,7 @@ export const generateHafezWisdom = async () => {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
@@ -30,7 +30,7 @@ export const generateHafezWisdom = async () => {
         }
       ],
       temperature: 1.0,  // Maximum randomization
-      max_tokens: 200,
+      max_tokens: 150,
       presence_penalty: 1.0,  // Encourage different responses
       frequency_penalty: 1.0  // Discourage repetition
     })
