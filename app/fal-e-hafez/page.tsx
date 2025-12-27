@@ -303,7 +303,7 @@ export default function FaleHafez() {
                       flipCover()
                     }
                   }}
-                  placeholder="Optionally, you can enter your question or intention..."
+                  placeholder="Enter your question or intention for a personalized reading (optional)..."
                   className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
                   rows={3}
                   maxLength={200}
@@ -580,7 +580,7 @@ export default function FaleHafez() {
                           flipCover()
                         }
                       }}
-                      placeholder="Optionally, you can enter your question or intention..."
+                      placeholder="Enter your question or intention for a personalized reading (optional)..."
                       className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-base text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
                       rows={3}
                       maxLength={200}
