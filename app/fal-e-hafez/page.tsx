@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import TypewriterEffect from '../components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from 'next/image'
+import { track } from '@vercel/analytics'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -499,7 +500,10 @@ export default function FaleHafez() {
                         {showReadMoreEnglish && !showFullReadingEnglish && (
                           <div className="mt-8 flex justify-center animate-fade-in">
                             <button 
-                              onClick={() => setShowFullReadingEnglish(true)}
+                              onClick={() => {
+                                track('deeper_insights_clicked', { page: 'fal-e-hafez', language: 'english' })
+                                setShowFullReadingEnglish(true)
+                              }}
                               className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 
                                        border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                        transition-all duration-300
@@ -551,7 +555,10 @@ export default function FaleHafez() {
                         {showReadMorePersian && !showFullReadingPersian && (
                           <div className="flex justify-center">
                             <button 
-                              onClick={() => setShowFullReadingPersian(true)}
+                              onClick={() => {
+                                track('deeper_insights_clicked', { page: 'fal-e-hafez', language: 'persian' })
+                                setShowFullReadingPersian(true)
+                              }}
                               className="px-6 py-2 text-base text-amber-200 hover:text-amber-100 
                                        border border-amber-200/20 hover:border-amber-100/30 rounded-lg 
                                        transition-all duration-300 animate-fade-in
@@ -790,7 +797,10 @@ export default function FaleHafez() {
                         {showReadMoreEnglish && !showFullReadingEnglish && (
                           <div className="flex justify-center animate-fade-in" style={{ marginTop: '32px' }}>
                             <button 
-                              onClick={() => setShowFullReadingEnglish(true)}
+                              onClick={() => {
+                                track('deeper_insights_clicked', { page: 'fal-e-hafez', language: 'english', view: 'mobile' })
+                                setShowFullReadingEnglish(true)
+                              }}
                               className="px-6 py-2.5 bg-[#1a1033]/80 text-amber-200 hover:text-amber-100 border border-amber-200/20 hover:border-amber-100/30 rounded-lg transition-all duration-300 shadow-[0_0_15px_rgba(88,28,135,0.2)] hover:shadow-[0_0_20px_rgba(88,28,135,0.3)] hover:bg-[#1a1033]"
                             >
                               ✧ Reveal deeper meaning ✧
@@ -831,7 +841,10 @@ export default function FaleHafez() {
                         {showReadMorePersian && !showFullReadingPersian && (
                           <div className="flex justify-center">
                             <button 
-                              onClick={() => setShowFullReadingPersian(true)}
+                              onClick={() => {
+                                track('deeper_insights_clicked', { page: 'fal-e-hafez', language: 'persian', view: 'mobile' })
+                                setShowFullReadingPersian(true)
+                              }}
                               className="px-6 py-2 text-amber-200 hover:text-amber-100 border border-amber-200/20 hover:border-amber-100/30 rounded-lg transition-all duration-300 animate-fade-in bg-[#1a1033]/80 hover:bg-[#1a1033] shadow-[0_0_15px_rgba(88,28,135,0.2)] hover:shadow-[0_0_20px_rgba(88,28,135,0.3)]"
                             >
                               ✧ مکاشفه عمیق‌تر ✧
