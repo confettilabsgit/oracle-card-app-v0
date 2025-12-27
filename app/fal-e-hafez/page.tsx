@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import TypewriterEffect from '../components/TypewriterEffect'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from 'next/image'
@@ -29,22 +29,34 @@ export default function FaleHafez() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
+  const [poemEnglishComplete, setPoemEnglishComplete] = useState(false)
+  const [poemPersianComplete, setPoemPersianComplete] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isCoverFlipped, setIsCoverFlipped] = useState(false)
   const [userIntention, setUserIntention] = useState('')
   const [showShootingStar, setShowShootingStar] = useState(false)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const textareaMobileRef = useRef<HTMLTextAreaElement>(null)
+
+  // Auto-resize textarea function
+  const autoResize = (textarea: HTMLTextAreaElement | null) => {
+    if (textarea) {
+      textarea.style.height = 'auto'
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px` // Max height ~200px
+    }
+  }
 
   useEffect(() => {
     // Randomly select a card on mount (client-side only to avoid hydration mismatch)
     if (typeof window !== 'undefined') {
       const randomCard = cards[Math.floor(Math.random() * cards.length)]
       setSelectedCard(randomCard)
+      setStars(generateStars())
     }
   }, [])
 
   // Generate random star positions
   const generateStars = () => {
-    if (typeof window === 'undefined') return []
     const stars = []
     const starCount = 50
     for (let i = 0; i < starCount; i++) {
@@ -59,7 +71,7 @@ export default function FaleHafez() {
     return stars
   }
 
-  const [stars] = useState(() => generateStars())
+  const [stars, setStars] = useState<Array<{id: number, top: number, left: number, size: string, delay: number}>>([])
 
   function getCardMeaning(name: string) {
     const meanings: Record<string, string> = {
@@ -107,6 +119,8 @@ export default function FaleHafez() {
     setShowReadMorePersian(false)
     setShowFullReadingEnglish(false)
     setShowFullReadingPersian(false)
+    setPoemEnglishComplete(false)
+    setPoemPersianComplete(false)
     setReading({ english: '', persian: '' })
     setIsCoverFlipped(false)
     setErrorMessage('')
@@ -123,6 +137,8 @@ export default function FaleHafez() {
     setShowReadMorePersian(false)
     setShowFullReadingEnglish(false)
     setShowFullReadingPersian(false)
+    setPoemEnglishComplete(false)
+    setPoemPersianComplete(false)
     
     try {
       // Get Hafez quote first (English)
@@ -165,12 +181,20 @@ export default function FaleHafez() {
         throw new Error('Invalid Hafez response format: missing text field');
       }
 
+      // Clean up the Hafez text - remove introductory phrases like "Sure," "here are some lines", etc.
+      let cleanedHafezText = hafezData.text.trim();
+      // Remove common introductory phrases
+      cleanedHafezText = cleanedHafezText.replace(/^Sure,\s*/i, '');
+      cleanedHafezText = cleanedHafezText.replace(/^here are some lines from[^:]*:\s*/i, '');
+      cleanedHafezText = cleanedHafezText.replace(/^here's[^:]*:\s*/i, '');
+      cleanedHafezText = cleanedHafezText.trim();
+
       // Start English interpretation immediately (most important)
       const englishResponsePromise = fetch('/api/hafez-interpretation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          verse: hafezData.text,
+          verse: cleanedHafezText,
           language: 'english',
           intention: intention?.trim() || undefined
         }),
@@ -181,7 +205,7 @@ export default function FaleHafez() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          prompt: `Persian for: "${hafezData.text}". Persian only, 2-3 lines.`,
+          prompt: `Persian for: "${cleanedHafezText}". Persian only, 2-3 lines.`,
             temperature: 0.2,
             max_tokens: 50
         }),
@@ -269,10 +293,10 @@ export default function FaleHafez() {
       }
 
       setReading({
-        english: `✧ Poem from Hafez ✧\n${hafezData.text}\n\n✧ Brief Insight ✧\n${
+        english: `✧ Poem from Hafez ✧\n${cleanedHafezText}\n\n✧ Brief Insight ✧\n${
           briefInsight
         }[READMORE_SPLIT]${deeperWisdom || 'Meditate on this verse to reveal its deeper meaning...'}`,
-        persian: `✧ شعر حافظ ✧\n${persianPoem || hafezData.text}\n\n✧ تفسیر ساده ✧\n${
+        persian: `✧ شعر حافظ ✧\n${persianPoem || cleanedHafezText}\n\n✧ تفسیر ساده ✧\n${
           persianBriefInsight
         }[READMORE_SPLIT]✧ تفسیر عمیق ✧\n${persianDeeperWisdom || 'در این شعر حافظ، حکمتی عمیق نهفته است که با تأمل بیشتر آشکار می‌شود.'}`
       })
@@ -368,13 +392,17 @@ export default function FaleHafez() {
                 <label htmlFor="intention" className="sr-only">
                   Optionally, you can enter your question or intention
                 </label>
-                <h2 className="text-sm md:text-lg text-center text-amber-100 font-light px-8 md:px-12 mb-3">
+                <h2 className="text-sm md:text-lg text-center text-amber-100 font-light px-[40px] md:px-[56px] mb-3">
                   <span>Tap the book to discover your verse.</span>
                 </h2>
                 <textarea
+                  ref={textareaRef}
                   id="intention"
                   value={userIntention}
-                  onChange={(e) => setUserIntention(e.target.value)}
+                  onChange={(e) => {
+                    setUserIntention(e.target.value)
+                    autoResize(e.target)
+                  }}
                   onFocus={() => setShowShootingStar(true)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey && !isCoverFlipped && selectedCard) {
@@ -383,9 +411,10 @@ export default function FaleHafez() {
                     }
                   }}
                   placeholder="Enter your question or intention for a personalized reading (optional)..."
-                  className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none"
-                  rows={3}
+                  className="w-full max-w-[98vw] bg-purple-900/20 border border-purple-500/30 rounded-lg px-5 py-3 text-amber-100 placeholder:text-amber-200/70 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none overflow-hidden"
+                  rows={2}
                   maxLength={200}
+                  style={{ minHeight: '5rem' }}
                 />
                 {userIntention.length > 0 && (
                   <p className="text-amber-200/60 text-xs mt-1 text-right">
@@ -495,20 +524,29 @@ export default function FaleHafez() {
                     {reading.english ? (
                       <div className="text-amber-100 space-y-6">
                         {/* Static Hafez poem - prominent but not oversized */}
-                        <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
-                          {reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''}
+                        <div className="text-amber-200 text-lg md:text-xl leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20">
+                          <TypewriterEffect 
+                            text={reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''} 
+                            onComplete={() => setPoemEnglishComplete(true)}
+                            isTitle={false}
+                            delay={10}
+                            textColor="text-amber-200"
+                            textSize="text-lg md:text-xl"
+                          />
                         </div>
                         
                         {/* Brief Insight - layman's interpretation */}
-                        <div>
-                          <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
-                          <TypewriterEffect 
-                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.replace(/\*\*/g, '').replace(/\*Brief Insight \(Layman's Interpretation\):\*/gi, '').trim() || ''} 
-                            onComplete={() => setShowReadMoreEnglish(true)}
-                            isTitle={false}
-                            delay={10}
-                          />
-                        </div>
+                        {poemEnglishComplete && (
+                          <div>
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
+                            <TypewriterEffect 
+                              text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.replace(/\*\*/g, '').replace(/\*Brief Insight \(Layman's Interpretation\):\*/gi, '').trim() || ''} 
+                              onComplete={() => setShowReadMoreEnglish(true)}
+                              isTitle={false}
+                              delay={10}
+                            />
+                          </div>
+                        )}
                         
                         {showReadMoreEnglish && !showFullReadingEnglish && (
                           <div className="mt-8 flex justify-center animate-fade-in">
@@ -550,20 +588,30 @@ export default function FaleHafez() {
                     {reading.persian ? (
                       <div className="text-amber-100 space-y-6">
                         {/* Static Hafez poem - prominent but not oversized */}
-                        <div className="text-amber-200 text-base md:text-lg leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20" dir="rtl">
-                          {reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''}
+                        <div className="text-amber-200 text-lg md:text-xl leading-relaxed font-serif italic text-center py-4 border-b border-amber-200/20" dir="rtl">
+                          <TypewriterEffect 
+                            text={reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''} 
+                            onComplete={() => setPoemPersianComplete(true)}
+                            isTitle={false}
+                            delay={10}
+                            direction="rtl"
+                            textColor="text-amber-200"
+                            textSize="text-lg md:text-xl"
+                          />
                         </div>
                         
                         {/* Brief Insight - simple interpretation */}
-                        <div>
-                          <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
-                          <TypewriterEffect 
-                            text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
-                            onComplete={() => setShowReadMorePersian(true)}
-                            delay={10}
-                            direction="rtl"
-                          />
-                        </div>
+                        {poemPersianComplete && (
+                          <div>
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
+                            <TypewriterEffect 
+                              text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
+                              onComplete={() => setShowReadMorePersian(true)}
+                              delay={10}
+                              direction="rtl"
+                            />
+                          </div>
+                        )}
                         
                         {showReadMorePersian && !showFullReadingPersian && (
                           <div className="flex justify-center">
@@ -616,9 +664,9 @@ export default function FaleHafez() {
                 />
               </div>
               <div className="mt-4 text-center max-w-md">
-                <h3 className="text-amber-100 text-lg font-semibold mb-2">{selectedCard.name}</h3>
-                <p className="text-amber-200/80 text-sm mb-2">{selectedCard.persianName}</p>
-                <p className="text-amber-200/60 text-sm leading-relaxed">
+                <h3 className="text-amber-100 text-xl font-semibold mb-2">{selectedCard.name}</h3>
+                <p className="text-amber-200/80 text-base mb-2">{selectedCard.persianName}</p>
+                <p className="text-amber-200/60 text-xl leading-relaxed">
                   {getCardMeaning(selectedCard.name)}
                 </p>
               </div>
@@ -652,13 +700,17 @@ export default function FaleHafez() {
                     <label htmlFor="intention-mobile" className="sr-only">
                       Optionally, you can enter your question or intention
                     </label>
-                    <h2 className="text-base text-center text-amber-100 font-light px-8 mb-3">
+                    <h2 className="text-base text-center text-amber-100 font-light px-[40px] mb-3">
                       <span>Tap the book to discover your verse.</span>
                     </h2>
                     <textarea
+                      ref={textareaMobileRef}
                       id="intention-mobile"
                       value={userIntention}
-                      onChange={(e) => setUserIntention(e.target.value)}
+                      onChange={(e) => {
+                        setUserIntention(e.target.value)
+                        autoResize(e.target)
+                      }}
                       onFocus={() => setShowShootingStar(true)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey && !isCoverFlipped && selectedCard) {
@@ -667,9 +719,10 @@ export default function FaleHafez() {
                         }
                       }}
                       placeholder="Enter your question or intention for a personalized reading (optional)..."
-                      className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-base text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none"
-                      rows={3}
+                      className="w-full max-w-[98vw] bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-base text-amber-100 placeholder:text-amber-200/70 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none overflow-hidden"
+                      rows={2}
                       maxLength={200}
+                      style={{ minHeight: '5rem' }}
                     />
                     {userIntention.length > 0 && (
                       <p className="text-amber-200/60 text-sm mt-1 text-right">
@@ -774,8 +827,9 @@ export default function FaleHafez() {
                   </div>
                 )}
                 
-                <Tabs defaultValue="english" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border border-purple-500/30" style={{ marginBottom: '32px' }}>
+                {!isLoading && reading.english && (
+                  <Tabs defaultValue="english" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 rounded-t-lg border-[0.5px] border-purple-500/30" style={{ marginBottom: '32px' }}>
                     <TabsTrigger 
                       value="english" 
                       className="text-xl data-[state=active]:bg-purple-800/40 data-[state=active]:text-amber-100 text-gray-400 hover:text-amber-200"
@@ -794,19 +848,29 @@ export default function FaleHafez() {
                     {isLoading ? (
                       <div className="min-h-[100px]"></div>
                     ) : (
-                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 rounded-b-lg" style={{ paddingTop: '8px', paddingBottom: '32px' }}>
-                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center border-b border-amber-200/20" style={{ paddingTop: '16px', paddingBottom: '16px', marginBottom: '32px' }}>
-                          {reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''}
-                        </div>
-                        <div>
-                          <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
+                      <div className="w-full mx-auto text-white bg-black/10 backdrop-blur-sm px-1 rounded-b-lg" style={{ paddingTop: '8px', paddingBottom: '32px' }}>
+                        <div className="text-amber-200 text-lg leading-relaxed font-serif italic text-center border-b border-amber-200/20" style={{ paddingTop: '16px', paddingBottom: '16px', marginBottom: '32px' }}>
                           <TypewriterEffect 
-                            text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.trim() || ''} 
-                            onComplete={() => setShowReadMoreEnglish(true)}
+                            text={reading.english.split('✧ Poem from Hafez ✧')[1]?.split('✧ Brief Insight ✧')[0]?.trim() || ''} 
+                            onComplete={() => setPoemEnglishComplete(true)}
                             isTitle={false}
                             delay={10}
+                            textColor="text-amber-200"
+                            textSize="text-lg"
                           />
                         </div>
+                        {poemEnglishComplete && (
+                          <div>
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ Brief Insight ✧</div>
+                            <TypewriterEffect 
+                              text={reading.english.split('[READMORE_SPLIT]')[0].split('✧ Brief Insight ✧')[1]?.trim() || ''} 
+                              onComplete={() => setShowReadMoreEnglish(true)}
+                              isTitle={false}
+                              delay={10}
+                              textSize="text-lg"
+                            />
+                          </div>
+                        )}
                         {showReadMoreEnglish && !showFullReadingEnglish && (
                           <div className="flex justify-center animate-fade-in" style={{ marginTop: '32px' }}>
                             <button 
@@ -827,6 +891,7 @@ export default function FaleHafez() {
                               text={reading.english.split('[READMORE_SPLIT]')[1]?.trim() || ''} 
                               isTitle={false}
                               delay={15}
+                              textSize="text-lg"
                             />
                           </div>
                         )}
@@ -838,19 +903,30 @@ export default function FaleHafez() {
                     {isLoading ? (
                       <div className="min-h-[100px]"></div>
                     ) : (
-                      <div className="max-w-[95vw] mx-auto text-white bg-black/10 backdrop-blur-sm px-4 rounded-b-lg text-right" style={{ paddingTop: '8px', paddingBottom: '32px' }}>
-                        <div className="text-amber-200 text-base leading-relaxed font-serif italic text-center border-b border-amber-200/20" style={{ paddingTop: '16px', paddingBottom: '16px', marginBottom: '32px' }} dir="rtl">
-                          {reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''}
-                        </div>
-                        <div>
-                          <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
+                      <div className="w-full mx-auto text-white bg-black/10 backdrop-blur-sm px-1 rounded-b-lg text-right" style={{ paddingTop: '8px', paddingBottom: '32px' }}>
+                        <div className="text-amber-200 text-lg leading-relaxed font-serif italic text-center border-b border-amber-200/20" style={{ paddingTop: '16px', paddingBottom: '16px', marginBottom: '32px' }} dir="rtl">
                           <TypewriterEffect 
-                            text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
-                            onComplete={() => setShowReadMorePersian(true)}
+                            text={reading.persian.split('✧ شعر حافظ ✧')[1]?.split('✧ تفسیر ساده ✧')[0]?.trim() || ''} 
+                            onComplete={() => setPoemPersianComplete(true)}
+                            isTitle={false}
                             delay={10}
                             direction="rtl"
+                            textColor="text-amber-200"
+                            textSize="text-lg"
                           />
                         </div>
+                        {poemPersianComplete && (
+                          <div>
+                            <div className="text-amber-200/80 mb-2 text-sm">✧ تفسیر ساده ✧</div>
+                            <TypewriterEffect 
+                              text={reading.persian.split('[READMORE_SPLIT]')[0].split('✧ تفسیر ساده ✧')[1]?.trim() || ''} 
+                              onComplete={() => setShowReadMorePersian(true)}
+                              delay={10}
+                              direction="rtl"
+                              textSize="text-lg"
+                            />
+                          </div>
+                        )}
                         {showReadMorePersian && !showFullReadingPersian && (
                           <div className="flex justify-center">
                             <button 
@@ -871,6 +947,7 @@ export default function FaleHafez() {
                               text={reading.persian.split('[READMORE_SPLIT]')[1]?.replace('✧ تفسیر عمیق ✧\n', '')?.trim() || ''} 
                               delay={10}
                               direction="rtl"
+                              textSize="text-lg"
                             />
                           </div>
                         )}
@@ -878,6 +955,7 @@ export default function FaleHafez() {
                     )}
                   </TabsContent>
                 </Tabs>
+                )}
               </div>
             )}
 
@@ -893,9 +971,9 @@ export default function FaleHafez() {
                   />
                 </div>
                 <div className="mt-4 text-center max-w-sm">
-                  <h3 className="text-amber-100 text-lg font-semibold mb-2">{selectedCard.name}</h3>
-                  <p className="text-amber-200/80 text-sm mb-2">{selectedCard.persianName}</p>
-                  <p className="text-amber-200/60 text-sm leading-relaxed">
+                  <h3 className="text-amber-100 text-xl font-semibold mb-2">{selectedCard.name}</h3>
+                  <p className="text-amber-200/80 text-base mb-2">{selectedCard.persianName}</p>
+                  <p className="text-amber-200/60 text-xl leading-relaxed">
                     {getCardMeaning(selectedCard.name)}
                   </p>
                 </div>

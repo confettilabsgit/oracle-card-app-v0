@@ -9,6 +9,8 @@ interface TypewriterEffectProps {
   onStart?: () => void
   isTitle?: boolean
   direction?: 'ltr' | 'rtl'
+  textColor?: string
+  textSize?: string
 }
 
 const TypewriterEffect = ({ 
@@ -17,7 +19,9 @@ const TypewriterEffect = ({
   onComplete,
   onStart,
   isTitle = false,
-  direction = 'ltr'
+  direction = 'ltr',
+  textColor,
+  textSize
 }: TypewriterEffectProps) => {
   const [currentText, setCurrentText] = useState('')
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -62,14 +66,18 @@ const TypewriterEffect = ({
 
   return (
     <div 
-      className={`whitespace-pre-line leading-normal ${direction === 'rtl' ? 'text-right' : 'text-left'} ${isTitle ? '' : 'mt-0'}`}
+      className={`whitespace-pre-line leading-normal ${direction === 'rtl' ? 'text-right' : 'text-left'} ${isTitle ? '' : 'mt-0'} ${textSize || ''}`}
       style={{ direction: direction }}
     >
       {formattedText.split('\n').map((line, i) => (
         <div 
           key={i} 
           className={`${
-            line.includes('✧') ? 'text-amber-200' : 'text-white'
+            textColor 
+              ? textColor 
+              : line.includes('✧') 
+                ? 'text-amber-200' 
+                : 'text-white'
           } ${line.includes('✧') ? 'mt-6' : ''}`}
         >
           {line}

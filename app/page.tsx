@@ -38,7 +38,6 @@ export default function Home() {
 
   // Generate random star positions
   const generateStars = () => {
-    if (typeof window === 'undefined') return []
     const stars = []
     const starCount = 50
     for (let i = 0; i < starCount; i++) {
@@ -53,12 +52,13 @@ export default function Home() {
     return stars
   }
 
-  const [stars] = useState(() => generateStars())
+  const [stars, setStars] = useState<Array<{id: number, top: number, left: number, size: string, delay: number}>>([])
 
   useEffect(() => {
     // Only shuffle on client-side to avoid hydration mismatch
     if (typeof window !== 'undefined') {
       shuffleCards()
+      setStars(generateStars())
     }
   }, [])
 
@@ -311,7 +311,7 @@ export default function Home() {
                       <p className="text-white font-semibold">
                         {card.name} <span className="text-white/80">{card.persianName}</span>
                       </p>
-                      <p className="text-white/80 text-sm mt-2 leading-relaxed max-w-[224px]">
+                      <p className="text-white/80 text-lg mt-2 leading-relaxed max-w-[224px]">
                         {getCardMeaning(card.name)}
                       </p>
                     </div>
@@ -572,7 +572,7 @@ export default function Home() {
                     {/* Card info between button and card - 2 lines of space */}
                     <div className="absolute top-16 left-1/2 -translate-x-1/2 text-center" style={{ lineHeight: '1.75' }}>
                       <p className="text-white mb-2">{selectedCards[currentCardIndex].name}</p>
-                      <p className="text-white/80 text-sm leading-relaxed">
+                      <p className="text-white/80 text-lg leading-relaxed">
                         {getCardMeaning(selectedCards[currentCardIndex].name)}
                       </p>
                     </div>
@@ -606,7 +606,7 @@ export default function Home() {
                   <div className="flex-1 w-full">
                     <Tabs defaultValue="english" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 bg-purple-900/30 
-                        rounded-t-lg border border-purple-500/30 mb-1"
+                        rounded-t-lg border-[0.5px] border-purple-500/30 mb-1"
                       >
                         <TabsTrigger 
                           value="english" 
@@ -631,7 +631,7 @@ export default function Home() {
                             </p>
                           </div>
                         ) : (
-                          <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
+                          <div className="max-w-[98vw] md:max-w-none mx-auto text-white px-2">
                             <TypewriterEffect 
                               text={reading.english.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMoreEnglish(true)}
@@ -681,7 +681,7 @@ export default function Home() {
                             </p>
                           </div>
                         ) : (
-                          <div className="max-w-[95vw] md:max-w-none mx-auto text-white">
+                          <div className="max-w-[98vw] md:max-w-none mx-auto text-white px-2">
                             <TypewriterEffect 
                               text={reading.persian.split('[READMORE_SPLIT]')[0]} 
                               onComplete={() => setShowReadMorePersian(true)}
