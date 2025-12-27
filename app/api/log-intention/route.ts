@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
     
     const response = await fetch(
-      'https://api.github.com/repos/confettilabsgit/oracle-card-app-v0/issues',
+      'https://api.github.com/repos/confettilabsgit/oracle-card-app/issues',
       {
         method: 'POST',
         headers: {
