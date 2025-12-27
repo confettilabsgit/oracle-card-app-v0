@@ -85,6 +85,19 @@ export default function FaleHafez() {
     setIsCoverFlipped(true)
     setErrorMessage('')
     setIsLoading(true)
+    
+    // Log intention to GitHub (fire and forget - don't block reading generation)
+    if (userIntention && userIntention.trim()) {
+      fetch('/api/log-intention', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ intention: userIntention.trim() })
+      }).catch(err => {
+        console.error('Failed to log intention:', err)
+        // Silently fail - don't interrupt user experience
+      })
+    }
+    
     generateReading(selectedCard, userIntention)
   }
 
