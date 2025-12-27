@@ -43,7 +43,17 @@ export async function POST(request: Request) {
       throw new Error(`GitHub API error: ${errorText}`)
     }
 
-    return NextResponse.json({ success: true })
+    const issueData = await response.json()
+    console.log('Successfully created GitHub issue:', {
+      issueNumber: issueData.number,
+      issueUrl: issueData.html_url
+    })
+
+    return NextResponse.json({ 
+      success: true, 
+      issueNumber: issueData.number,
+      issueUrl: issueData.html_url
+    })
   } catch (error) {
     console.error('Error logging intention:', error)
     // Don't fail the reading if logging fails - just log the error
