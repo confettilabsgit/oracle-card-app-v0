@@ -288,10 +288,10 @@ export default function FaleHafez() {
             <div className="flex flex-col items-center gap-4 w-full max-w-md">
               <div className="w-full px-4">
                 <label htmlFor="intention" className="sr-only">
-                  What brings you here? (Optional)
+                  Optionally, you can enter your question or intention
                 </label>
                 <h2 className="text-sm md:text-lg text-center text-amber-100 font-light px-8 md:px-12 mb-3">
-                  <span>Open the book to discover your verse. What brings you here? (Optional)</span>
+                  <span>Tap the book to discover your verse.</span>
                 </h2>
                 <textarea
                   id="intention"
@@ -303,7 +303,7 @@ export default function FaleHafez() {
                       flipCover()
                     }
                   }}
-                  placeholder="Enter your question or intention..."
+                  placeholder="Optionally, you can enter your question or intention..."
                   className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
                   rows={3}
                   maxLength={200}
@@ -565,10 +565,10 @@ export default function FaleHafez() {
                 <div className="flex flex-col items-center gap-3 w-full px-4" style={{ marginTop: '8px' }}>
                   <div className="w-full">
                     <label htmlFor="intention-mobile" className="sr-only">
-                      What brings you here? (Optional)
+                      Optionally, you can enter your question or intention
                     </label>
                     <h2 className="text-base text-center text-amber-100 font-light px-8 mb-3">
-                      <span>Open the book to discover your verse. What brings you here? (Optional)</span>
+                      <span>Tap the book to discover your verse.</span>
                     </h2>
                     <textarea
                       id="intention-mobile"
@@ -580,7 +580,7 @@ export default function FaleHafez() {
                           flipCover()
                         }
                       }}
-                      placeholder="Enter your question or intention..."
+                      placeholder="Optionally, you can enter your question or intention..."
                       className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-base text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
                       rows={3}
                       maxLength={200}
