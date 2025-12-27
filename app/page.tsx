@@ -33,6 +33,26 @@ export default function Home() {
   const [showReadMorePersian, setShowReadMorePersian] = useState(false)
   const [showFullReadingEnglish, setShowFullReadingEnglish] = useState(false)
   const [showFullReadingPersian, setShowFullReadingPersian] = useState(false)
+  const [showShootingStar, setShowShootingStar] = useState(false)
+
+  // Generate random star positions
+  const generateStars = () => {
+    if (typeof window === 'undefined') return []
+    const stars = []
+    const starCount = 50
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
+        id: i,
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        size: Math.random() < 0.6 ? 'small' : Math.random() < 0.9 ? 'medium' : 'large',
+        delay: Math.random() * 3
+      })
+    }
+    return stars
+  }
+
+  const [stars] = useState(() => generateStars())
 
   useEffect(() => {
     // Only shuffle on client-side to avoid hydration mismatch
@@ -205,6 +225,50 @@ export default function Home() {
           zIndex: -1
         }}
       />
+      {/* Background stars */}
+      <div className="fixed inset-0 pointer-events-none z-0" style={{ overflow: 'hidden' }}>
+        {stars.map((star) => (
+          <div
+            key={star.id}
+            className={`star star-${star.size}`}
+            style={{
+              top: `${star.top}%`,
+              left: `${star.left}%`,
+              animationDelay: `${star.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+      {/* Shooting star animation */}
+      {showShootingStar && (
+        <div 
+          className="fixed pointer-events-none z-10 animate-shooting-star"
+          style={{
+            top: '20%',
+            left: '0',
+            width: '2px',
+            height: '2px',
+          }}
+          onAnimationEnd={() => setShowShootingStar(false)}
+        >
+          <div className="relative w-full h-full">
+            {/* Star head */}
+            <div className="absolute w-2 h-2 bg-amber-300 rounded-full shadow-[0_0_6px_rgba(251,191,36,0.8)]"></div>
+            {/* Star tail */}
+            <div 
+              className="absolute bg-gradient-to-r from-amber-300/80 via-amber-200/40 to-transparent"
+              style={{
+                width: '100px',
+                height: '1px',
+                top: '50%',
+                left: '0',
+                transform: 'translateY(-50%)',
+                boxShadow: '0 0 10px rgba(251,191,36,0.6)',
+              }}
+            ></div>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto flex flex-col items-center pt-[100px]">
         {/* Header section */}
         <div className="flex flex-col items-center space-y-4 mb-8">
@@ -253,7 +317,12 @@ export default function Home() {
                   )}
                   <OracleCard
                     isFlipped={flippedCards.includes(card.id)}
-                    onClick={() => flipCard(card.id)}
+                    onClick={() => {
+                      flipCard(card.id)
+                      if (!flippedCards.includes(card.id)) {
+                        setShowShootingStar(true)
+                      }
+                    }}
                     frontImage={card.image}
                     name={card.name}
                     persianName={card.persianName}
@@ -453,7 +522,12 @@ export default function Home() {
                   <OracleCard
                     key={card.id}
                     isFlipped={flippedCards.includes(card.id)}
-                    onClick={() => flipCard(card.id)}
+                    onClick={() => {
+                      flipCard(card.id)
+                      if (!flippedCards.includes(card.id)) {
+                        setShowShootingStar(true)
+                      }
+                    }}
                     frontImage={card.image}
                     name={card.name}
                     persianName={card.persianName}

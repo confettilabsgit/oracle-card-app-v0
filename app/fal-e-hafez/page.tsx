@@ -31,6 +31,7 @@ export default function FaleHafez() {
   const [errorMessage, setErrorMessage] = useState('')
   const [isCoverFlipped, setIsCoverFlipped] = useState(false)
   const [userIntention, setUserIntention] = useState('')
+  const [showShootingStar, setShowShootingStar] = useState(false)
 
   useEffect(() => {
     // Randomly select a card on mount (client-side only to avoid hydration mismatch)
@@ -39,6 +40,25 @@ export default function FaleHafez() {
       setSelectedCard(randomCard)
     }
   }, [])
+
+  // Generate random star positions
+  const generateStars = () => {
+    if (typeof window === 'undefined') return []
+    const stars = []
+    const starCount = 50
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
+        id: i,
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        size: Math.random() < 0.6 ? 'small' : Math.random() < 0.9 ? 'medium' : 'large',
+        delay: Math.random() * 3
+      })
+    }
+    return stars
+  }
+
+  const [stars] = useState(() => generateStars())
 
   function getCardMeaning(name: string) {
     const meanings: Record<string, string> = {
@@ -266,6 +286,50 @@ export default function FaleHafez() {
           zIndex: -1
         }}
       />
+      {/* Background stars */}
+      <div className="fixed inset-0 pointer-events-none z-0" style={{ overflow: 'hidden' }}>
+        {stars.map((star) => (
+          <div
+            key={star.id}
+            className={`star star-${star.size}`}
+            style={{
+              top: `${star.top}%`,
+              left: `${star.left}%`,
+              animationDelay: `${star.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+      {/* Shooting star animation */}
+      {showShootingStar && (
+        <div 
+          className="fixed pointer-events-none z-10 animate-shooting-star"
+          style={{
+            top: '20%',
+            left: '0',
+            width: '2px',
+            height: '2px',
+          }}
+          onAnimationEnd={() => setShowShootingStar(false)}
+        >
+          <div className="relative w-full h-full">
+            {/* Star head */}
+            <div className="absolute w-2 h-2 bg-amber-300 rounded-full shadow-[0_0_6px_rgba(251,191,36,0.8)]"></div>
+            {/* Star tail */}
+            <div 
+              className="absolute bg-gradient-to-r from-amber-300/80 via-amber-200/40 to-transparent"
+              style={{
+                width: '100px',
+                height: '1px',
+                top: '50%',
+                left: '0',
+                transform: 'translateY(-50%)',
+                boxShadow: '0 0 10px rgba(251,191,36,0.6)',
+              }}
+            ></div>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto px-4 flex flex-col items-center pt-[100px]">
         {/* Header section - Desktop only */}
         <div className="hidden md:flex flex-col items-center space-y-4 mb-6">
@@ -297,6 +361,7 @@ export default function FaleHafez() {
                   id="intention"
                   value={userIntention}
                   onChange={(e) => setUserIntention(e.target.value)}
+                  onFocus={() => setShowShootingStar(true)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey && !isCoverFlipped && selectedCard) {
                       e.preventDefault()
@@ -304,7 +369,7 @@ export default function FaleHafez() {
                     }
                   }}
                   placeholder="Enter your question or intention for a personalized reading (optional)..."
-                  className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
+                  className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none"
                   rows={3}
                   maxLength={200}
                 />
@@ -574,6 +639,7 @@ export default function FaleHafez() {
                       id="intention-mobile"
                       value={userIntention}
                       onChange={(e) => setUserIntention(e.target.value)}
+                      onFocus={() => setShowShootingStar(true)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey && !isCoverFlipped && selectedCard) {
                           e.preventDefault()
@@ -581,7 +647,7 @@ export default function FaleHafez() {
                         }
                       }}
                       placeholder="Enter your question or intention for a personalized reading (optional)..."
-                      className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-base text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 transition-all resize-none"
+                      className="w-full bg-purple-900/20 border border-purple-500/30 rounded-lg px-3 py-2 text-base text-amber-100 placeholder:text-amber-200/40 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none"
                       rows={3}
                       maxLength={200}
                     />
