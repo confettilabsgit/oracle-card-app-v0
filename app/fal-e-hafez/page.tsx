@@ -52,6 +52,7 @@ export default function FaleHafez() {
       const randomCard = cards[Math.floor(Math.random() * cards.length)]
       setSelectedCard(randomCard)
       setStars(generateStars())
+      setZodiacSigns(generateZodiacSigns())
     }
   }, [])
 
@@ -72,6 +73,27 @@ export default function FaleHafez() {
   }
 
   const [stars, setStars] = useState<Array<{id: number, top: number, left: number, size: string, delay: number}>>([])
+
+  // Generate random zodiac sign positions
+  const generateZodiacSigns = () => {
+    if (typeof window === 'undefined') return []
+    const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+    const signs = []
+    const signCount = 8
+    for (let i = 0; i < signCount; i++) {
+      signs.push({
+        id: i,
+        symbol: zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)],
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        delay: Math.random() * 5,
+        duration: 15 + Math.random() * 10, // 15-25 seconds
+      })
+    }
+    return signs
+  }
+
+  const [zodiacSigns, setZodiacSigns] = useState<Array<{id: number, symbol: string, top: number, left: number, delay: number, duration: number}>>([])
 
   function getCardMeaning(name: string) {
     const meanings: Record<string, string> = {
@@ -336,6 +358,20 @@ export default function FaleHafez() {
               animationDelay: `${star.delay}s`,
             }}
           />
+        ))}
+        {zodiacSigns.map((sign) => (
+          <div
+            key={sign.id}
+            className="zodiac-sign"
+            style={{
+              top: `${sign.top}%`,
+              left: `${sign.left}%`,
+              animationDelay: `${sign.delay}s`,
+              animationDuration: `${sign.duration}s`,
+            }}
+          >
+            {sign.symbol}
+          </div>
         ))}
       </div>
       {/* Shooting star animation */}
@@ -751,7 +787,7 @@ export default function FaleHafez() {
                   marginBottom: '32px',
                 }}>
                   <div
-                    className="relative mx-auto overflow-hidden cursor-pointer"
+                    className="relative mx-auto overflow-hidden cursor-pointer rounded-lg"
                     style={{
                       width: 'min(392px, calc(90vw - 46px))',
                       height: 'min(548px, calc((min(440px, 90vw) - 24px) * 1.245))',
@@ -759,18 +795,19 @@ export default function FaleHafez() {
                     }}
                     onClick={flipCover}
                   >
-                    <div style={{
+                    <div className="rounded-lg" style={{
                       position: 'absolute',
-                      left: '-11px',
+                      left: '-18px',
                       top: 0,
-                      right: '-11px',
+                      right: '-18px',
                       bottom: 0,
+                      overflow: 'hidden',
                     }}>
                       <Image
                         src="/cards/bookcover.png"
                         alt="Book Cover"
                         fill
-                        className="object-cover rounded-lg"
+                        className="object-cover"
                         style={{
                           boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
                           pointerEvents: 'none',

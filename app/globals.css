@@ -217,3 +217,32 @@
   height: 3px;
   box-shadow: 0 0 4px rgba(255, 255, 255, 1);
 }
+
+@keyframes float-zodiac {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(20px, -30px) rotate(5deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-15px, -50px) rotate(-5deg);
+    opacity: 0.5;
+  }
+  75% {
+    transform: translate(10px, -20px) rotate(3deg);
+    opacity: 0.7;
+  }
+}
+
+.zodiac-sign {
+  position: absolute;
+  font-size: 24px;
+  color: rgba(251, 191, 36, 0.5); /* amber-300 with opacity */
+  animation: float-zodiac 20s ease-in-out infinite;
+  pointer-events: none;
+  user-select: none;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
