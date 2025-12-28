@@ -10,6 +10,9 @@ const notoSansArabic = Noto_Sans_Arabic({ subsets: ['arabic'] })
 export const metadata: Metadata = {
   title: 'The Persian Oracle',
   description: 'Unveil what the Persian realm holds for you',
+  verification: {
+    google: 'yFy1QIvrwLjrDRwspe7z0bEtQfWP7Gmxr3I5ulwtsWI',
+  },
 }
 
 export default function RootLayout({
