@@ -77,23 +77,39 @@ export default function FaleHafez() {
   // Generate random zodiac sign positions
   const generateZodiacSigns = () => {
     if (typeof window === 'undefined') return []
-    const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+    const zodiacSigns = [
+      { id: 'aries', points: [[20, 20], [50, 10], [80, 20], [50, 30]] },
+      { id: 'taurus', points: [[20, 30], [50, 20], [80, 30], [50, 50], [30, 50], [70, 50]] },
+      { id: 'gemini', points: [[30, 20], [50, 15], [70, 20], [30, 40], [50, 35], [70, 40]] },
+      { id: 'cancer', points: [[30, 30], [50, 25], [70, 30], [50, 45], [30, 40], [70, 40]] },
+      { id: 'leo', points: [[25, 30], [50, 20], [75, 30], [50, 45], [35, 40], [65, 40]] },
+      { id: 'virgo', points: [[40, 15], [50, 20], [60, 15], [50, 45], [40, 40], [60, 40]] },
+      { id: 'libra', points: [[30, 30], [50, 25], [70, 30], [50, 40], [35, 35], [65, 35]] },
+      { id: 'scorpio', points: [[50, 15], [50, 25], [50, 35], [50, 45], [40, 40], [60, 40]] },
+      { id: 'sagittarius', points: [[50, 20], [40, 30], [60, 30], [50, 40], [35, 35], [65, 35]] },
+      { id: 'capricorn', points: [[40, 20], [50, 25], [60, 20], [50, 40], [40, 45], [60, 45]] },
+      { id: 'aquarius', points: [[30, 25], [50, 20], [70, 25], [30, 40], [50, 35], [70, 40]] },
+      { id: 'pisces', points: [[30, 30], [50, 25], [70, 30], [30, 40], [50, 35], [70, 40]] },
+    ]
     const signs = []
-    const signCount = 8
+    const signCount = 4
     for (let i = 0; i < signCount; i++) {
+      const sign = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)]
       signs.push({
         id: i,
-        symbol: zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)],
+        signId: sign.id,
+        points: sign.points,
         top: Math.random() * 100,
         left: Math.random() * 100,
         delay: Math.random() * 5,
         duration: 15 + Math.random() * 10, // 15-25 seconds
+        rotation: Math.random() * 360,
       })
     }
     return signs
   }
 
-  const [zodiacSigns, setZodiacSigns] = useState<Array<{id: number, symbol: string, top: number, left: number, delay: number, duration: number}>>([])
+  const [zodiacSigns, setZodiacSigns] = useState<Array<{id: number, signId: string, points: number[][], top: number, left: number, delay: number, duration: number, rotation: number}>>([])
 
   function getCardMeaning(name: string) {
     const meanings: Record<string, string> = {
@@ -368,9 +384,46 @@ export default function FaleHafez() {
               left: `${sign.left}%`,
               animationDelay: `${sign.delay}s`,
               animationDuration: `${sign.duration}s`,
+              transform: `rotate(${sign.rotation}deg)`,
             }}
           >
-            {sign.symbol}
+            <svg width="100" height="100" viewBox="0 0 100 100" className="zodiac-svg">
+              {/* Draw connecting lines */}
+              {sign.points.length > 1 && sign.points.map((point, idx) => {
+                if (idx === 0) return null
+                const prevPoint = sign.points[idx - 1]
+                return (
+                  <line
+                    key={`line-${idx}`}
+                    x1={prevPoint[0]}
+                    y1={prevPoint[1]}
+                    x2={point[0]}
+                    y2={point[1]}
+                    stroke="rgba(255, 255, 255, 0.4)"
+                    strokeWidth="0.5"
+                  />
+                )
+              })}
+              {/* Draw stars at points */}
+              {sign.points.map((point, idx) => (
+                <g key={`star-${idx}`}>
+                  <circle
+                    cx={point[0]}
+                    cy={point[1]}
+                    r="1.5"
+                    fill="white"
+                    opacity="0.8"
+                  />
+                  <circle
+                    cx={point[0]}
+                    cy={point[1]}
+                    r="0.5"
+                    fill="white"
+                    opacity="1"
+                  />
+                </g>
+              ))}
+            </svg>
           </div>
         ))}
       </div>
@@ -424,12 +477,12 @@ export default function FaleHafez() {
             </div>
           ) : !isCoverFlipped ? (
             <div className="flex flex-col items-center gap-4 w-full max-w-md">
-              <div className="w-full px-4">
+              <div className="w-full px-4" style={{ paddingTop: '8px' }}>
                 <label htmlFor="intention" className="sr-only">
                   Optionally, you can enter your question or intention
                 </label>
-                <h2 className="text-sm md:text-lg text-center text-amber-100 font-light px-[40px] md:px-[56px] mb-3">
-                  <span>Tap the book to discover your verse.</span>
+                <h2 className="text-sm md:text-lg text-center text-amber-100 font-light px-2 md:px-[56px] mb-3" style={{ maxWidth: '95vw', margin: '0 auto' }}>
+                  <span>Tap the book to discover your&nbsp;verse.</span>
                 </h2>
                 <textarea
                   ref={textareaRef}
@@ -446,11 +499,11 @@ export default function FaleHafez() {
                       flipCover()
                     }
                   }}
-                  placeholder="Enter your question or intention for a personalized reading (optional)..."
+                  placeholder="Type your question or intention to personalize the reading..."
                   className="w-full max-w-[98vw] bg-purple-900/20 border border-purple-500/30 rounded-lg px-5 py-3 text-amber-100 placeholder:text-amber-200/70 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none overflow-hidden"
                   rows={2}
                   maxLength={200}
-                  style={{ minHeight: '5rem' }}
+                  style={{ minHeight: 'calc(5rem + 13px)', marginTop: '5px' }}
                 />
                 {userIntention.length > 0 && (
                   <p className="text-amber-200/60 text-xs mt-1 text-right">
@@ -732,12 +785,12 @@ export default function FaleHafez() {
                 </div>
               ) : !isCoverFlipped ? (
                 <div className="flex flex-col items-center gap-3 w-full px-4" style={{ marginTop: '8px' }}>
-                  <div className="w-full">
+                  <div className="w-full" style={{ paddingTop: '8px' }}>
                     <label htmlFor="intention-mobile" className="sr-only">
                       Optionally, you can enter your question or intention
                     </label>
-                    <h2 className="text-base text-center text-amber-100 font-light px-[40px] mb-3">
-                      <span>Tap the book to discover your verse.</span>
+                    <h2 className="text-base text-center text-amber-100 font-light px-2 mb-3" style={{ maxWidth: '95vw', margin: '0 auto' }}>
+                      <span>Tap the book to discover your&nbsp;verse.</span>
                     </h2>
                     <textarea
                       ref={textareaMobileRef}
@@ -754,11 +807,11 @@ export default function FaleHafez() {
                           flipCover()
                         }
                       }}
-                      placeholder="Enter your question or intention for a personalized reading (optional)..."
+                      placeholder="Type your question or intention to personalize the reading..."
                       className="w-full max-w-[98vw] bg-purple-900/20 border border-purple-500/30 rounded-lg px-4 py-3 text-base text-amber-100 placeholder:text-amber-200/70 focus:outline-none focus:border-purple-400/50 focus:bg-purple-800/30 focus:shadow-[0_0_12px_rgba(139,92,246,0.3)] transition-all resize-none overflow-hidden"
                       rows={2}
                       maxLength={200}
-                      style={{ minHeight: '5rem' }}
+                      style={{ minHeight: 'calc(5rem + 13px)', marginTop: '5px' }}
                     />
                     {userIntention.length > 0 && (
                       <p className="text-amber-200/60 text-sm mt-1 text-right">

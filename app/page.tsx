@@ -57,23 +57,39 @@ export default function Home() {
   // Generate random zodiac sign positions
   const generateZodiacSigns = () => {
     if (typeof window === 'undefined') return []
-    const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓']
+    const zodiacSigns = [
+      { id: 'aries', points: [[20, 20], [50, 10], [80, 20], [50, 30]] },
+      { id: 'taurus', points: [[20, 30], [50, 20], [80, 30], [50, 50], [30, 50], [70, 50]] },
+      { id: 'gemini', points: [[30, 20], [50, 15], [70, 20], [30, 40], [50, 35], [70, 40]] },
+      { id: 'cancer', points: [[30, 30], [50, 25], [70, 30], [50, 45], [30, 40], [70, 40]] },
+      { id: 'leo', points: [[25, 30], [50, 20], [75, 30], [50, 45], [35, 40], [65, 40]] },
+      { id: 'virgo', points: [[40, 15], [50, 20], [60, 15], [50, 45], [40, 40], [60, 40]] },
+      { id: 'libra', points: [[30, 30], [50, 25], [70, 30], [50, 40], [35, 35], [65, 35]] },
+      { id: 'scorpio', points: [[50, 15], [50, 25], [50, 35], [50, 45], [40, 40], [60, 40]] },
+      { id: 'sagittarius', points: [[50, 20], [40, 30], [60, 30], [50, 40], [35, 35], [65, 35]] },
+      { id: 'capricorn', points: [[40, 20], [50, 25], [60, 20], [50, 40], [40, 45], [60, 45]] },
+      { id: 'aquarius', points: [[30, 25], [50, 20], [70, 25], [30, 40], [50, 35], [70, 40]] },
+      { id: 'pisces', points: [[30, 30], [50, 25], [70, 30], [30, 40], [50, 35], [70, 40]] },
+    ]
     const signs = []
-    const signCount = 8
+    const signCount = 4
     for (let i = 0; i < signCount; i++) {
+      const sign = zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)]
       signs.push({
         id: i,
-        symbol: zodiacSigns[Math.floor(Math.random() * zodiacSigns.length)],
+        signId: sign.id,
+        points: sign.points,
         top: Math.random() * 100,
         left: Math.random() * 100,
         delay: Math.random() * 5,
         duration: 15 + Math.random() * 10, // 15-25 seconds
+        rotation: Math.random() * 360,
       })
     }
     return signs
   }
 
-  const [zodiacSigns, setZodiacSigns] = useState<Array<{id: number, symbol: string, top: number, left: number, delay: number, duration: number}>>([])
+  const [zodiacSigns, setZodiacSigns] = useState<Array<{id: number, signId: string, points: number[][], top: number, left: number, delay: number, duration: number, rotation: number}>>([])
 
   useEffect(() => {
     // Only shuffle on client-side to avoid hydration mismatch
@@ -270,9 +286,46 @@ export default function Home() {
               left: `${sign.left}%`,
               animationDelay: `${sign.delay}s`,
               animationDuration: `${sign.duration}s`,
+              transform: `rotate(${sign.rotation}deg)`,
             }}
           >
-            {sign.symbol}
+            <svg width="100" height="100" viewBox="0 0 100 100" className="zodiac-svg">
+              {/* Draw connecting lines */}
+              {sign.points.length > 1 && sign.points.map((point, idx) => {
+                if (idx === 0) return null
+                const prevPoint = sign.points[idx - 1]
+                return (
+                  <line
+                    key={`line-${idx}`}
+                    x1={prevPoint[0]}
+                    y1={prevPoint[1]}
+                    x2={point[0]}
+                    y2={point[1]}
+                    stroke="rgba(255, 255, 255, 0.4)"
+                    strokeWidth="0.5"
+                  />
+                )
+              })}
+              {/* Draw stars at points */}
+              {sign.points.map((point, idx) => (
+                <g key={`star-${idx}`}>
+                  <circle
+                    cx={point[0]}
+                    cy={point[1]}
+                    r="1.5"
+                    fill="white"
+                    opacity="0.8"
+                  />
+                  <circle
+                    cx={point[0]}
+                    cy={point[1]}
+                    r="0.5"
+                    fill="white"
+                    opacity="1"
+                  />
+                </g>
+              ))}
+            </svg>
           </div>
         ))}
       </div>
@@ -312,7 +365,7 @@ export default function Home() {
           <h1 className="text-2xl md:text-4xl text-center font-serif font-light text-amber-100 tracking-wide">
             The Persian Oracle
           </h1>
-          <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full"></div>
+          <div className="w-16 md:w-24 h-0.5 md:h-1 bg-amber-400 mx-auto rounded-full !mb-6 md:!mb-8"></div>
           
           {/* Show New Reading button only after loading is complete */}
           {flippedCards.length === 3 && !isLoading ? (
@@ -327,7 +380,7 @@ export default function Home() {
               ✨ New Reading ✨
             </button>
           ) : (
-            <h2 className="text-base md:text-xl text-center text-amber-200 font-light px-8 md:px-12 italic">
+            <h2 className="text-base md:text-xl text-center text-amber-200 font-light px-2 md:px-12 italic md:!mt-0" style={{ maxWidth: '95vw', margin: '0 auto' }}>
               <span>Flip three cards mindfully and invite the cosmos to share its secrets</span>
             </h2>
           )}
