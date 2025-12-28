@@ -75,7 +75,7 @@ export default function Footer({ content }: { content: 'oracle' | 'hafez' }) {
                 <p>Anything you are genuinely unsure about. Love, timing, decisions, or inner clarity all work.</p>
               </div>
               <div>
-                <p className="font-medium text-amber-200 mb-1">Is this "real" Fal-e Hafez?</p>
+                <p className="font-medium text-amber-200 mb-1">Is this &quot;real&quot; Fal-e Hafez?</p>
                 <p>It is a modern digital version inspired by the tradition. If you want, you can compare it to your own Divan at home.</p>
               </div>
               <div>
