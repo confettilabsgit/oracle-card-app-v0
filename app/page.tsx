@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { track } from '@vercel/analytics'
+import Footer from './components/Footer'
 
 const cards = [
   { id: 1, name: 'Simurgh', persianName: 'سیمرغ', image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/simurgh-Jtc8EVywGwdSEKIK3PcGGMyz6d0Yon.png' },
@@ -820,6 +821,8 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <Footer content="oracle" />
     </main>
   )
 }

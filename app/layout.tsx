@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ['latin'] })
 const notoSansArabic = Noto_Sans_Arabic({ subsets: ['arabic'] })
 
 export const metadata: Metadata = {
-  title: 'The Persian Oracle',
-  description: 'Unveil what the Persian realm holds for you',
+  title: 'The Persian Oracle | Bilingual Fal-e Hafez and Oracle Readings',
+  description: 'Explore The Persian Oracle, a bilingual digital ritual inspired by Persian myth and poetry. Try Fal-e Hafez online or flip three cards in English or فارسی.',
   verification: {
     google: 'yFy1QIvrwLjrDRwspe7z0bEtQfWP7Gmxr3I5ulwtsWI',
   },
