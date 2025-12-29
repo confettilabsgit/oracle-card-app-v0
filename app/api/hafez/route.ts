@@ -1,6 +1,8 @@
 import { generateHafezWisdom } from '@/lib/generateHafezWisdom'
 import { NextResponse } from 'next/server'
 
+export const maxDuration = 30 // Increase timeout to 30 seconds
+
 export async function POST() {
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json(

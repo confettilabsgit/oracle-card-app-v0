@@ -6,7 +6,7 @@ export default function Footer({ content }: { content: 'oracle' | 'hafez' }) {
           <div className="text-amber-100/80 text-base md:text-lg leading-relaxed space-y-8">
             {/* Introduction */}
             <p className="text-left">
-              The Persian Oracle is a quiet digital ritual inspired by Persian myth, symbolism, and poetry. Flip three cards with a question in mind. Let the pattern that appears guide your reflection. You can read in English or فارسی.
+              The Persian Oracle is a quiet digital ritual inspired by Persian myth, symbolism, and poetry. Like tarot cards or divination decks, it offers a moment for reflection through symbolic imagery. Flip three cards with a question in mind. Each card carries meaning drawn from Persian mythology and poetic tradition. Let the pattern that appears guide your reflection. You can read in English or فارسی.
             </p>
 
             {/* How it works */}
@@ -51,10 +51,10 @@ export default function Footer({ content }: { content: 'oracle' | 'hafez' }) {
     <footer className="w-full mt-16 pb-12 px-4 md:px-8">
       <div className="container mx-auto max-w-4xl">
         <div className="text-amber-100/80 text-base md:text-lg leading-relaxed space-y-8">
-          {/* Introduction */}
-          <p className="text-left">
-            Fal-e Hafez is a beloved Persian practice of opening the Divan of Hafez, the poet you end up quoting when life gets complicated. If you know, you know. If not, a quick search will catch you up. Think of it as bibliomancy with a poet who tells the truth sideways. This digital version keeps it simple: you arrive with a question, you open the book, and you receive a verse with a clear interpretation in English or فارسی.
-          </p>
+            {/* Introduction */}
+            <p className="text-left">
+              Fal-e Hafez is a beloved Persian practice of opening the Divan of Hafez, the poet you end up quoting when life gets complicated. If you know, you know. If not, a quick search will catch you up. Think of it as bibliomancy—divination through poetry—with a poet who tells the truth sideways. Like a tarot reading based on verse, this digital version keeps it simple: you arrive with a question, you open the book, and you receive a verse with a clear interpretation in English or فارسی.
+            </p>
 
           {/* How it works */}
           <div>

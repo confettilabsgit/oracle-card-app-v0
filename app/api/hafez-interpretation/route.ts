@@ -1,5 +1,7 @@
 import { OpenAI } from 'openai';
 
+export const maxDuration = 30 // Increase timeout to 30 seconds
+
 export async function POST(req: Request) {
   if (!process.env.OPENAI_API_KEY) {
     return new Response(
